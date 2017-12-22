@@ -1,11 +1,16 @@
 {
   "name": "polka",
   "version": "0.0.0",
-  "main": "index.js",
+  "description": "WIP",
+  "repository": "lukeed/prev.js",
+  "main": "lib/index.js",
   "license": "MIT",
+  "files": [
+    "lib"
+  ],
   "author": {
     "name": "Luke Edwards",
-    "email": "luke.edwards05@gmail.com",
-    "url": "lukeed.com"
+    "email": "luke@lukeed.com",
+    "url": "https://lukeed.com"
   }
 }
