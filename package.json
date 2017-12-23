@@ -16,6 +16,10 @@
   "scripts": {
     "test": "tape test/*.js | tap-spec"
   },
+  "dependencies": {
+    "parseurl": "^1.3.2",
+    "trouter": "^0.1.0"
+  },
   "devDependencies": {
     "tap-spec": "^4.1.1",
     "tape": "^4.8.0"
