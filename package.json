@@ -2,7 +2,7 @@
   "name": "polka",
   "version": "0.0.0",
   "description": "WIP",
-  "repository": "lukeed/prev.js",
+  "repository": "lukeed/polka",
   "main": "lib/index.js",
   "license": "MIT",
   "files": [
