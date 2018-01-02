@@ -24,7 +24,18 @@ polka()
 
 ## API
 
-~>
+~> ...
+
+## Benchmarks
+
+> Note, grain of salt. App code is slowest component, etc
+
+~> ...
+
+## Comparisons
+
+~> With Express
+
 
 ## License
 
