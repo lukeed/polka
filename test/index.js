@@ -110,24 +110,59 @@ test('usage::middleware', t => {
 	});
 });
 
-test('usage::errors::simple', t => {
-	t.plan(3);
-
+test('usage::errors', t => {
+	t.plan(9);
 	let a = 41;
-	let app = polka().use((req, res, next) => {
+
+	// next(Error)
+	let foo = polka().use((req, res, next) => {
 		(a += 1) && next(new Error('boo'));
 	}).get('/', (req, res) => {
-		a = 0; // shouldnt run
+		a = 0; // wont run
 		res.end('OK');
 	});
 
-	let uri = listen(app.server);
-	axios.get(uri).catch(err => {
+	let u1 = listen(foo.server);
+	axios.get(u1).catch(err => {
 		let r = err.response;
 		t.is(a, 42, 'exits before route handler if middleware error');
 		t.is(r.data, 'Error: boo', '~> received "Error: boo" text');
 		t.is(r.status, 500, '~> received 500 status');
-		app.server.close();
+		foo.server.close();
 	});
-});
+
+	// next(string)
+	let bar = polka().use((_, r, next) => {
+		next('boo~!');
+	}).get('/', (_, res) => {
+		a = 123; // wont run
+		res.end('OK');
+	});
+
+	let u2 = listen(bar.server);
+	axios.get(u2).catch(err => {
+		let r = err.response;
+		t.is(a, 42, 'exits without running route handler');
+		t.is(r.data, 'boo~!', '~> received "boo~!" text');
+		t.is(r.status, 500, '~> received 500 status');
+		bar.server.close();
+	});
+
+	// early res.end()
+	let baz = polka().use((_, res) => {
+		res.statusCode = 501;
+		res.end('oh dear');
+	}).get('/', (_, res) => {
+		a = 42; // wont run
+		res.end('OK');
+	});
+
+	let u3 = listen(baz.server);
+	axios.get(u3).catch(err => {
+		let r = err.response;
+		t.is(a, 42, 'exits without running route handler');
+		t.is(r.data, 'oh dear', '~> received "oh dear" (custom) text');
+		t.is(r.status, 501, '~> received 501 (custom) status');
+		baz.server.close();
+	});
 });
