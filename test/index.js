@@ -109,4 +109,25 @@ test('usage::middleware', t => {
 		app.server.close();
 	});
 });
+
+test('usage::errors::simple', t => {
+	t.plan(3);
+
+	let a = 41;
+	let app = polka().use((req, res, next) => {
+		(a += 1) && next(new Error('boo'));
+	}).get('/', (req, res) => {
+		a = 0; // shouldnt run
+		res.end('OK');
+	});
+
+	let uri = listen(app.server);
+	axios.get(uri).catch(err => {
+		let r = err.response;
+		t.is(a, 42, 'exits before route handler if middleware error');
+		t.is(r.data, 'Error: boo', '~> received "Error: boo" text');
+		t.is(r.status, 500, '~> received 500 status');
+		app.server.close();
+	});
+});
 });
