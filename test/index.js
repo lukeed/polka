@@ -1,4 +1,5 @@
 const { test, Test } = require('tape');
+const http = require('http');
 const polka = require('../lib');
 
 const $ = Test.prototype;
@@ -35,7 +36,7 @@ test('internals', t => {
 	t.isArray(app.wares, 'app.wares is an array');
 	t.isEmpty(app.wares, 'app.wares is empty');
 
-	t.is(app.server.constructor.name, 'Server', 'app.server is an HTTP server');
+	t.ok(app.server instanceof http.Server, 'app.server is an HTTP server');
 
 	['parse', 'listen', 'handler'].forEach(k => {
 		t.isFunction(app[k], `app.${k} is a function`);
