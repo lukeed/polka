@@ -1,5 +1,6 @@
-const { test, Test } = require('tape');
 const http = require('http');
+const axios = require('axios');
+const { test, Test } = require('tape');
 const polka = require('../lib');
 
 const $ = Test.prototype;
@@ -7,7 +8,7 @@ const METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
 
 $.isEmpty = function (val, msg) {
 	this.ok(!Object.keys(val).length, msg);
-};
+}
 
 $.isArray = function (val, msg) {
 	this.ok(Array.isArray(val), msg);
@@ -19,6 +20,12 @@ $.isObject = function (val, msg) {
 
 $.isFunction = function (val, msg) {
 	this.is(typeof val, 'function', msg);
+}
+
+function listen(srv, host) {
+	srv.listen(); // boots
+	let { port } = srv.address();
+	return `http://${host || 'localhost'}:${port}`;
 }
 
 test('polka', t => {
@@ -78,7 +85,7 @@ test('usage::basic', t => {
 });
 
 test('usage::middleware', t => {
-	t.plan(4);
+	t.plan(7);
 
 	let app = polka().use((req, res, next) => {
 		(req.one='hello') && next();
@@ -88,9 +95,18 @@ test('usage::middleware', t => {
 		t.pass('~> matches the GET(/) route');
 		t.is(req.one, 'hello', '~> route handler runs after first middleware');
 		t.is(req.two, 'world', '~> route handler runs after both middlewares!');
+		res.setHeader('x-type', 'text/foo');
+		res.end('Hello');
 	});
 
 	t.is(app.wares.length, 2, 'added 2 middleware functions');
 
-	app.handler({ method:'GET', url:'/' });
+	let uri = listen(app.server);
+	axios.get(uri).then(r => {
+		t.is(r.status, 200, '~> received 200 status');
+		t.is(r.data, 'Hello', '~> received "Hello" response');
+		t.is(r.headers['x-type'], 'text/foo', '~> received custom header');
+		app.server.close();
+	});
+});
 });

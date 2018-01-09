@@ -21,6 +21,7 @@
     "trouter": "^0.1.0"
   },
   "devDependencies": {
+    "axios": "^0.17.1",
     "tap-spec": "^4.1.1",
     "tape": "^4.8.0"
   }
