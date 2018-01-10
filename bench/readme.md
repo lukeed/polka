@@ -1,49 +1,71 @@
-# Benchmark
+# Benchmarks
 
-All apps must have two global middlewares enabled (with request mutations), an empty `GET` route handler for `favicon.ico` and a `GET` handler for the `/users/:id`, returning a `User: {id}` string response.
+All apps employ two global middlewares with `req` mutations, an empty `GET` route handler for `favicon.ico` and a `GET` handler for the `/users/:id`, returning a `User: {id}` string response.
 
-The tool used for results is the following:
+Results are taken after 1 warm-up run. The tool used for results is the following:
 
 ```sh
-$ wrk -t12 -c100 -d30s http://localhost:3000/user/123
+$ wrk -t8 -c100 -d30s http://localhost:3000/user/123
 ```
+
 
 ## Node v9.1.0
 
 ```
 #=> POLKA
 Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     1.92ms  358.56us  28.83ms   94.34%
-    Req/Sec     4.21k   724.58    44.48k    98.97%
-  1509408 requests in 30.10s, 155.46MB read
-Requests/sec:  50145.93
-Transfer/sec:      5.16MB
+    Latency     2.34ms  198.33us   8.98ms   92.70%
+    Req/Sec     5.15k   152.73     6.93k    85.70%
+  1233025 requests in 30.10s, 127.00MB read
+Requests/sec:  40962.46
+Transfer/sec:      4.22MB
 
 #=> EXPRESS
 Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     2.79ms  545.98us  30.95ms   92.04%
-    Req/Sec     2.89k   209.85     3.32k    93.08%
-  1036447 requests in 30.02s, 129.48MB read
-Requests/sec:  34528.66
-Transfer/sec:      4.31MB
+    Latency     3.22ms  406.21us  10.57ms   92.21%
+    Req/Sec     3.87k   248.19    10.42k    98.00%
+  924698 requests in 30.10s, 115.52MB read
+Requests/sec:  30716.24
+Transfer/sec:      3.84MB
 ```
+
+## Node v8.9.0
+
+```
+#=> POLKA
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     2.53ms  198.92us   8.93ms   84.30%
+    Req/Sec     4.77k   417.95    19.25k    99.25%
+  1139800 requests in 30.10s, 117.40MB read
+Requests/sec:  37866.55
+Transfer/sec:      3.90MB
+
+#=> EXPRESS
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     3.24ms  354.08us  10.25ms   89.52%
+    Req/Sec     3.71k   120.42     4.19k    68.83%
+  887040 requests in 30.01s, 110.82MB read
+Requests/sec:  29556.30
+Transfer/sec:      3.69MB
+```
+
 
 ## Node v6.11.1
 
 ```
 #=> POLKA
 Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     2.57ms  522.87us  31.84ms   97.46%
-    Req/Sec     3.14k   164.45     4.15k    86.69%
-  1125110 requests in 30.01s, 115.88MB read
-Requests/sec:  37490.67
-Transfer/sec:      3.86MB
+    Latency     3.02ms  268.67us  11.52ms   78.66%
+    Req/Sec     3.99k   117.22     4.38k    74.49%
+  955759 requests in 30.10s, 98.44MB read
+Requests/sec:  31748.49
+Transfer/sec:      3.27MB
 
 #=> EXPRESS
 Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     3.96ms  638.85us  31.61ms   94.12%
-    Req/Sec     2.03k   114.58     2.36k    85.92%
-  729354 requests in 30.02s, 91.12MB read
-Requests/sec:  24295.28
-Transfer/sec:      3.04MB
+    Latency     4.60ms  355.35us  14.29ms   73.88%
+    Req/Sec     2.62k    68.59     3.24k    68.88%
+  626258 requests in 30.01s, 78.24MB read
+Requests/sec:  20865.30
+Transfer/sec:      2.61MB
 ```
