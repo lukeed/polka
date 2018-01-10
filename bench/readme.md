@@ -1,7 +1,16 @@
+# Benchmark
+
+All apps must have two global middlewares enabled (with request mutations), an empty `GET` route handler for `favicon.ico` and a `GET` handler for the `/users/:id`, returning a `User: {id}` string response.
+
+The tool used for results is the following:
+
+```sh
 $ wrk -t12 -c100 -d30s http://localhost:3000/user/123
+```
 
-######### NODE v9.1.0 #########
+## Node v9.1.0
 
+```
 #=> POLKA
 Thread Stats   Avg      Stdev     Max   +/- Stdev
     Latency     1.92ms  358.56us  28.83ms   94.34%
@@ -17,9 +26,11 @@ Thread Stats   Avg      Stdev     Max   +/- Stdev
   1036447 requests in 30.02s, 129.48MB read
 Requests/sec:  34528.66
 Transfer/sec:      4.31MB
+```
 
-######### NODE v6.11.1 #########
+## Node v6.11.1
 
+```
 #=> POLKA
 Thread Stats   Avg      Stdev     Max   +/- Stdev
     Latency     2.57ms  522.87us  31.84ms   97.46%
@@ -35,3 +46,4 @@ Thread Stats   Avg      Stdev     Max   +/- Stdev
   729354 requests in 30.02s, 91.12MB read
 Requests/sec:  24295.28
 Transfer/sec:      3.04MB
+```

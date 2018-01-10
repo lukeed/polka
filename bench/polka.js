@@ -1,7 +1,5 @@
 const polka = require('../lib');
 
-// const sleep = ms => new Promise(r => setTimeout(r, ms));
-
 function one(req, res, next) {
 	req.one = true;
 	next();
