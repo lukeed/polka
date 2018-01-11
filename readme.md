@@ -389,23 +389,39 @@ A round of Polka-vs-Express benchmarks across varying Node versions can be [foun
 > **Important:** Time is mostly spent in _your application code_ rather than Express or Polka code!<br> Switching from Express to Polka will (likely) not show such drastic performance gains.
 
 ```
-# Node v9.1.0
+Node 8.9.0
 
-#=> POLKA
-Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     2.34ms  198.33us   8.98ms   92.70%
-    Req/Sec     5.15k   152.73     6.93k    85.70%
-  1233025 requests in 30.10s, 127.00MB read
-Requests/sec:  40962.46
-Transfer/sec:      4.22MB
+Native
+    Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     2.25ms  198.89us   6.39ms   93.49%
+        Req/Sec     5.36k   545.77    13.90k    97.63%
+      428295 requests in 10.10s, 42.48MB read
+    Requests/sec:  42405.68
+    Transfer/sec:      4.21MB
 
-#=> EXPRESS
-Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     3.22ms  406.21us  10.57ms   92.21%
-    Req/Sec     3.87k   248.19    10.42k    98.00%
-  924698 requests in 30.10s, 115.52MB read
-Requests/sec:  30716.24
-Transfer/sec:      3.84MB
+Polka
+    Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     2.29ms  254.76us   6.82ms   92.38%
+        Req/Sec     5.26k     1.26k   40.56k    99.88%
+      419118 requests in 10.10s, 41.57MB read
+    Requests/sec:  41499.08
+    Transfer/sec:      4.12MB
+
+Express
+    Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     3.11ms  438.20us  10.17ms   89.85%
+        Req/Sec     3.88k     0.93k   29.98k    99.88%
+      308988 requests in 10.10s, 37.42MB read
+    Requests/sec:  30594.98
+    Transfer/sec:      3.71MB
+
+Fastify
+    Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     2.92ms  310.96us  10.29ms   89.60%
+        Req/Sec     4.12k   335.51     8.16k    95.52%
+      329986 requests in 10.10s, 40.91MB read
+    Requests/sec:  32665.12
+    Transfer/sec:      4.05MB
 ```
 
 
