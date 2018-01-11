@@ -123,6 +123,80 @@ Type: `Function`
 An optional function (with the same signature) to call at the end of the response cycle.
 
 
+## Routing
+
+Routes are used to define how an application responds to varying HTTP methods and endpoints.
+
+> If you're coming from Express, there's nothing new here!<br> However, do check out [Comparisons](#comparisons) for some pattern changes.
+
+### Basics
+
+Each route is compromised of a pathname, a HTTP method, and a handler (aka, what you want to do).
+
+In code, this looks like:
+
+```js
+app.METHOD(pattern, handler);
+```
+
+wherein:
+
+* `app` is an instance of `polka`
+* `METHOD` is any valid HTTP method, lowercased
+* `pattern` is a [routing pattern](#patterns) string
+* `handler` is the function executed when the `pattern` is matched
+
+Also, a single pathname (or `pattern`) may be reused with multiple METHODs.
+
+The following examples demonstrate some simple routes.
+
+```js
+const app = polka();
+
+app.get('/', (req, res) => {
+  res.end('Hello world!');
+});
+
+app.get('/users', (req, res) => {
+  res.end('Get all users!');
+});
+
+app.post('/users', (req, res) => {
+  res.end('Create a new User!');
+});
+
+app.put('/users/:id', (req, res) => {
+  res.end(`Update User with ID of ${req.params.id}`);
+});
+
+app.delete('/users/:id', (req, res) => {
+  res.end(`CY@ User ${req.params.id}!`);
+});
+```
+
+### Patterns
+
+Unlike the very popular [`path-to-regexp`](https://github.com/pillarjs/path-to-regexp), Polka uses string comparison to locate route matches. While [faster](https://github.com/lukeed/matchit#benchmarks) & more memory efficient, this does also prevent complex pattern matching.
+
+However, have no fear! :boom: All the basic and most commonly used patterns are supported. You probably only ever used these patterns in the first place :wink:
+
+> See [Comparisons](#comparisons) for the list of `RegExp`-based patterns that Polka does not support.
+
+The supported pattern types are:
+
+* static (`/users`)
+* named parameters (`/users/:id`)
+* nested parameters (`/users/:id/books/:title`)
+* optional parameters (`/users/:id?/books/:title?`)
+* any match / wildcards (`/users/*`)
+
+### Methods
+
+Any valid HTTP method is supported! However, only the most common methods are used throughout this documentation for demo purposes.
+
+> **Note:** For a full list of valid METHODs, please see [this list](http://expressjs.com/en/4x/api.html#routing-methods).
+
+
 ## Benchmarks
 
 A round of Polka-vs-Express benchmarks across varying Node versions can be [found here](/bench).
