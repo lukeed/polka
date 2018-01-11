@@ -20,9 +20,9 @@
 
 <br />
 
-Polka is an extremely minimal, highly performant Express.js alternative. Yes, you're right, Express is _already_ super fast & not _that_ big :thinking: --- but Polka shows that there was (somehow) room for improvement!
+Polka is an extremely minimal, highly performant Express.js alternative. Yes, you're right, Express is _already_ super fast & not _that_ big :thinking: &mdash; but Polka shows that there was (somehow) room for improvement!
 
-Essentially, Polka is just a [native HTTP server](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_server) with added support for routing, middlewares, and sub-applications (TODO). That's it! :tada:
+Essentially, Polka is just a [native HTTP server](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_server) with added support for routing, middleware, and sub-applications (_TODO_). That's it! :tada:
 
 And, of course, in mandatory bullet-point format:
 
@@ -70,14 +70,14 @@ Polka extends [Trouter](https://github.com/lukeed/trouter) which means it inheri
 
 ### use(...fn)
 
-Attach [middleware(s)](#middleware) and/or sub-application(s) (TODO) to the server. These will execute _before_ your routes' [handlers](#handlers).
+Attach [middleware(s)](#middleware) and/or sub-application(s) (_TODO_) to the server. These will execute _before_ your routes' [handlers](#handlers).
 
 #### fn
 Type: `Function|Array`
 
-You may pass one or more function(s) at a time. Each function must have the standardized `(req, res, next)` signature.
+You may pass one or more functions at a time. Each function must have the standardized `(req, res, next)` signature.
 
-Please see [`handler`](#handlers) and [Express' middleware examples](http://expressjs.com/en/4x/api.html#middleware-callback-function-examples) for more info.
+Please see [`Middleware`](#middleware) and [Express' middleware examples](http://expressjs.com/en/4x/api.html#middleware-callback-function-examples) for more info.
 
 ### parse(req)
 
@@ -124,7 +124,7 @@ The `Content-Type` header value for the response.
 
 The main Polka [`ClientRequest`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_clientrequest) handler. It receives all requests and tries to match the incoming URL against known routes.
 
-If the `req.url` is not matched, a `(501) Not Implemented` response is returned. Otherwise, all middleware will be called & then, finally, the route handler (user-defined) will be executed --- assuming that a middleware hasn't already returned a response or thrown an error!
+If the `req.url` is not matched, a `(501) Not Implemented` response is returned. Otherwise, all middleware will be called. At the end of the loop, the (user-defined) route handler will be executed &mdash; assuming that a middleware hasn't already returned a response or thrown an error!
 
 #### req
 Type: `ClientRequest`
@@ -237,7 +237,7 @@ Every route definition must contain a valid `handler` function, or else an error
 
 > **Important:** You must _always_ terminate a `ServerResponse`!
 
-It's a **very good** practice to _always_ terminate your response ([`res.end`](https://nodejs.org/api/http.html#http_request_end_data_encoding_callback)) inside a handler, even if you expect a [middleware](#middlewares) to do it for you. In the event a response is/was not terminated, the server will hang & eventually exit with a `TIMEOUT` error.
+It's a **very good** practice to _always_ terminate your response ([`res.end`](https://nodejs.org/api/http.html#http_request_end_data_encoding_callback)) inside a handler, even if you expect a [middleware](#middleware) to do it for you. In the event a response is/was not terminated, the server will hang & eventually exit with a `TIMEOUT` error.
 
 > **Note:** This is a native `http` behavior.
 
@@ -314,7 +314,7 @@ $ curl -H "authorization: secret" /foobar
 #=> (200) Hello, valid user
 ```
 
-In Polka, middleware functions are mounted globally, which means that they'll run on every request (see [Comparisons](#comparisons). Instead, you'll have to apply internal filters to determine when & where your middleware should run.
+In Polka, middleware functions are mounted globally, which means that they'll run on every request (see [Comparisons](#comparisons)). Instead, you'll have to apply internal filters to determine when & where your middleware should run.
 
 > **Note:** This might change in Polka 1.0 :thinking:
 
@@ -354,7 +354,7 @@ There are three ways to "throw" an error from within a middleware function.
 
 2. **Pass an `Error` to `next()`**
 
-    This is similar to the above option, but gives you an window in changing the `statusCode` to something other than the `500` default.
+    This is similar to the above option, but gives you a window in changing the `statusCode` to something other than the `500` default.
 
     ```js
     function oopsies(req, res, next) {
@@ -448,7 +448,7 @@ There are, however, a few main differences. Polka does not support or offer:
 
 1) **Any built-in view/rendering engines.**
 
-    Most templating engines can be incorporated into middleware functions or used directly within route handler.
+    Most templating engines can be incorporated into middleware functions or used directly within a route handler.
 
 2) **The ability to `throw` from within middleware.**
 
@@ -470,7 +470,7 @@ There are, however, a few main differences. Polka does not support or offer:
 
 3) **Response helpers... yet!**
 
-    Express has a nice set of [response helpers](http://expressjs.com/en/4x/api.html#res.append). While Polka relies on the [native Node.js response methods](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_serverresponse), it would be very easy/possible to attach a global middleware that contained a similar set of helpers. (TODO)
+    Express has a nice set of [response helpers](http://expressjs.com/en/4x/api.html#res.append). While Polka relies on the [native Node.js response methods](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_serverresponse), it would be very easy/possible to attach a global middleware that contained a similar set of helpers. (_TODO_)
 
 4) **The `.use()` method does not accept a `pathname` filter.**
 
