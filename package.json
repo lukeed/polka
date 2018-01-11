@@ -1,6 +1,6 @@
 {
   "name": "polka",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "WIP",
   "repository": "lukeed/polka",
   "main": "lib/index.js",
