@@ -190,6 +190,24 @@ The supported pattern types are:
 * optional parameters (`/users/:id?/books/:title?`)
 * any match / wildcards (`/users/*`)
 
+### Parameters
+
+Any named parameters included within your route [`pattern`](#patterns) will be automatically added to your incoming `req` object. All parameters will be found within `req.params` under the same name they were given.
+
+> **Important:** Your parameter names should be unique, as shared names will overwrite each other!
+
+```js
+app.get('/users/:id/books/:title', (req, res) => {
+  let { id, title } = req.params;
+  res.end(`User: ${id} && Book: ${title}`);
+});
+```
+
+```sh
+$ curl /users/123/books/Narnia
+#=> User: 123 && Book: Narnia
+```
+
 ### Methods
 
 Any valid HTTP method is supported! However, only the most common methods are used throughout this documentation for demo purposes.
