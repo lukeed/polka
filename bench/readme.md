@@ -8,6 +8,8 @@ Results are taken after 1 warm-up run. The tool used for results is the followin
 $ wrk -t8 -c100 -d30s http://localhost:3000/user/123
 ```
 
+> Please remember that _your application code_ is most likely the slowest part of your application!<br> Switching from Express to Polka will (likely) not guarantee the same performance gains.
+
 
 ## Node v9.1.0
 
