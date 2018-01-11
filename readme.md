@@ -256,6 +256,132 @@ app
   });
 ```
 
+
+## Middleware
+
+Middleware are functions that run in between (hence "middle") receiving the request & executing your route's [`handler`](#handlers) response.
+
+> Coming from Express? Use any middleware you already know & love! :tada:
+
+The middleware signature receives the request (`req`), the response (`res`), and a callback (`next`).
+
+These can apply mutations to the `req` and `res` objects, and unlike Express, have access to `req.params`, `req.pathname`, `req.search`, and `req.query`!
+
+Most importantly, a middleware ***must*** either call `next()` or terminate the response (`res.end`). Failure to do this will result in a never-ending response, which will eventually crash the `http.Server`.
+
+```js
+// Log every request
+function logger(req, res, next) {
+  console.log(`~> Received ${req.method} on ${req.url}`);
+  next(); // move on
+}
+
+function authorize(req, res, next) {
+  // mutate req; available later
+  req.token = req.getHeader('authorization');
+  req.token ? next() : ((res.statusCode=401) && res.end('No token!'));
+}
+
+polka().use(logger, authorize).get('*', (req, res) => {
+  console.log(`~> user token: ${req.token}`);
+  res.end('Hello, valid user');
+});
+```
+
+```sh
+$ curl /
+# ~> Received GET on /
+#=> (401) No token!
+
+$ curl -H "authorization: secret" /foobar
+# ~> Received GET on /foobar
+# ~> user token: secret
+#=> (200) Hello, valid user
+```
+
+In Polka, middleware functions are mounted globally, which means that they'll run on every request (see [Comparisons](#comparisons). Instead, you'll have to apply internal filters to determine when & where your middleware should run.
+
+> **Note:** This might change in Polka 1.0 :thinking:
+
+```js
+function foobar(req, res, next) {
+  if (req.pathname.startsWith('/users')) {
+    // do something magical
+  }
+  next();
+}
+```
+
+### Middleware Errors
+
+If an error arises within a middleware, the loop will be exited. This means that no other middleware will execute & neither will the route handler.
+
+Similarly, regardless of `statusCode`, an early response termination will also exit the loop & prevent the route handler from running.
+
+There are three ways to "throw" an error from within a middleware function.
+
+> **Hint:** None of them use `throw` :joy_cat:
+
+1. **Pass any string to `next()`**
+
+    This will exit the loop & send a `500` status code, with your error string as the response body.
+
+    ```js
+    polka()
+      .use((req, res, next) => next('💩'))
+      .get('*', (req, res) => res.end('wont run'));
+    ```
+
+    ```sh
+    $ curl /
+    #=> (500) 💩
+    ```
+
+2. **Pass an `Error` to `next()`**
+
+    This is similar to the above option, but gives you an window in changing the `statusCode` to something other than the `500` default.
+
+    ```js
+    function oopsies(req, res, next) {
+      let err = new Error('Try again');
+      err.code = 422;
+      next(err);
+    }
+    ```
+
+    ```sh
+    $ curl /
+    #=> (422) Try again
+    ```
+
+3. **Terminate the response early**
+
+    Once the response has been ended, there's no reason to continue the loop!
+
+    This approach is the most versatile as it allows to control every aspect of the outgoing `res`.
+
+    ```js
+    function oopsies(req, res, next) {
+      if (true) {
+        // something bad happened~
+        res.writeHead(400, {
+          'Content-Type': 'application/json',
+          'X-Error-Code': 'Please dont do this IRL'
+        });
+        let json = JSON.stringify({ error:'Missing CSRF token' });
+        res.end(json);
+      } else {
+        next(); // never called FYI
+      }
+    }
+    ```
+
+    ```sh
+    $ curl /
+    #=> (400) {"error":"Missing CSRF token"}
+    ```
+
+
 ## Benchmarks
 
 A round of Polka-vs-Express benchmarks across varying Node versions can be [found here](/bench).
