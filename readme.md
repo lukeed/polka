@@ -107,7 +107,9 @@ The `Content-Type` header value for the response.
 
 ### handler(req, res, next)
 
-The main Polka [`ClientRequest`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_clientrequest) handler. It receives all requests and tries to match the incoming URL against known routes. If the URL does not match anything, a `(501) Not Implemented` response is returned. Otherwise, all middlewares will be called & then, finally, the route handler (user-defined) will be called --- assuming that a middleware hasn't already returned a response or thrown an error!
+The main Polka [`ClientRequest`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_clientrequest) handler. It receives all requests and tries to match the incoming URL against known routes.
+
+If the `req.url` is not matched, a `(501) Not Implemented` response is returned. Otherwise, all middlewares will be called & then, finally, the route handler (user-defined) will be called --- assuming that a middleware hasn't already returned a response or thrown an error!
 
 #### req
 Type: `ClientRequest`
@@ -152,31 +154,62 @@ Transfer/sec:      3.84MB
 
 Polka's API aims to be _very_ similar to Express since most Node.js developers are already familiar with it. If you know Express, you already know Polka! :dancer:
 
-There are, however, a few main differences. Polka does not support:
+There are, however, a few main differences. Polka does not support or offer:
 
-1) The ability to `throw new Error`s from within middlewares.
+1) Any built-in view/rendering engines.
+
+    Most templating engines can be incorporated into middleware functions or used directly within route handler.
+
+2) The ability to `throw new Error`s from within middleware.
 
     However, all other forms of middleware-errors are supported.
 
     ```js
     function middleware(res, res, next) {
       // pass an error message to next()
-      next('uh oh, something happened');
+      next('uh oh');
+
       // pass an Error to next()
       next(new Error('🙀'));
+
       // send an early, customized error response
       res.statusCode = 401;
       res.end('Who are you?');
     }
     ```
 
-2) There are no reponse helpers... yet!
+3) Response helpers... yet!
 
     Express has a nice set of [response helpers](http://expressjs.com/en/4x/api.html#res.append). While Polka relies on the [native Node.js response methods](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_serverresponse), it would be very easy/possible to attach a global middleware that contained a similar set of helpers. (TODO)
 
-3) The `.use()` method does not accept a `pathname` filter.
+4) The `.use()` method does not accept a `pathname` filter.
 
-4) Sub-applications are not yet supported (TODO 1.0)
+5) `RegExp`-based route patterns.
+
+    Polka's router uses string comparison to match paths against patterns. It's a lot quicker & more efficient.
+
+    The following routing patterns **are not** supported:
+
+    ```js
+    app.get('/ab?cd', _ => {});
+    app.get('/ab+cd', _ => {});
+    app.get('/ab*cd', _ => {});
+    app.get('/ab(cd)?e', _ => {});
+    app.get(/a/, _ => {});
+    app.get(/.*fly$/, _ => {});
+    ```
+
+    The following routing patterns **are** supported:
+
+    ```js
+    app.get('/users', _ => {});
+    app.get('/users/:id', _ => {});
+    app.get('/users/:id?', _ => {});
+    app.get('/users/:id/books/:title', _ => {});
+    app.get('/users/*', _ => {});
+    ```
+
+6) Sub-applications...yet! (TODO 1.0)
 
 
 ## License
