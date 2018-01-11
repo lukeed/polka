@@ -214,6 +214,47 @@ Any valid HTTP method is supported! However, only the most common methods are us
 
 > **Note:** For a full list of valid METHODs, please see [this list](http://expressjs.com/en/4x/api.html#routing-methods).
 
+### Handlers
+
+Request handlers accept the incoming [`ClientRequest`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_clientrequest) and the formulating [`ServerResponse`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_serverresponse).
+
+Every route definition must contain a valid `handler` function, or else an error will be thrown at runtime.
+
+> **Important:** You must _always_ terminate a `ServerResponse`!
+
+It's a **very good** practice to _always_ terminate your response ([`res.end`](https://nodejs.org/api/http.html#http_request_end_data_encoding_callback)) inside a handler, even if you expect a [middleware](#middlewares) to do it for you. In the event a response is/was not terminated, the server will hang & eventually exit with a `TIMEOUT` error.
+
+> **Note:** This is a native `http` behavior.
+
+#### Async Handlers
+
+If using Node 7.4 or later, you may leverage native `async` and `await` syntax! :heart_eyes_cat:
+
+No special preparation is needed &mdash; simply add the appropriate keywords.
+
+```js
+const app = polka();
+
+const sleep = ms => new Promise(r, setTimeout(r, ms));
+
+async function authenticate(req, res, next) {
+  let token = req.getHeader('authorization');
+  if (!token) return app.send(res, 401);
+  req.user = await Users.find(token); // <== fake
+  next(); // done, woot!
+}
+
+app
+  .use(authenticate)
+  .get('/', async (req, res) => {
+    // log middleware's findings
+    console.log('~> current user', req.user);
+    // force sleep, because we can~!
+    await sleep(500);
+    // send greeting
+    res.end(`Hello, ${req.user.name}`);
+  });
+```
 
 ## Benchmarks
 
