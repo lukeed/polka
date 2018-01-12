@@ -14,6 +14,8 @@
   <a href="https://npmjs.org/package/polka">
     <img src="https://img.shields.io/npm/dm/polka.svg" alt="downloads" />
   </a>
+  <a href="license">
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="license" /> 
 </div>
 
 <div align="center">A micro web server so fast, it'll make you dance! :dancers:</div>
