@@ -250,7 +250,7 @@ No special preparation is needed &mdash; simply add the appropriate keywords.
 ```js
 const app = polka();
 
-const sleep = ms => new Promise(r, setTimeout(r, ms));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function authenticate(req, res, next) {
   let token = req.getHeader('authorization');
