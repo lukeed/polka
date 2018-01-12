@@ -166,3 +166,39 @@ test('usage::errors', t => {
 		baz.server.close();
 	});
 });
+
+test('usage::sub-apps', t => {
+	t.plan(8);
+
+	let foo = (req, res, next) => {
+		req.foobar = 'hello';
+		next();
+	};
+
+	let sub = polka().get('/sub', (req, res) => {
+		t.pass('runs the sub-application route')
+		t.is(req.foobar, 'hello', '~> receives mutatations from main-app middleware');
+		res.end('hello from sub');
+	});
+
+	let app = polka().use(foo, sub).get('/', (req, res) => {
+		t.pass('run the main-application route');
+		t.is(req.foobar, 'hello', '~> receives mutatations from middleware');
+		res.end('hello from main');
+	});
+
+	let uri = listen(app.server);
+
+	// check sub-app first
+	axios.get(`${uri}/sub`).then(r => {
+		t.is(r.status, 200, '~> received 200 status');
+		t.is(r.data, 'hello from sub', '~> received "hello from sub" response');
+	}).then(_ => {
+		// check main-app now
+		axios.get(uri).then(r => {
+			t.is(r.status, 200, '~> received 200 status');
+			t.is(r.data, 'hello from main', '~> received "hello from main" response');
+			app.server.close();
+		});
+	});
+});
