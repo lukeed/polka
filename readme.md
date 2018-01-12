@@ -120,7 +120,7 @@ Default: `'text/plain'`
 
 The `Content-Type` header value for the response.
 
-### handler(req, res, next)
+### handler(req, res, parsed)
 
 The main Polka [`ClientRequest`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_clientrequest) handler. It receives all requests and tries to match the incoming URL against known routes.
 
@@ -132,10 +132,10 @@ Type: `ClientRequest`
 #### res
 Type: `ServerResponse`
 
-#### next
-Type: `Function`
+#### parsed
+Type: `Object`
 
-An optional function (with the same signature) to call at the end of the response cycle.
+Optionally provide a parsed [URL](https://nodejs.org/dist/latest-v9.x/docs/api/url.html#url_class_url) object. Useful if you've already parsed the incoming path. Otherwise, [`app.parse`](#parsereq) (aka [`parseurl`](https://github.com/pillarjs/parseurl)) will run by default.
 
 
 ## Routing
