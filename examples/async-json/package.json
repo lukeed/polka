@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "node index"
+  },
+  "dependencies": {
+    "node-fetch": "^1.7.3",
+    "polka": "latest"
+  }
+}
