@@ -22,7 +22,7 @@
 
 Polka is an extremely minimal, highly performant Express.js alternative. Yes, you're right, Express is _already_ super fast & not _that_ big :thinking: &mdash; but Polka shows that there was (somehow) room for improvement!
 
-Essentially, Polka is just a [native HTTP server](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_server) with added support for routing, middleware, and sub-applications (_TODO_). That's it! :tada:
+Essentially, Polka is just a [native HTTP server](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_server) with added support for routing, middleware, and sub-applications. That's it! :tada:
 
 And, of course, in mandatory bullet-point format:
 
@@ -70,7 +70,7 @@ Polka extends [Trouter](https://github.com/lukeed/trouter) which means it inheri
 
 ### use(...fn)
 
-Attach [middleware(s)](#middleware) and/or sub-application(s) (_TODO_) to the server. These will execute _before_ your routes' [handlers](#handlers).
+Attach [middleware(s)](#middleware) and/or sub-application(s) to the server. These will execute _before_ your routes' [handlers](#handlers).
 
 #### fn
 Type: `Function|Array`
@@ -500,10 +500,6 @@ There are, however, a few main differences. Polka does not support or offer:
     app.get('/users/:id/books/:title', _ => {});
     app.get('/users/*', _ => {});
     ```
-
-6) **Sub-applications ...yet!**
-
-    This will definitely be done for 1.0 :+1:
 
 
 ## License
