@@ -408,35 +408,35 @@ Node 8.9.0
 
 Native
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     2.25ms  198.89us   6.39ms   93.49%
-        Req/Sec     5.36k   545.77    13.90k    97.63%
-      428295 requests in 10.10s, 42.48MB read
-    Requests/sec:  42405.68
+        Latency     2.25ms  152.31us   6.24ms   92.88%
+        Req/Sec     5.35k   261.18     7.40k    95.91%
+      428754 requests in 10.10s, 42.52MB read
+    Requests/sec:  42440.55
     Transfer/sec:      4.21MB
 
 Polka
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     2.29ms  254.76us   6.82ms   92.38%
-        Req/Sec     5.26k     1.26k   40.56k    99.88%
-      419118 requests in 10.10s, 41.57MB read
-    Requests/sec:  41499.08
-    Transfer/sec:      4.12MB
+        Latency     2.34ms  140.61us   6.55ms   85.80%
+        Req/Sec     5.16k    95.20     5.43k    71.78%
+      414672 requests in 10.10s, 41.13MB read
+    Requests/sec:  41043.54
+    Transfer/sec:      4.07MB
 
 Express
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     3.11ms  438.20us  10.17ms   89.85%
-        Req/Sec     3.88k     0.93k   29.98k    99.88%
-      308988 requests in 10.10s, 37.42MB read
-    Requests/sec:  30594.98
-    Transfer/sec:      3.71MB
+        Latency     5.48ms  453.04us   9.38ms   64.96%
+        Req/Sec     2.20k    76.01     2.42k    70.12%
+      175155 requests in 10.01s, 34.74MB read
+    Requests/sec:  17505.70
+    Transfer/sec:      3.47MB
 
 Fastify
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     2.92ms  310.96us  10.29ms   89.60%
-        Req/Sec     4.12k   335.51     8.16k    95.52%
-      329986 requests in 10.10s, 40.91MB read
-    Requests/sec:  32665.12
-    Transfer/sec:      4.05MB
+        Latency     3.04ms  250.90us   8.86ms   72.14%
+        Req/Sec     3.97k   163.83     4.57k    73.85%
+      318822 requests in 10.10s, 39.53MB read
+    Requests/sec:  31558.84
+    Transfer/sec:      3.91MB
 ```
 
 
