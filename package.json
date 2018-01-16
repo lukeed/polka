@@ -23,6 +23,7 @@
   "devDependencies": {
     "axios": "^0.17.1",
     "express": "^4.16.2",
+    "fastify": "^0.39.1",
     "tap-spec": "^4.1.1",
     "tape": "^4.8.0"
   }

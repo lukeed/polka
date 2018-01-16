@@ -13,6 +13,7 @@ function two(req, res, next) {
 polka()
 	.use(one, two)
 	.get('/favicon.ico', _ => {})
+	.get('/', (req, res) => res.end('Hello'))
 	.get('/user/:id', (req, res) => {
 		res.end(`User: ${req.params.id}`);
 	})
