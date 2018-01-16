@@ -6,6 +6,8 @@ const polka = require('../lib');
 const $ = Test.prototype;
 const METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
 $.isEmpty = function (val, msg) {
 	this.ok(!Object.keys(val).length, msg);
 }
@@ -95,6 +97,32 @@ test('usage::middleware', t => {
 		t.pass('~> matches the GET(/) route');
 		t.is(req.one, 'hello', '~> route handler runs after first middleware');
 		t.is(req.two, 'world', '~> route handler runs after both middlewares!');
+		res.setHeader('x-type', 'text/foo');
+		res.end('Hello');
+	});
+
+	t.is(app.wares.length, 2, 'added 2 middleware functions');
+
+	let uri = listen(app.server);
+	axios.get(uri).then(r => {
+		t.is(r.status, 200, '~> received 200 status');
+		t.is(r.data, 'Hello', '~> received "Hello" response');
+		t.is(r.headers['x-type'], 'text/foo', '~> received custom header');
+		app.server.close();
+	});
+});
+
+test('usage::middleware (async)', t => {
+	t.plan(7);
+
+	let app = polka().use((req, res, next) => {
+		sleep(10).then(_ => { req.foo=123 }).then(next);
+	}).use((req, res, next) => {
+		sleep(1).then(_ => { req.bar=456 }).then(next);
+	}).get('/', (req, res) => {
+		t.pass('~> matches the GET(/) route');
+		t.is(req.foo, 123, '~> route handler runs after first middleware');
+		t.is(req.bar, 456, '~> route handler runs after both middlewares!');
 		res.setHeader('x-type', 'text/foo');
 		res.end('Hello');
 	});
