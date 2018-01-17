@@ -408,35 +408,35 @@ Node 8.9.0
 
 Native
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     2.25ms  152.31us   6.24ms   92.88%
-        Req/Sec     5.35k   261.18     7.40k    95.91%
-      428754 requests in 10.10s, 42.52MB read
-    Requests/sec:  42440.55
-    Transfer/sec:      4.21MB
+        Latency     2.23ms   98.59us   6.51ms   86.53%
+        Req/Sec     5.41k    73.21     5.61k    75.62%
+      435050 requests in 10.10s, 43.15MB read
+    Requests/sec:  43064.72
+    Transfer/sec:      4.27MB
 
 Polka
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     2.34ms  140.61us   6.55ms   85.80%
-        Req/Sec     5.16k    95.20     5.43k    71.78%
-      414672 requests in 10.10s, 41.13MB read
-    Requests/sec:  41043.54
-    Transfer/sec:      4.07MB
+        Latency     2.31ms  138.06us   7.69ms   89.18%
+        Req/Sec     5.22k    96.92     5.46k    74.88%
+      420120 requests in 10.10s, 41.67MB read
+    Requests/sec:  41583.07
+    Transfer/sec:      4.12MB
 
 Express
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     5.48ms  453.04us   9.38ms   64.96%
-        Req/Sec     2.20k    76.01     2.42k    70.12%
-      175155 requests in 10.01s, 34.74MB read
-    Requests/sec:  17505.70
-    Transfer/sec:      3.47MB
+        Latency     5.36ms  443.33us  11.94ms   65.87%
+        Req/Sec     2.25k    69.99     2.42k    71.12%
+      178907 requests in 10.01s, 35.49MB read
+    Requests/sec:  17877.63
+    Transfer/sec:      3.55MB
 
 Fastify
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     3.04ms  250.90us   8.86ms   72.14%
-        Req/Sec     3.97k   163.83     4.57k    73.85%
-      318822 requests in 10.10s, 39.53MB read
-    Requests/sec:  31558.84
-    Transfer/sec:      3.91MB
+        Latency     3.00ms  207.92us   9.42ms   58.75%
+        Req/Sec     4.01k   123.35     4.32k    65.10%
+      322606 requests in 10.10s, 40.00MB read
+    Requests/sec:  31930.70
+    Transfer/sec:      3.96MB
 ```
 
 
