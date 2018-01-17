@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "node index"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "polka": "latest"
+  }
+}
