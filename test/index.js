@@ -112,6 +112,34 @@ test('usage::middleware', t => {
 	});
 });
 
+test('usage::middleware (no route)', t => {
+	t.plan(6);
+
+	let app = polka().use((req, res, next) => {
+		if (req.pathname === '/testurl') {
+			res.end('Done');
+			return;
+		}
+		next();
+	}).get('/', (req, res) => {
+		t.pass('~> matches the GET(/) route');
+		res.end('Hello');
+	});
+
+	t.is(app.wares.length, 1, 'added 1 middleware function');
+
+	let uri = listen(app.server);
+	axios.get(uri).then(r => {
+		t.is(r.status, 200, '~> received 200 status');
+		t.is(r.data, 'Hello', '~> received "Hello" response');
+		return axios.get(`${uri}/testurl`).then(r => {
+			t.is(r.status, 200, '~> received 200 status');
+			t.is(r.data, 'Done', '~> received "Hello" response');
+			app.server.close();
+		})
+	});
+});
+
 test('usage::middleware (async)', t => {
 	t.plan(7);
 
