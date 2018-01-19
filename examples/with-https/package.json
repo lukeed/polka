@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "start": "node index"
+  },
+  "dependencies": {
+    "polka": "^0.2.3"
+  }
+}
