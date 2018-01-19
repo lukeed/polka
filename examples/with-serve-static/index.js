@@ -6,7 +6,6 @@ const dir = join(__dirname, 'public');
 const serve = require('serve-static')(dir);
 
 polka()
-	.use(serve)
 	.get('/', (req, res) => {
 		serve(req, res);
 	})
