@@ -1,0 +1,33 @@
+{
+  "name": "polka",
+  "version": "0.2.3",
+  "description": "WIP",
+  "repository": "lukeed/polka",
+  "main": "lib/index.js",
+  "license": "MIT",
+  "files": [
+    "lib"
+  ],
+  "author": {
+    "name": "Luke Edwards",
+    "email": "luke@lukeed.com",
+    "url": "https://lukeed.com"
+  },
+  "scripts": {
+    "test": "tape test/*.js | tap-spec"
+  },
+  "dependencies": {
+    "parseurl": "^1.3.2",
+    "polka": "^0.2.3",
+    "trouter": "^1.0.0"
+  },
+  "devDependencies": {
+    "axios": "^0.17.1",
+    "express": "^4.16.2",
+    "fastify": "^0.39.1",
+    "koa": "^2.4.1",
+    "serve-static": "^1.13.1",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.8.0"
+  }
+}
