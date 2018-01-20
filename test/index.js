@@ -40,7 +40,6 @@ test('internals', t => {
 	let proto = app.__proto__;
 
 	t.isObject(app.opts, 'app.opts is an object');
-	t.isEmpty(app.opts, 'app.opts is empty');
 
 	t.isArray(app.wares, 'app.wares is an array');
 	t.isEmpty(app.wares, 'app.wares is empty');
