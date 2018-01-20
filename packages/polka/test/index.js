@@ -1,7 +1,7 @@
 const http = require('http');
 const axios = require('axios');
 const { test, Test } = require('tape');
-const polka = require('../lib');
+const polka = require('..');
 
 const $ = Test.prototype;
 const METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
