@@ -1,0 +1,15 @@
+{
+  "name": "@polka/send-type",
+  "version": "0.0.0",
+  "description": "WIP",
+  "repository": "lukeed/polka",
+  "license": "MIT",
+  "files": [
+    "*.js"
+  ],
+  "author": {
+    "name": "Luke Edwards",
+    "email": "luke@lukeed.com",
+    "url": "https://lukeed.com"
+  }
+}
