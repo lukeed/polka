@@ -1,18 +1,17 @@
 {
   "private": true,
-  "version": "0.2.3",
-  "repository": "lukeed/polka",
-  "license": "MIT",
   "author": {
     "name": "Luke Edwards",
     "email": "luke@lukeed.com",
     "url": "https://lukeed.com"
   },
   "scripts": {
-    "test": "tape test/*.js | tap-spec"
+    "pretest": "lerna bootstrap",
+    "test": "lerna run test"
   },
   "devDependencies": {
     "axios": "^0.17.1",
+    "lerna": "^2.8.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.8.0"
   }
