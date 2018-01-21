@@ -1,41 +1,16 @@
 const http = require('http');
 const axios = require('axios');
-const { test, Test } = require('tape');
-const polka = require('..');
+const polka = require('../packages/polka');
+const { test, sleep, listen } = require('./util');
 
-const $ = Test.prototype;
 const METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
-
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-$.isEmpty = function (val, msg) {
-	this.ok(!Object.keys(val).length, msg);
-}
-
-$.isArray = function (val, msg) {
-	this.ok(Array.isArray(val), msg);
-}
-
-$.isObject = function (val, msg) {
-	this.ok(Boolean(val) && (val.constructor === Object), msg);
-}
-
-$.isFunction = function (val, msg) {
-	this.is(typeof val, 'function', msg);
-}
-
-function listen(srv, host) {
-	srv.listen(); // boots
-	let { port } = srv.address();
-	return `http://${host || 'localhost'}:${port}`;
-}
 
 test('polka', t => {
 	t.is(typeof polka, 'function', 'exports a function');
 	t.end();
 });
 
-test('internals', t => {
+test('polka::internals', t => {
 	let app = polka();
 	let proto = app.__proto__;
 
@@ -69,7 +44,7 @@ test('internals', t => {
 	t.end();
 });
 
-test('usage::basic', t => {
+test('polka::usage::basic', t => {
 	t.plan(9);
 
 	let app = polka();
@@ -86,7 +61,7 @@ test('usage::basic', t => {
 	});
 });
 
-test('usage::middleware', t => {
+test('polka::usage::middleware', t => {
 	t.plan(7);
 
 	let app = polka().use((req, res, next) => {
@@ -112,7 +87,7 @@ test('usage::middleware', t => {
 	});
 });
 
-test('usage::middleware (async)', t => {
+test('polka::usage::middleware (async)', t => {
 	t.plan(7);
 
 	let app = polka().use((req, res, next) => {
@@ -138,7 +113,7 @@ test('usage::middleware (async)', t => {
 	});
 });
 
-test('usage::errors', t => {
+test('polka::usage::errors', t => {
 	t.plan(9);
 	let a = 41;
 
@@ -195,7 +170,7 @@ test('usage::errors', t => {
 	});
 });
 
-test('usage::sub-apps', t => {
+test('polka::usage::sub-apps', t => {
 	t.plan(8);
 
 	let foo = (req, res, next) => {

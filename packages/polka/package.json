@@ -12,9 +12,6 @@
     "email": "luke@lukeed.com",
     "url": "https://lukeed.com"
   },
-  "scripts": {
-    "test": "tape test/*.js | tap-spec"
-  },
   "dependencies": {
     "parseurl": "^1.3.2",
     "trouter": "^1.0.0"

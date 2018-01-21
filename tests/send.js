@@ -1,18 +1,15 @@
-const { test } = require('tape');
-const { STATUS_CODES } = require('http');
-const Response = require('./response');
-const send = require('..');
+const send = require('../packages/send');
+const { Response } = require('./util/mock');
+const { test, toStatusText } = require('./util');
 
-const toBody = code => STATUS_CODES[code];
-
-test('@polka/send', t => {
+test('polka/send', t => {
 	t.is(typeof send, 'function', 'exports a function');
 	t.end();
 });
 
-test('usage::basic', t => {
+test('polka/send::usage::basic', t => {
 	let res = new Response();
-	let str = toBody(200);
+	let str = toStatusText(200);
 	send(res);
 	t.is(res.statusCode, 200, 'default statusCode: 200');
 	t.deepEqual(res.headers, {}, 'default headers: {}');
@@ -20,9 +17,9 @@ test('usage::basic', t => {
 	t.end();
 });
 
-test('usage::custom::code', t => {
+test('polka/send::usage::custom::code', t => {
 	let res = new Response();
-	let str = toBody(404);
+	let str = toStatusText(404);
 	send(res, 404);
 	t.is(res.statusCode, 404, 'custom statusCode: 404');
 	t.deepEqual(res.headers, {}, 'default headers: {}');
@@ -30,7 +27,7 @@ test('usage::custom::code', t => {
 	t.end();
 });
 
-test('usage::custom::body', t => {
+test('polka/send::usage::custom::body', t => {
 	let res = new Response();
 	send(res, 405, 'FOOBAR');
 	t.is(res.statusCode, 405, 'custom statusCode: 405');
@@ -39,7 +36,7 @@ test('usage::custom::body', t => {
 	t.end();
 });
 
-test('usage::custom::headers', t => {
+test('polka/send::usage::custom::headers', t => {
 	let res = new Response();
 	send(res, 405, 'Hello', {
 		'x-foo': 'hello',

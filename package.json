@@ -7,7 +7,7 @@
   },
   "scripts": {
     "pretest": "lerna bootstrap",
-    "test": "lerna run test"
+    "test": "tape tests/*.js | tap-spec"
   },
   "devDependencies": {
     "axios": "^0.17.1",
