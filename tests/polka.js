@@ -28,7 +28,7 @@ test('polka::internals', t => {
 		t.isFunction(app[k], `app.${k} is a function`);
 	});
 
-	['use', 'start', 'send', 'handler'].forEach(k => {
+	['use', 'start', 'handler'].forEach(k => {
 		t.isFunction(proto[k], `app.${k} is a prototype method`);
 	});
 

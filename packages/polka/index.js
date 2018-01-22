@@ -52,15 +52,6 @@ class Polka extends Router {
 		});
 	}
 
-	send(res, code, body, type) {
-		code = code || 200;
-		res.writeHead(code, {
-			'Content-Type': type || 'text/plain',
-			'X-Powered-By': 'Polka'
-		});
-		res.end(body || http.STATUS_CODES[code]);
-	}
-
 	handler(req, res, info) {
 		info = info || this.parse(req);
 		let arr=this.wares,
