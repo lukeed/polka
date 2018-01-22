@@ -22,6 +22,8 @@ test('polka::internals', t => {
 
 	t.ok(app.server instanceof http.Server, 'app.server is an HTTP server');
 
+	t.isFunction(app.onError, 'app.onError is a function');
+
 	['parse', 'listen', 'handler'].forEach(k => {
 		t.isFunction(app[k], `app.${k} is a function`);
 	});
@@ -129,7 +131,7 @@ test('polka::usage::errors', t => {
 	axios.get(u1).catch(err => {
 		let r = err.response;
 		t.is(a, 42, 'exits before route handler if middleware error');
-		t.is(r.data, 'Error: boo', '~> received "Error: boo" text');
+		t.is(r.data, 'boo', '~> received "boo" text');
 		t.is(r.status, 500, '~> received 500 status');
 		foo.server.close();
 	});
