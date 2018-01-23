@@ -127,7 +127,11 @@ Wraps the native [`server.listen`](https://nodejs.org/dist/latest-v9.x/docs/api/
 
 The main Polka [`ClientRequest`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_clientrequest) handler. It receives all requests and tries to match the incoming URL against known routes.
 
-If the `req.url` is not matched, a `(501) Not Implemented` response is returned. Otherwise, all middleware will be called. At the end of the loop, the (user-defined) route handler will be executed &mdash; assuming that a middleware hasn't already returned a response or thrown an error!
+If the `req.url` is not immediately matched, Polka will look for sub-applications or middleware groups matching the `req.url`'s [`base`](#base) path. If any are found, they are appended to the loop, running _after_ any global middleware.
+
+> **Note:** Any middleware defined within a sub-application is run _after_ the main app's (aka, global) middleware and _before_ the sub-application's route handler.
+
+At the end of the loop, if a middleware hasn't yet terminated the response (or thrown an error), the route handler will be executed, if found &mdash; otherwise a `(404) Not found` response is returned, configurable via [`options.onNoMatch`](#optionsonnomatch).
 
 #### req
 Type: `ClientRequest`
