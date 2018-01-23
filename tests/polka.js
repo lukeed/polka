@@ -31,11 +31,11 @@ test('polka::internals', t => {
 	t.isFunction(app.onError, 'app.onError is a function');
 	t.isFunction(app.onNoMatch, 'app.onNoMatch is a function');
 
-	['parse', 'listen', 'handler'].forEach(k => {
+	['parse', 'handler'].forEach(k => {
 		t.isFunction(app[k], `app.${k} is a function`);
 	});
 
-	['use', 'start', 'handler'].forEach(k => {
+	['use', 'listen', 'handler'].forEach(k => {
 		t.isFunction(proto[k], `app.${k} is a prototype method`);
 	});
 

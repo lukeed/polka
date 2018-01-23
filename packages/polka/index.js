@@ -23,7 +23,6 @@ class Polka extends Router {
 		this.wares = [];
 		this.bwares = {};
 		this.parse = parseurl;
-		this.listen = this.start;
 		this.handler = this.handler.bind(this);
 		this.server = http.createServer(this.handler);
 		this.onError = opts.onError || onError; // catch-all handler
@@ -46,7 +45,7 @@ class Polka extends Router {
 		return this; // chainable
 	}
 
-	start(port, hostname) {
+	listen(port, hostname) {
 		return new Promise((res, rej) => {
 			this.server.listen(port, hostname, err => err ? rej(err) : res());
 		});
