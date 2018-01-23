@@ -255,37 +255,63 @@ test('polka::usage::errors', t => {
 });
 
 test('polka::usage::sub-apps', t => {
-	t.plan(8);
+	t.plan(24);
 
 	let foo = (req, res, next) => {
-		req.foobar = 'hello';
+		req.foo = 'hello';
 		next();
 	};
 
-	let sub = polka().get('/sub', (req, res) => {
-		t.pass('runs the sub-application route')
-		t.is(req.foobar, 'hello', '~> receives mutatations from main-app middleware');
-		res.end('hello from sub');
+	let bar = (req, res, next) => {
+		t.pass('runs the sub-application middleware'); // runs 2x
+		req.bar = 'world';
+		next();
+	};
+
+	let sub = polka().use(bar).get('/', (req, res) => {
+		t.pass('runs the sub-application / route');
+		t.is(req.url, '/', '~> trims basepath from `req.url` value');
+		t.is(req.originalUrl, '/sub', '~> preserves original `req.url` value');
+		t.is(req.foo, 'hello', '~> receives mutatations from main-app middleware');
+		t.is(req.bar, 'world', '~> receives mutatations from own middleware');
+		res.end('hello from sub@index');
+	}).get('/:bar', (req, res) => {
+		t.pass('runs the sub-application /:id route');
+		t.is(req.params.bar, 'hi', '~> parses the sub-application params');
+		t.is(req.url, '/hi?a=0', '~> trims basepath from `req.url` value');
+		t.is(req.query, 'a=0', '~> parses the sub-application `re.query` value');
+		t.is(req.originalUrl, '/sub/hi?a=0', '~> preserves original `req.url` value');
+		t.is(req.foo, 'hello', '~> receives mutatations from main-app middleware');
+		t.is(req.bar, 'world', '~> receives mutatations from own middleware');
+		res.end('hello from sub@show');
 	});
 
-	let app = polka().use(foo, sub).get('/', (req, res) => {
+	let app = polka().use(foo).use('sub', sub).get('/', (req, res) => {
 		t.pass('run the main-application route');
-		t.is(req.foobar, 'hello', '~> receives mutatations from middleware');
+		t.is(req.foo, 'hello', '~> receives mutatations from middleware');
+		t.is(req.bar, undefined, '~> does NOT run the sub-application middleware');
+		t.is(req.originalUrl, undefined, '~> does not see an `req.originalUrl` key');
 		res.end('hello from main');
 	});
 
 	let uri = listen(app.server);
 
-	// check sub-app first
+	// check sub-app index route
 	axios.get(`${uri}/sub`).then(r => {
 		t.is(r.status, 200, '~> received 200 status');
-		t.is(r.data, 'hello from sub', '~> received "hello from sub" response');
+		t.is(r.data, 'hello from sub@index', '~> received "hello from sub@index" response');
 	}).then(_ => {
 		// check main-app now
 		axios.get(uri).then(r => {
 			t.is(r.status, 200, '~> received 200 status');
 			t.is(r.data, 'hello from main', '~> received "hello from main" response');
-			app.server.close();
+		}).then(_ => {
+			// check sub-app pattern route
+			axios.get(`${uri}/sub/hi?a=0`).then(r => {
+				t.is(r.status, 200, '~> received 200 status');
+				t.is(r.data, 'hello from sub@show', '~> received "hello from sub@show" response');
+				app.server.close();
+			});
 		});
 	});
 });
