@@ -3,6 +3,7 @@
     "start": "node index"
   },
   "dependencies": {
+    "@polka/send-type": "latest",
     "node-fetch": "^1.7.3",
     "polka": "latest"
   }

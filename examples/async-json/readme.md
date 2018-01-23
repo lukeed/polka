@@ -25,5 +25,5 @@ $ curl localhost:3000
 $ curl localhost:3000/news
 #=> (200) JSON
 $ curl localhost:3000/foobar
-#=> 404 Not Found
+#=> (404) Not Found
 ```
