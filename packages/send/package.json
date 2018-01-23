@@ -1,7 +1,7 @@
 {
   "name": "@polka/send",
   "version": "0.0.0",
-  "description": "WIP",
+  "description": "An extremely simple response helper",
   "repository": "lukeed/polka",
   "license": "MIT",
   "files": [
