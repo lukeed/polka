@@ -6,8 +6,6 @@ The `public` directory (configurable) contents are served by Polka as static ass
 
 All photos are fetched from [Unsplash](https://unsplash.com) via the `public/app.js` script.
 
-> **Note:** Polka (currently) uses a workaround to accomodate the middleware. <br>This will likely change before 1.0! This example will be udpated at such time~
-
 ## Setup
 
 ```sh

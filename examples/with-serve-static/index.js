@@ -6,13 +6,8 @@ const dir = join(__dirname, 'public');
 const serve = require('serve-static')(dir);
 
 polka()
-	.get('/', (req, res) => {
-		serve(req, res);
-	})
-	.get('/assets/*', (req, res) => {
-		req.url = req.url.substring(7); // remove `/assets`
-		serve(req, res);
-	})
+	.get('/', serve) // OR move `public/index.html` into root dir
+	.use('assets', serve)
 	.get('/health', (req, res) => {
 		res.end('OK');
 	})
