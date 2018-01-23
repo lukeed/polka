@@ -289,3 +289,55 @@ test('polka::usage::sub-apps', t => {
 		});
 	});
 });
+
+test('polka::options::onError', t => {
+	t.plan(7);
+
+	let abc = new Error('boo~!');
+	abc.code = 418; // teapot lol
+
+	let foo = (err, req, res, next) => {
+		t.is(err, abc, '~> receives the `err` object directly as 1st param');
+		t.ok(req.url, '~> receives the `req` object as 2nd param');
+		t.isFunction(res.end, '~> receives the `res` object as 3rd param');
+		t.isFunction(next, '~> receives the `next` function 4th param'); // in case want to skip?
+		res.statusCode = err.code;
+		res.end('error: ' + err.message);
+	};
+
+	let app = polka({ onError:foo }).use((req, res, next) => next(abc));
+
+	t.is(app.onError, foo, 'replaces `app.onError` with the option value');
+
+	let uri = listen(app.server);
+	axios.get(uri).catch(err => {
+		let r = err.response;
+		t.is(r.status, 418, '~> response gets the error code');
+		t.is(r.data, 'error: boo~!', '~> response gets the formatted error message');
+		app.server.close();
+	});
+});
+
+test('polka::options::onNoMatch', t => {
+	t.plan(6);
+
+	let foo = (req, res) => {
+		t.ok(req.url, '~> receives the `req` object as 1st param');
+		t.isFunction(res.end, '~> receives the `res` object as 2nd param');
+		res.statusCode = 405;
+		res.end('prefer: Method Not Found');
+	};
+
+	let app = polka({ onNoMatch:foo }).get('/', _ => {});
+
+	t.is(app.onNoMatch, foo, 'replaces `app.onNoMatch` with the option value');
+	t.not(app.onError, foo, 'does not affect the `app.onError` handler');
+
+	let uri = listen(app.server);
+	axios.post(uri).catch(err => {
+		let r = err.response;
+		t.is(r.status, 405, '~> response gets the error code');
+		t.is(r.data, 'prefer: Method Not Found', '~> response gets the formatted error message');
+		app.server.close();
+	});
+});
