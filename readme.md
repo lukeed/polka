@@ -29,7 +29,7 @@ And, of course, in mandatory bullet-point format:
 * 33-50% faster than Express for simple applications
 * Middleware support, including Express middleware you already know & love
 * Nearly identical application API & route pattern definitions
-* 70 LOC for Polka, 105 including [its router](https://github.com/lukeed/trouter)
+* ~90 LOC for Polka, 120 including [its router](https://github.com/lukeed/trouter)
 
 
 ## Install
@@ -68,16 +68,48 @@ polka()
 
 Polka extends [Trouter](https://github.com/lukeed/trouter) which means it inherits its API, too!
 
-### use(...fn)
+### polka(options)
+
+Returns an instance of Polka~!
+
+#### options.onError
+Type: `Function`
+
+A catch-all error handler; executed whenever a middleware throws an error. Change this if you don't like default behavior.
+
+Its signature is `(err, req, res, next)`, where `err` is the `String` or `Error` thrown by your middleware.
+
+> **Caution:** Use `next()` to bypass certain errors **at your own risk!** <br>You must be certain that the exception will be handled elsewhere or _can_ be safely ignored. <br>Otherwise your response will never terminate!
+
+#### options.onNoMatch
+Type: `Function`
+
+A handler when no route definitions were matched. Change this if you don't like default behavior, which sends a `404` status & `Not found` response.
+
+Its signature is `(req, res)` and requires that you terminate the response.
+
+
+### use(base, ...fn)
 
 Attach [middleware(s)](#middleware) and/or sub-application(s) to the server. These will execute _before_ your routes' [handlers](#handlers).
+
+**Important:** If a `base` pathname is provided, all functions within the same `use()` block will _only_ execute when the `req.pathname` matches the `base` path.
+
+#### base
+Type: `String`<br>
+Default: `undefined`
+
+The base path on which the following middleware(s) or sub-application should be mounted.
 
 #### fn
 Type: `Function|Array`
 
 You may pass one or more functions at a time. Each function must have the standardized `(req, res, next)` signature.
 
+You may also pass a sub-application, which _must_ be accompanied by a `base` pathname.
+
 Please see [`Middleware`](#middleware) and [Express' middleware examples](http://expressjs.com/en/4x/api.html#middleware-callback-function-examples) for more info.
+
 
 ### parse(req)
 
@@ -85,40 +117,11 @@ Returns: `Object`
 
 This is an alias of the awesome [`parseurl`](https://github.com/pillarjs/parseurl#api) module. There are no Polka-specific changes.
 
-### start(port, hostname)
-
-Returns: `Promise`
-
-Wraps the native [`server.listen`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_server_listen) with a Promise, rejecting on any error.
-
 ### listen(port, hostname)
 
 Returns: `Promise`
 
-This is an alias of [`start`](#start).
-
-### send(res, code, body, type)
-
-A minimal helper that terminates the [`ServerResponse`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_serverresponse) with desired values.
-
-#### res
-Type: `ServerResponse`
-
-#### code
-Type: `Number`<br>
-Default: `200`
-
-#### body
-Type: `String`<br>
-Default: `http.STATUS_CODES[code]`
-
-Returns the default `statusText` for a given [`code`](#code).
-
-#### type
-Type: `String`<br>
-Default: `'text/plain'`
-
-The `Content-Type` header value for the response.
+Wraps the native [`server.listen`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_server_listen) with a Promise, rejecting on any error.
 
 ### handler(req, res, parsed)
 
@@ -476,15 +479,11 @@ There are, however, a few main differences. Polka does not support or offer:
     }
     ```
 
-3) **Response helpers... yet!**
+3) **Express-like response helpers... yet! (#14)**
 
     Express has a nice set of [response helpers](http://expressjs.com/en/4x/api.html#res.append). While Polka relies on the [native Node.js response methods](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_serverresponse), it would be very easy/possible to attach a global middleware that contained a similar set of helpers. (_TODO_)
 
-4) **The `.use()` method does not accept a `pathname` filter.**
-
-    ...This might change before a 1.0 release :thinking:
-
-5) **`RegExp`-based route patterns.**
+4) **`RegExp`-based route patterns.**
 
     Polka's router uses string comparison to match paths against patterns. It's a lot quicker & more efficient.
 
