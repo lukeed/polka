@@ -122,6 +122,81 @@ test('polka::usage::middleware (async)', t => {
 	});
 });
 
+test('polka::usage::middleware (basenames)', t => {
+	t.plan(36);
+
+	let aaa = (req, res, next) => (req.aaa='aaa',next());
+	let bbb = (req, res, next) => (req.bbb='bbb',next());
+	let bar = (req, res, next) => (req.bar='bar',next());
+
+	let app = polka()
+		.use(aaa, bbb) // globals
+		.use('foo', (req, res) => {
+			// all runs 2 times
+			t.pass('runs the base middleware for: foo');
+			t.is(req.aaa, 'aaa', '~> runs after `aaa` global middleware');
+			t.is(req.bbb, 'bbb', '~> runs after `bbb` global middleware');
+			t.false(req.url.includes('foo'), '~> strips "foo" base from `req.url`');
+			t.false(req.pathname.includes('foo'), '~> strips "foo" base from `req.pathname`');
+			t.ok(req.originalUrl.includes('foo'), '~> keeps "foo" base within `req.originalUrl`');
+			res.end('hello from foo');
+		})
+		.use('bar', bar, (req, res) => {
+			t.pass('runs the base middleware for: bar');
+			t.is(req.aaa, 'aaa', '~> runs after `aaa` global middleware');
+			t.is(req.bbb, 'bbb', '~> runs after `bbb` global middleware');
+			t.is(req.bar, 'bar', '~> runs after `bar` SELF-GROUPED middleware');
+			t.false(req.url.includes('bar'), '~> strips "bar" base from `req.url`');
+			t.false(req.pathname.includes('bar'), '~> strips "bar" base from `req.pathname`');
+			t.ok(req.originalUrl.includes('bar'), '~> keeps "bar" base within `req.originalUrl`');
+			t.is(req.pathname, '/hello', '~> matches expected `req.pathname` value');
+			res.end('hello from bar');
+		})
+		.get('/', (req, res) => {
+			t.pass('runs the MAIN app handler for GET /');
+			t.is(req.aaa, 'aaa', '~> runs after `aaa` global middleware');
+			t.is(req.bbb, 'bbb', '~> runs after `bbb` global middleware');
+			res.end('hello from main');
+		});
+
+	t.is(app.wares.length, 2, 'added 2 global middleware functions');
+	let keys = Object.keys(app.bwares);
+	t.is(keys.length, 2, 'added 2 basename middleware groups');
+	t.deepEqual(keys, ['foo', 'bar'], '~> has middleware groups for `foo` & `bar` path matches');
+
+	let uri = listen(app.server);
+	axios.get(uri).then(r => {
+		t.is(r.status, 200, '~> received 200 status');
+		t.is(r.data, 'hello from main', '~> received "hello from main" response');
+	}).then(_ => {
+		// Test (GET /foo)
+		axios.get(`${uri}/foo`).then(r => {
+			t.is(r.status, 200, '~> received 200 status');
+			t.is(r.data, 'hello from foo', '~> received "hello from foo" response');
+		}).then(_ => {
+			// Test (POST /foo/items?this=123)
+			axios.post(`${uri}/foo/items?this=123`).then(r => {
+				t.is(r.status, 200, '~> received 200 status');
+				t.is(r.data, 'hello from foo', '~> received "hello from foo" response');
+			});
+		}).then(_ => {
+			// Test (GET /bar/hello)
+			axios.get(`${uri}/bar/hello`).then(r => {
+				t.is(r.status, 200, '~> received 200 status');
+				t.is(r.data, 'hello from bar', '~> received "hello from bar" response');
+			});
+		}).then(_ => {
+			// Test (GET 404)
+			axios.get(`${uri}/foobar`).catch(err => {
+				let r = err.response;
+				t.is(r.status, 404, '~> received 404 status');
+				t.is(r.data, 'Not Found', '~> received "Not Found" response');
+				app.server.close();
+			});
+		});
+	});
+});
+
 test('polka::usage::errors', t => {
 	t.plan(9);
 	let a = 41;
