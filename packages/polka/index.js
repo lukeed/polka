@@ -54,20 +54,22 @@ class Polka extends Router {
 
 	handler(req, res, info) {
 		info = info || this.parse(req);
-		let arr=this.wares,
-			obj=this.find(req.method, info.pathname);
+		let fn, arr=this.wares, obj=this.find(req.method, info.pathname);
 		if (obj) {
+			fn = obj.handler;
 			req.params = obj.params;
 		} else {
 			// Looking for sub-apps or extra middleware
 			let base = value(info.pathname);
 			req.originalUrl = req.url; // for somebody?
-			info.pathname = req.url = '/' + strip(req.url.substring(base.length + 1));
+			req.url = '/' + strip(req.url.substring(base.length + 1));
+			info.pathname = '/' + strip(info.pathname.substring(base.length + 1));
 			if (this.apps[base] !== void 0) {
-				return this.apps[base].handler(req, res, info);
+				fn = this.apps[base].handler.bind(null, req, res, info);
+			} else {
+				arr = arr.concat(this.bwares[base] || []);
+				fn = this.onNoMatch;
 			}
-			obj = { handler:this.onNoMatch };
-			arr = arr.concat(this.bwares[base] || []);
 		}
 		// Grab addl values from `info`
 		req.pathname = info.pathname;
@@ -75,10 +77,10 @@ class Polka extends Router {
 		req.query = info.query;
 		// Exit if no middleware
 		let i=0, len=arr.length;
-		if (len === i) return obj.handler(req, res);
+		if (len === i) return fn(req, res);
 		// Otherwise loop thru all middlware
 		let next = err => err ? this.onError(err, req, res, next) : loop();
-		let loop = _ => res.finished || (i < len) ? arr[i++](req, res, next) : obj.handler(req, res);
+		let loop = _ => res.finished || (i < len) ? arr[i++](req, res, next) : fn(req, res);
 		loop(); // init
 	}
 }
