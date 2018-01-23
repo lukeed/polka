@@ -17,12 +17,19 @@ test('polka::internals', t => {
 	t.isObject(app.opts, 'app.opts is an object');
 	t.isEmpty(app.opts, 'app.opts is empty');
 
+	t.isObject(app.apps, 'app.apps is an object');
+	t.isEmpty(app.apps, 'app.apps is empty');
+
 	t.isArray(app.wares, 'app.wares is an array');
 	t.isEmpty(app.wares, 'app.wares is empty');
+
+	t.isObject(app.bwares, 'app.bwares is an object');
+	t.isEmpty(app.bwares, 'app.bwares is empty');
 
 	t.ok(app.server instanceof http.Server, 'app.server is an HTTP server');
 
 	t.isFunction(app.onError, 'app.onError is a function');
+	t.isFunction(app.onNoMatch, 'app.onNoMatch is a function');
 
 	['parse', 'listen', 'handler'].forEach(k => {
 		t.isFunction(app[k], `app.${k} is a function`);
