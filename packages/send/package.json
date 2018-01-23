@@ -11,5 +11,8 @@
     "name": "Luke Edwards",
     "email": "luke@lukeed.com",
     "url": "https://lukeed.com"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
