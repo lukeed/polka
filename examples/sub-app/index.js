@@ -9,9 +9,9 @@ function reply(req, res) {
 
 // Main app
 polka()
-	.use(users)
 	.get('/', reply)
 	.get('/about', reply)
+	.use('users', users)
 	.listen(PORT).then(_ => {
 		console.log(`> Running on localhost:${PORT}`);
 	});
