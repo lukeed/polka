@@ -1,0 +1,23 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "parcel build -d ../public index.html",
+    "watch": "parcel watch -d ../public index.html"
+  },
+  "dependencies": {
+    "is-ready": "^1.0.0",
+    "obj-str": "^1.0.0",
+    "preact": "^8.2.7",
+    "preact-router": "^2.6.0",
+    "todomvc-app-css": "^2.1.0",
+    "todomvc-common": "^1.0.4"
+  },
+  "devDependencies": {
+    "babel-plugin-jsx-pragmatic": "^1.0.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-react-constant-elements": "^6.23.0",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
+    "parcel-bundler": "^1.5.0"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "start": "node index"
+  },
+  "dependencies": {
+    "@polka/send-type": "^0.3.0",
+    "body-parser": "^1.18.2",
+    "compression": "^1.7.1",
+    "cors": "^2.8.4",
+    "firebase-admin": "^5.8.1",
+    "polka": "^0.3.0",
+    "serve-static": "^1.13.1"
+  }
+}

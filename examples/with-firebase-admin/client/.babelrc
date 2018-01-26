@@ -1,0 +1,24 @@
+{
+  "comments": false,
+  "presets": [
+  	["env", {
+	  	"loose": true,
+			"uglify": true,
+			"modules": false,
+			"exclude": [
+				"transform-regenerator",
+				"transform-es2015-typeof-symbol"
+			]
+	  }]
+  ],
+  "plugins": [
+	  "transform-class-properties",
+	  "transform-react-constant-elements",
+	  ["transform-react-jsx", { "pragma": "h" }],
+		["jsx-pragmatic", {
+			"module": "preact",
+			"export": "h",
+			"import": "h"
+		}]
+  ]
+}
