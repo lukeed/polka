@@ -1,18 +1,19 @@
 import isReady from 'is-ready';
 import { h, Component } from 'preact';
 import { Router, route } from 'preact-router';
+import { isUser } from '../utils/local';
 import CONFIG from '../firebase.json';
 import TodoMVC from './TodoMVC';
 import Login from './Login';
 
 export default class App extends Component {
-	state = { user:null }
+	state = { user:isUser() }
 
 	onRoute = obj => {
 		let isUser = !!this.state.user;
-		let isLogin = obj.url === '/login';
+		let isLogin = !!~obj.url.indexOf('login');
+		if (!isUser) return route('/login', true);
 		if (isUser && isLogin) return route('/', true);
-		if (!isUser && !isLogin) return route('/login', true);
 	}
 
 	componentWillMount() {
@@ -33,8 +34,8 @@ export default class App extends Component {
 	render(_, state) {
 		return (
 			<Router onChange={ this.onRoute }>
-				<TodoMVC path="/:filter?" default />
 				<Login path="/login" />
+				<TodoMVC path="/:filter?" />
 			</Router>
 		);
 	}

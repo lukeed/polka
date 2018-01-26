@@ -1,6 +1,8 @@
+import { getToken } from './local';
+
 const API = '/api/';
 
-const HEAD = {
+const HEADERS = {
 	'Content-Type': 'application/json;charset=UTF-8',
 	'Accept': 'application/json, text/plain, */*'
 };
@@ -14,8 +16,10 @@ function handle(r) {
 function send(method, uri, data, opts) {
   opts = opts || {};
   opts.method = method;
+  opts.headers = HEADERS;
+  let token = getToken(); // fresh check on localstorage
+  token && (opts.headers.Authorization = `Bearer ${token}`);
   data && (opts.body = JSON.stringify(data));
-  opts.headers = Object.assign({}, HEAD, opts.headers);
   return fetch(`${API}${uri}`, opts).then(handle);
 }
 

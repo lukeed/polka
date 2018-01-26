@@ -22,7 +22,11 @@ Once up and running, you will be forced to Register/Login (`/login`) before acce
 
     _This file is accessed inside `with-firebase/api/services.js` to connect to your Database._
 
-4. Install & build dependencies
+4. Save your [Firebase WEB config](https://firebase.google.com/docs/database/web/start) to `with-firebase/client/firebase.json`.
+
+    _This is used to connect the Firebase client to your Database from within the browser._
+
+5. Install & build dependencies
 
     ```sh
     # Install server dependencies
@@ -37,7 +41,7 @@ Once up and running, you will be forced to Register/Login (`/login`) before acce
 
 Open a browser to `localhost:3000`!
 
-You also try interacting with the API, but all routes require a Firebase Token identifier.
+You can also try interacting with the API, but all routes require a Firebase Token identifier.
 > AKA, it won't work :D
 
 ```sh

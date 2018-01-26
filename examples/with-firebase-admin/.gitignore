@@ -1,4 +1,5 @@
+firebase.json
 secret.json
-public
 .cache
 dist
+public

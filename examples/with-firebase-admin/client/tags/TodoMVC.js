@@ -1,6 +1,6 @@
 import isReady from 'is-ready';
 import { Component } from 'preact';
-import { get, post, put, del } from '../fetch';
+import { get, post, put, del } from '../utils/api';
 import TodoFooter from './Footer';
 import TodoItem from './Item';
 
@@ -13,18 +13,17 @@ const FILTERS = {
 };
 
 export default class Todos extends Component {
-	state = { editing:'', items:[], token:'', filter:'all' }
+	state = { editing:'', items:[], filter:'all' }
 
 	onAddItem = e => {
 		if (e.keyCode !== 13) return;
 		let title = e.target.value.trim();
-		if (title) {
-			let { items, token } = this.state;
-			post('items', { completed:false, title }, { headers:toAuth(token) }).then(obj => {
-				this.setState({ items:items.concat(obj) });
-				e.target.value = null; // reset
-			});
-		}
+		if (!title) return; // exit
+		let items = this.state.items;
+		post('items', { completed:false, title }).then(obj => {
+			this.setState({ items:items.concat(obj) });
+			e.target.value = null; // reset
+		});
 	}
 
 	onEdit = id => this.setState({ editing:id })
@@ -32,30 +31,24 @@ export default class Todos extends Component {
 
 	onSave = (obj, text) => {
 		obj.title = text;
-		let { token, items } = this.state;
-		put(`items/${obj.id}`, obj, { headers:toAuth(token) }).then(_ => {
-			this.setState({
-				editing: null,
-				items: items.map(x => x.id === obj.id ? obj : x)
-			});
+		put(`items/${obj.id}`, obj).then(_ => {
+			let items = this.state.items.map(x => x.id === obj.id ? obj : x);
+			this.setState({ editing:null, items });
 		});
 	}
 
 	onToggle = obj => {
 		obj.completed = !obj.completed;
-		let { token, items } = this.state;
-		put(`items/${obj.id}`, obj, { headers:toAuth(token) }).then(_ => {
-			this.setState({
-				items: items.map(x => x.id === obj.id ? obj : x)
-			});
+		put(`items/${obj.id}`, obj).then(_ => {
+			let items = this.state.items.map(x => x.id === obj.id ? obj : x);
+			this.setState({ items });
 		});
 	}
 
 	clearCompleted = e => {
-		let { items, token } = this.state;
-		let config = { headers:toAuth(token) };
+		let items = this.state.items;
 		return Promise.all(
-			items.filter(FILTERS.completed).map(o => del(`items/${o.id}`, null, config))
+			items.filter(FILTERS.completed).map(o => del(`items/${o.id}`))
 		).then(_ => {
 			this.setState({
 				items: items.filter(FILTERS.active)
@@ -65,19 +58,16 @@ export default class Todos extends Component {
 
 	onDestroy = obj => {
 		let id = obj.id;
-		let { items, token } = this.state;
-		del(`items/${id}`, null, { headers:toAuth(token) }).then(_ => {
-			this.setState({ items:items.filter(x => x.id !== id) });
+		del(`items/${id}`).then(_ => {
+			let items = this.state.items.filter(x => x.id !== id);
+			this.setState({ items });
 		});
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		let filter = this.props.filter || 'all';
-		isReady(['firebase', 'firebase.auth']).then(_ => {
-			let token = firebase.auth().currentUser.toJSON().stsTokenManager.accessToken;
-			get('items', null, { headers:toAuth(token) }).then(arr => {
-				this.setState({ items:arr, token, filter });
-			});
+		get('items').then(arr => {
+			this.setState({ items:arr, filter });
 		});
 	}
 
@@ -101,7 +91,7 @@ export default class Todos extends Component {
 				</header>
 
 				{
-					items.length && (
+					items.length > 0 && (
 						<section class="main">
 							<input class="toggle-all" type="checkbox" onchange={ this.toggleAll } />
 							<ul class="todo-list">
@@ -121,7 +111,7 @@ export default class Todos extends Component {
 				}
 
 				{
-					(numActive || numComplete) && (
+					(numActive || numComplete) > 0 && (
 						<TodoFooter active={numActive} completed={numComplete}
 							filter={state.filter} onClear={this.clearCompleted} />
 					)
