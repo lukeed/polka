@@ -7,7 +7,7 @@ const compress = require('compression')();
 const { PORT=3000 } = process.env;
 
 polka()
-	.use(cors, json(), serve, compress)
+	.use(cors, compress, json(), serve)
 	.use('api', require('./api'))
 	.listen(PORT)
 	.then(_ => {
