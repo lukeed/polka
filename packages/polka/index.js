@@ -11,6 +11,12 @@ function value(x) {
   return y > 1 ? x.substring(1, y) : x.substring(1);
 }
 
+function mutate(req, info, str) {
+	req.originalUrl = req.url; // for somebody?
+	req.url = '/' + strip(req.url.substring(str.length + 1));
+	info.pathname = '/' + strip(info.pathname.substring(str.length + 1));
+}
+
 function onError(err, req, res, next) {
 	let code = (res.statusCode = err.code || err.status || 500);
 	res.end(err.length && err || err.message || http.STATUS_CODES[code]);
@@ -60,14 +66,15 @@ class Polka extends Router {
 		} else {
 			// Looking for sub-apps or extra middleware
 			let base = value(info.pathname);
-			req.originalUrl = req.url; // for somebody?
-			req.url = '/' + strip(req.url.substring(base.length + 1));
-			info.pathname = '/' + strip(info.pathname.substring(base.length + 1));
 			if (this.apps[base] !== void 0) {
+				mutate(req, info, base); //=> updates
 				fn = this.apps[base].handler.bind(null, req, res, info);
 			} else {
-				arr = arr.concat(this.bwares[base] || []);
 				fn = this.onNoMatch;
+				if (this.bwares[base] !== void 0) {
+					mutate(req, info, base); //=> updates
+					arr = arr.concat(this.bwares[base]);
+				}
 			}
 		}
 		// Grab addl values from `info`
