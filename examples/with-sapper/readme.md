@@ -1,8 +1,8 @@
 # Example: Sapper
 
-> Polka and [Sapper](https://github.com/sveltejs/sapper) make for an exceptional combo! :tada:
+> Polka and Sapper make for an exceptional combo! :tada: _([DEMO](https://polka-sapper.now.sh/))_
 
-Sapper is a structure-dependent framework that all allows you to build highly-performant, universal [Svelte](https://github.com/sveltejs/svelte) apps! Sapper operates as a middleware layer, which allows you to attach it to _any_ Node.js server.
+[Sapper](https://github.com/sveltejs/sapper) is a structure-dependent framework that all allows you to build highly-performant, universal [Svelte](https://github.com/sveltejs/svelte) apps! Sapper operates as a middleware layer, which allows you to attach it to _any_ Node.js server.
 
 This example shows how easy it is to use Polka with the default [`sapper-template`](https://github.com/sveltejs/sapper-template).
 
