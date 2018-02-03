@@ -1,10 +1,9 @@
-const fs = require('fs');
-const app = require('express')();
-const compression = require('compression');
-const sapper = require('sapper');
-const static = require('serve-static');
+const express = require('express');
+const sapper = require('sapper')();
+const static = require('serve-static')('assets');
+const compression = require('compression')({ threshold:0 });
 
-const { PORT = 3000 } = process.env;
+const { PORT=3000 } = process.env;
 
 // this allows us to do e.g. `fetch('/api/blog')` on the server
 const fetch = require('node-fetch');
@@ -13,12 +12,8 @@ global.fetch = (url, opts) => {
 	return fetch(url, opts);
 };
 
-app.use(compression({ threshold: 0 }));
-
-app.use(static('assets'));
-
-app.use(sapper());
-
-app.listen(PORT, () => {
-	console.log(`listening on port ${PORT}`);
-});
+express()
+	.use(compression, static, sapper)
+	.listen(PORT, _ => {
+		console.log(`> Running on localhost:${PORT}`);
+	});

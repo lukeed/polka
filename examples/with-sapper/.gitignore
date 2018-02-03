@@ -1,5 +1,2 @@
-.DS_Store
-node_modules
 .sapper
-yarn.lock
 templates/.*

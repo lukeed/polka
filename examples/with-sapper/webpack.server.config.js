@@ -1,7 +1,4 @@
 const config = require('sapper/webpack/config.js');
-const webpack = require('webpack');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
 	entry: config.server.entry(),
