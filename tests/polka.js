@@ -162,9 +162,10 @@ test('polka::usage::middleware (basenames)', t => {
 	t.is(app.wares.length, 2, 'added 2 global middleware functions');
 	let keys = Object.keys(app.bwares);
 	t.is(keys.length, 2, 'added 2 basename middleware groups');
-	t.deepEqual(keys, ['foo', 'bar'], '~> has middleware groups for `foo` & `bar` path matches');
+	t.deepEqual(keys, ['/foo', '/bar'], '~> has middleware groups for `/foo` & `/bar` path matches');
 
 	let uri = listen(app.server);
+
 	axios.get(uri).then(r => {
 		t.is(r.status, 200, '~> received 200 status');
 		t.is(r.data, 'hello from main', '~> received "hello from main" response');

@@ -2,19 +2,19 @@ const http = require('http');
 const Router = require('trouter');
 const parseurl = require('parseurl');
 
-function strip(x) {
-	return x.charCodeAt(0) === 47 ? x.substring(1) : x;
+function lead(x) {
+	return x.charCodeAt(0) === 47 ? x : ('/' + x);
 }
 
 function value(x) {
   let y = x.indexOf('/', 1);
-  return y > 1 ? x.substring(1, y) : x.substring(1);
+  return y > 1 ? x.substring(0, y) : x;
 }
 
 function mutate(req, info, str) {
 	req.originalUrl = req.url; // for somebody?
-	req.url = '/' + strip(req.url.substring(str.length + 1));
-	info.pathname = '/' + strip(info.pathname.substring(str.length + 1));
+	req.url = req.url.substring(str.length) || '/';
+	info.pathname = info.pathname.substring(str.length) || '/';
 }
 
 function onError(err, req, res, next) {
@@ -39,7 +39,7 @@ class Polka extends Router {
 		if (typeof base === 'function') {
 			this.wares = this.wares.concat(base, fns);
 		} else {
-			base = strip(base);
+			base = lead(base);
 			fns.forEach(fn => {
 				if (fn instanceof Polka) {
 					this.apps[base] = fn;
