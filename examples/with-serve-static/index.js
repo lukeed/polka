@@ -6,8 +6,7 @@ const dir = join(__dirname, 'public');
 const serve = require('serve-static')(dir);
 
 polka()
-	.get('/', serve) // OR move `public/index.html` into root dir
-	.use('assets', serve)
+	.use(serve)
 	.get('/health', (req, res) => {
 		res.end('OK');
 	})

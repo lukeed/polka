@@ -2,9 +2,8 @@ const polka = require('polka');
 const static = require('serve-static');
 
 const { PORT=3000 } = process.env;
-const pubdir = static('public');
 
-const { server } = polka().use('assets', pubdir).get('/', pubdir);
+const { server } = polka().use(static('public'));
 const io = require('socket.io')(server);
 
 server.listen(PORT, _ => {
