@@ -2,5 +2,4 @@
 node_modules
 .sapper
 yarn.lock
-cypress/screenshots
 templates/.*
