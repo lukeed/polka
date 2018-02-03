@@ -8,9 +8,6 @@ const contents = JSON.stringify(posts.map(post => {
 }));
 
 export function get(req, res) {
-	res.set({
-		'Content-Type': 'application/json'
-	});
-
+	res.setHeader('Content-Type', 'application/json');
 	res.end(contents);
 }

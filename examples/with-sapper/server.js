@@ -1,4 +1,4 @@
-const express = require('express');
+const polka = require('polka');
 const sapper = require('sapper')();
 const static = require('serve-static')('assets');
 const compression = require('compression')({ threshold:0 });
@@ -12,8 +12,8 @@ global.fetch = (url, opts) => {
 	return fetch(url, opts);
 };
 
-express()
+polka()
 	.use(compression, static, sapper)
-	.listen(PORT, _ => {
+	.listen(PORT).then(_ => {
 		console.log(`> Running on localhost:${PORT}`);
 	});

@@ -11,10 +11,7 @@ export function get(req, res, next) {
 	const { slug } = req.params;
 
 	if (lookup.has(slug)) {
-		res.set({
-			'Content-Type': 'application/json'
-		});
-
+		res.setHeader('Content-Type', 'application/json');
 		res.end(lookup.get(slug));
 	} else {
 		next();
