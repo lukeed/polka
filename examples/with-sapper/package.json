@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "dev": "node server.js",
     "build": "sapper build",
-    "start": "cross-env NODE_ENV=production node server.js"
+    "start": "cross-env NODE_ENV=production node server.js",
+    "watch": "node server.js"
   },
   "dependencies": {
     "compression": "^1.7.1",
