@@ -123,14 +123,23 @@ test('polka::usage::middleware (async)', t => {
 });
 
 test('polka::usage::middleware (basenames)', t => {
-	t.plan(36);
+	t.plan(40);
 
+	let chk = false;
 	let aaa = (req, res, next) => (req.aaa='aaa',next());
 	let bbb = (req, res, next) => (req.bbb='bbb',next());
 	let bar = (req, res, next) => (req.bar='bar',next());
+	let ccc = (req, res, next) => {
+		if (chk) { // runs 2x
+			t.true(req.url.includes('/foo'), 'defers `bware` URL mutation until after global');
+			t.true(req.pathname.includes('/foo'), 'defers `bware` PATH mutation until after global');
+			chk = false;
+		}
+		next();
+	}
 
 	let app = polka()
-		.use(aaa, bbb) // globals
+		.use(aaa, bbb, ccc) // globals
 		.use('foo', (req, res) => {
 			// all runs 2 times
 			t.pass('runs the base middleware for: foo');
@@ -159,7 +168,7 @@ test('polka::usage::middleware (basenames)', t => {
 			res.end('hello from main');
 		});
 
-	t.is(app.wares.length, 2, 'added 2 global middleware functions');
+	t.is(app.wares.length, 3, 'added 2 global middleware functions');
 	let keys = Object.keys(app.bwares);
 	t.is(keys.length, 2, 'added 2 basename middleware groups');
 	t.deepEqual(keys, ['/foo', '/bar'], '~> has middleware groups for `/foo` & `/bar` path matches');
@@ -171,11 +180,13 @@ test('polka::usage::middleware (basenames)', t => {
 		t.is(r.data, 'hello from main', '~> received "hello from main" response');
 	}).then(_ => {
 		// Test (GET /foo)
+		chk = true;
 		axios.get(`${uri}/foo`).then(r => {
 			t.is(r.status, 200, '~> received 200 status');
 			t.is(r.data, 'hello from foo', '~> received "hello from foo" response');
 		}).then(_ => {
 			// Test (POST /foo/items?this=123)
+			chk = true;
 			axios.post(`${uri}/foo/items?this=123`).then(r => {
 				t.is(r.status, 200, '~> received 200 status');
 				t.is(r.data, 'hello from foo', '~> received "hello from foo" response');
