@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "node index"
+  },
+  "dependencies": {
+    "morgan": "latest",
+    "polka": "latest"
+  }
+}
