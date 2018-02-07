@@ -179,20 +179,20 @@ test('polka::usage::middleware (basenames)', t => {
 			axios.post(`${uri}/foo/items?this=123`).then(r => {
 				t.is(r.status, 200, '~> received 200 status');
 				t.is(r.data, 'hello from foo', '~> received "hello from foo" response');
-			});
-		}).then(_ => {
-			// Test (GET /bar/hello)
-			axios.get(`${uri}/bar/hello`).then(r => {
-				t.is(r.status, 200, '~> received 200 status');
-				t.is(r.data, 'hello from bar', '~> received "hello from bar" response');
-			});
-		}).then(_ => {
-			// Test (GET 404)
-			axios.get(`${uri}/foobar`).catch(err => {
-				let r = err.response;
-				t.is(r.status, 404, '~> received 404 status');
-				t.is(r.data, 'Not Found', '~> received "Not Found" response');
-				app.server.close();
+			}).then(_ => {
+				// Test (GET /bar/hello)
+				axios.get(`${uri}/bar/hello`).then(r => {
+					t.is(r.status, 200, '~> received 200 status');
+					t.is(r.data, 'hello from bar', '~> received "hello from bar" response');
+				}).then(_ => {
+					// Test (GET 404)
+					axios.get(`${uri}/foobar`).catch(err => {
+						let r = err.response;
+						t.is(r.status, 404, '~> received 404 status');
+						t.is(r.data, 'Not Found', '~> received "Not Found" response');
+						app.server.close();
+					});
+				});
 			});
 		});
 	});
