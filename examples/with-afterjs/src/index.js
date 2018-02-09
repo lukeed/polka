@@ -1,11 +1,6 @@
-import { createServer } from 'http';
 import app from './server';
 
-// We're only doing this for HMR
-// ~> but we actually don't even have to!
-const server = createServer(app.handler);
-
-let curr = app.handler;
+let { handler, server } = app;
 
 server.listen(process.env.PORT || 3000, error => {
   if (error) {
@@ -20,9 +15,9 @@ if (module.hot) {
 
   module.hot.accept('./server', () => {
     console.log('🔁  HMR Reloading `./server`...');
-    server.removeListener('request', curr);
-    const updated = require('./server').default.handler;
-    server.on('request', updated);
-    curr = updated;
+    server.removeListener('request', handler);
+    let nxt = require('./server').default;
+    server.on('request', nxt.handler);
+    handler = nxt.handler;
   });
 }
