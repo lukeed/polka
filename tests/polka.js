@@ -228,7 +228,6 @@ test('polka::usage::middleware (wildcard)', t => {
 		})
 		.get('*', (req, res) => {
 			// runs 3x
-
 			t.pass('runs the MAIN app handler for GET /*');
 			t.is(req.foo, 'foo', '~> runs after `foo` global middleware');
 			t.is(req.url, expect, '~> receives the full, expected URL');
