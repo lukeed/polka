@@ -1,2 +1,2 @@
-public/static
 .env.*.local
+build
