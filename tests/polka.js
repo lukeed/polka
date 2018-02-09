@@ -209,6 +209,64 @@ test('polka::usage::middleware (basenames)', t => {
 	});
 });
 
+test('polka::usage::middleware (wildcard)', t => {
+	t.plan(29);
+
+	let expect;
+	let foo = (req, res, next) => (req.foo='foo',next());
+
+	let app = polka()
+		.use(foo) // global
+		.use('bar', (req, res) => {
+			// runs 2x
+			t.pass('runs the base middleware for: bar');
+			t.is(req.foo, 'foo', '~> runs after `foo` global middleware');
+			t.false(req.url.includes('bar'), '~> strips "bar" base from `req.url`');
+			t.false(req.pathname.includes('bar'), '~> strips "bar" base from `req.pathname`');
+			t.ok(req.originalUrl.includes('bar'), '~> keeps "bar" base within `req.originalUrl`');
+			res.end('hello from bar');
+		})
+		.get('*', (req, res) => {
+			// runs 3x
+
+			t.pass('runs the MAIN app handler for GET /*');
+			t.is(req.foo, 'foo', '~> runs after `foo` global middleware');
+			t.is(req.url, expect, '~> receives the full, expected URL');
+			res.end('hello from wildcard');
+		});
+
+	let uri = listen(app.server);
+
+	expect = '/';
+	axios.get(uri).then(r => {
+		t.is(r.status, 200, '~> received 200 status');
+		t.is(r.data, 'hello from wildcard', '~> received "hello from wildcard" response');
+	}).then(_ => {
+		expect = '/hello';
+		axios.get(`${uri}${expect}`).then(r => {
+			t.is(r.status, 200, '~> received 200 status');
+			t.is(r.data, 'hello from wildcard', '~> received "hello from wildcard" response');
+		}).then(_ => {
+			expect = '/a/b/c';
+			axios.get(`${uri}${expect}`).then(r => {
+				t.is(r.status, 200, '~> received 200 status');
+				t.is(r.data, 'hello from wildcard', '~> received "hello from wildcard" response');
+			}).then(_ => {
+				axios.get(`${uri}/bar`).then(r => {
+					t.is(r.status, 200, '~> received 200 status');
+					t.is(r.data, 'hello from bar', '~> received "hello from bar" response');
+				}).then(_ => {
+					axios.get(`${uri}/bar/extra`).then(r => {
+						t.is(r.status, 200, '~> received 200 status');
+						t.is(r.data, 'hello from bar', '~> received "hello from bar" response');
+						app.server.close();
+					});
+				});
+			});
+		});
+	});
+});
+
 test('polka::usage::errors', t => {
 	t.plan(9);
 	let a = 41;
