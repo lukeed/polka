@@ -168,7 +168,7 @@ test('polka::usage::middleware (basenames)', t => {
 			res.end('hello from main');
 		});
 
-	t.is(app.wares.length, 3, 'added 2 global middleware functions');
+	t.is(app.wares.length, 3, 'added 3 global middleware functions');
 	let keys = Object.keys(app.bwares);
 	t.is(keys.length, 2, 'added 2 basename middleware groups');
 	t.deepEqual(keys, ['/foo', '/bar'], '~> has middleware groups for `/foo` & `/bar` path matches');
