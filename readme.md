@@ -415,19 +415,19 @@ Node 8.9.0
 
 Native
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     2.24ms  124.41us   6.77ms   88.78%
-        Req/Sec     5.38k   144.35     6.26k    94.30%
-      432249 requests in 10.10s, 42.87MB read
-    Requests/sec:  42784.60
-    Transfer/sec:      4.24MB
+        Latency     2.25ms  297.71us   8.95ms   94.93%
+        Req/Sec     5.35k   273.24     7.38k    92.68%
+      429498 requests in 10.10s, 42.60MB read
+    Requests/sec:  42514.75
+    Transfer/sec:      4.22MB
 
 Polka
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     2.26ms  138.41us   6.66ms   90.94%
-        Req/Sec     5.33k    83.07     5.94k    80.25%
-      424080 requests in 10.01s, 42.06MB read
-    Requests/sec:  42381.02
-    Transfer/sec:      4.20MB
+        Latency     2.27ms  127.07us   5.39ms   88.61%
+        Req/Sec     5.31k    92.52     5.55k    77.85%
+      426962 requests in 10.10s, 42.35MB read
+    Requests/sec:  42259.21
+    Transfer/sec:      4.19MB
 
 Express
     Thread Stats   Avg      Stdev     Max   +/- Stdev
