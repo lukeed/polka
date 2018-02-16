@@ -359,7 +359,7 @@ test('polka::usage::sub-apps', t => {
 		t.pass('run the main-application route');
 		t.is(req.foo, 'hello', '~> receives mutatations from middleware');
 		t.is(req.bar, undefined, '~> does NOT run the sub-application middleware');
-		t.is(req.originalUrl, undefined, '~> does not see an `req.originalUrl` key');
+		t.is(req.originalUrl, '/', '~> always sets `req.originalUrl` key');
 		res.end('hello from main');
 	});
 
