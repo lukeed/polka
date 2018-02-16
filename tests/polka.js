@@ -348,7 +348,7 @@ test('polka::usage::sub-apps', t => {
 		t.pass('runs the sub-application /:id route');
 		t.is(req.params.bar, 'hi', '~> parses the sub-application params');
 		t.is(req.url, '/hi?a=0', '~> trims basepath from `req.url` value');
-		t.is(req.query, 'a=0', '~> parses the sub-application `re.query` value');
+		t.same(req.query, {a:'0'}, '~> parses the sub-application `res.query` value');
 		t.is(req.originalUrl, '/sub/hi?a=0', '~> preserves original `req.url` value');
 		t.is(req.foo, 'hello', '~> receives mutatations from main-app middleware');
 		t.is(req.bar, 'world', '~> receives mutatations from own middleware');

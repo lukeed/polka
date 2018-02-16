@@ -1,6 +1,7 @@
 const http = require('http');
 const Router = require('trouter');
 const parseurl = require('parseurl');
+const { parse } = require('querystring');
 
 function lead(x) {
 	return x.charCodeAt(0) === 47 ? x : ('/' + x);
@@ -86,7 +87,7 @@ class Polka extends Router {
 		}
 		// Grab addl values from `info`
 		req.search = info.search;
-		req.query = info.query;
+		req.query = parse(info.query);
 		// Exit if no middleware
 		let i=0, len=arr.length;
 		if (len === i) return fn(req, res);
