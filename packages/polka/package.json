@@ -1,6 +1,6 @@
 {
   "name": "polka",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "A micro web server so fast, it'll make you dance! :dancers:",
   "repository": "lukeed/polka",
   "license": "MIT",
