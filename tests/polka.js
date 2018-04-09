@@ -266,6 +266,54 @@ test('polka::usage::middleware (wildcard)', t => {
 	});
 });
 
+test('polka::usage::middleware (router composition)', t => {
+	t.plan(11);
+
+	let foo = polka().get('/foo', (req, res, next) => {
+		t.pass('handles the route hoisted from foo instance');
+		res.end('hello from foo');
+	});
+	let bar = polka().get('/bar/*', (req, res, next) => {
+		t.pass('handles the route hoisted from bar instance');
+		res.end('hello from bar');
+	});
+
+	let app = polka()
+		.use(foo) // hoist foo instance
+		.use(bar) // hoist bar instance
+		.get('/', (req, res) => {
+			t.pass('runs the MAIN app handler for GET /');
+			res.end('hello from main');
+		});
+
+	let uri = listen(app.server);
+
+	axios.get(uri).then(r => {
+		t.is(r.status, 200, '~> received 200 status');
+		t.is(r.data, 'hello from main', '~> received "hello from main" response');
+	}).then(_ => {
+		// Test (GET /foo)
+		axios.get(`${uri}/foo`).then(r => {
+			t.is(r.status, 200, '~> received 200 status');
+			t.is(r.data, 'hello from foo', '~> received "hello from foo" response');
+		}).then(_ => {
+			// Test (GET /bar/hello)
+			axios.get(`${uri}/bar/hello`).then(r => {
+				t.is(r.status, 200, '~> received 200 status');
+				t.is(r.data, 'hello from bar', '~> received "hello from bar" response');
+			}).then(_ => {
+				// Test (GET 404)
+				axios.get(`${uri}/foobar`).catch(err => {
+					let r = err.response;
+					t.is(r.status, 404, '~> received 404 status');
+					t.is(r.data, 'Not Found', '~> received "Not Found" response');
+					app.server.close();
+				});
+			});
+		});
+	});
+});
+
 test('polka::usage::errors', t => {
 	t.plan(9);
 	let a = 41;

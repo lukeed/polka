@@ -89,7 +89,7 @@ A handler when no route definitions were matched. Change this if you don't like 
 Its signature is `(req, res)` and requires that you terminate the response.
 
 
-### use(base, ...fn)
+### use([base,] ...fn)
 
 Attach [middleware(s)](#middleware) and/or sub-application(s) to the server. These will execute _before_ your routes' [handlers](#handlers).
 
@@ -106,7 +106,7 @@ Type: `Function|Array`
 
 You may pass one or more functions at a time. Each function must have the standardized `(req, res, next)` signature.
 
-You may also pass a sub-application, which _must_ be accompanied by a `base` pathname.
+You may also pass a sub-application without a `base` pathname, which will have its routes hoisted to the primary polka instance.
 
 Please see [`Middleware`](#middleware) and [Express' middleware examples](http://expressjs.com/en/4x/api.html#middleware-callback-function-examples) for more info.
 
