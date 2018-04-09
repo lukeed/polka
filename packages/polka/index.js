@@ -40,7 +40,18 @@ class Polka extends Router {
 	}
 
 	use(base, ...fns) {
-		if (typeof base === 'function') {
+		if (base instanceof Polka) {
+			// Flatten routes into primary polka instance
+			for (const method in base.routes) {
+				if (base.routes[method].length) {
+					base.routes[method].forEach((route) => {
+						const pattern = route[0].old;
+						if (this.handlers[method][pattern]) return; // avoid overwriting existing routes
+						this[method.toLowerCase()](pattern, base.handlers[method][pattern]);
+					})
+				}
+			}
+		} else if (typeof base === 'function') {
 			this.wares = this.wares.concat(base, fns);
 		} else {
 			base = lead(base);
