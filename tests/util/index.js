@@ -22,8 +22,8 @@ exports.toStatusText = code => STATUS_CODES[code];
 
 exports.sleep = ms => new Promise(r => setTimeout(r, ms));
 
-exports.listen = function (srv, host) {
-	srv.listen(); // boots
-	let { port } = srv.address();
+exports.listen = async function (app, host) {
+	await app.listen(); // boots
+	let { port } = app.server.address();
 	return `http://${host || 'localhost'}:${port}`;
 };

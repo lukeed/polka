@@ -70,7 +70,7 @@ test('polka::usage::basic', t => {
 	});
 });
 
-test('polka::usage::middleware', t => {
+test('polka::usage::middleware', async t => {
 	t.plan(7);
 
 	let app = polka().use((req, res, next) => {
@@ -87,16 +87,15 @@ test('polka::usage::middleware', t => {
 
 	t.is(app.wares.length, 2, 'added 2 middleware functions');
 
-	let uri = listen(app.server);
-	axios.get(uri).then(r => {
-		t.is(r.status, 200, '~> received 200 status');
-		t.is(r.data, 'Hello', '~> received "Hello" response');
-		t.is(r.headers['x-type'], 'text/foo', '~> received custom header');
-		app.server.close();
-	});
+	let uri = await listen(app);
+	let r = await axios.get(uri);
+	t.is(r.status, 200, '~> received 200 status');
+	t.is(r.data, 'Hello', '~> received "Hello" response');
+	t.is(r.headers['x-type'], 'text/foo', '~> received custom header');
+	app.server.close();
 });
 
-test('polka::usage::middleware (async)', t => {
+test('polka::usage::middleware (async)', async t => {
 	t.plan(7);
 
 	let app = polka().use((req, res, next) => {
@@ -113,16 +112,17 @@ test('polka::usage::middleware (async)', t => {
 
 	t.is(app.wares.length, 2, 'added 2 middleware functions');
 
-	let uri = listen(app.server);
-	axios.get(uri).then(r => {
-		t.is(r.status, 200, '~> received 200 status');
-		t.is(r.data, 'Hello', '~> received "Hello" response');
-		t.is(r.headers['x-type'], 'text/foo', '~> received custom header');
-		app.server.close();
-	});
+	let uri = await listen(app);
+
+	let r = await axios.get(uri);
+	t.is(r.status, 200, '~> received 200 status');
+	t.is(r.data, 'Hello', '~> received "Hello" response');
+	t.is(r.headers['x-type'], 'text/foo', '~> received custom header');
+
+	app.server.close();
 });
 
-test('polka::usage::middleware (basenames)', t => {
+test('polka::usage::middleware (basenames)', async t => {
 	t.plan(40);
 
 	let chk = false;
@@ -173,43 +173,40 @@ test('polka::usage::middleware (basenames)', t => {
 	t.is(keys.length, 2, 'added 2 basename middleware groups');
 	t.deepEqual(keys, ['/foo', '/bar'], '~> has middleware groups for `/foo` & `/bar` path matches');
 
-	let uri = listen(app.server);
+	let uri = await listen(app);
 
-	axios.get(uri).then(r => {
-		t.is(r.status, 200, '~> received 200 status');
-		t.is(r.data, 'hello from main', '~> received "hello from main" response');
-	}).then(_ => {
-		// Test (GET /foo)
-		chk = true;
-		axios.get(`${uri}/foo`).then(r => {
-			t.is(r.status, 200, '~> received 200 status');
-			t.is(r.data, 'hello from foo', '~> received "hello from foo" response');
-		}).then(_ => {
-			// Test (POST /foo/items?this=123)
-			chk = true;
-			axios.post(`${uri}/foo/items?this=123`).then(r => {
-				t.is(r.status, 200, '~> received 200 status');
-				t.is(r.data, 'hello from foo', '~> received "hello from foo" response');
-			}).then(_ => {
-				// Test (GET /bar/hello)
-				axios.get(`${uri}/bar/hello`).then(r => {
-					t.is(r.status, 200, '~> received 200 status');
-					t.is(r.data, 'hello from bar', '~> received "hello from bar" response');
-				}).then(_ => {
-					// Test (GET 404)
-					axios.get(`${uri}/foobar`).catch(err => {
-						let r = err.response;
-						t.is(r.status, 404, '~> received 404 status');
-						t.is(r.data, 'Not Found', '~> received "Not Found" response');
-						app.server.close();
-					});
-				});
-			});
-		});
+	let r1 = await axios.get(uri);
+	t.is(r1.status, 200, '~> received 200 status');
+	t.is(r1.data, 'hello from main', '~> received "hello from main" response');
+
+	// Test (GET /foo)
+	chk = true;
+	let r2 = await axios.get(`${uri}/foo`);
+	t.is(r2.status, 200, '~> received 200 status');
+	t.is(r2.data, 'hello from foo', '~> received "hello from foo" response');
+
+	// Test (POST /foo/items?this=123)
+	chk = true;
+	let r3 = await axios.post(`${uri}/foo/items?this=123`);
+	t.is(r3.status, 200, '~> received 200 status');
+	t.is(r3.data, 'hello from foo', '~> received "hello from foo" response');
+
+	// Test (GET /bar/hello)
+	let r4 = await axios.get(`${uri}/bar/hello`);
+	t.is(r4.status, 200, '~> received 200 status');
+	t.is(r4.data, 'hello from bar', '~> received "hello from bar" response');
+
+	// Test (GET 404)
+	await axios.get(`${uri}/foobar`).catch(err => {
+		let r = err.response;
+		t.is(r.status, 404, '~> received 404 status');
+		t.is(r.data, 'Not Found', '~> received "Not Found" response');
 	});
+
+	app.server.close();
 });
 
-test('polka::usage::middleware (wildcard)', t => {
+test('polka::usage::middleware (wildcard)', async t => {
 	t.plan(29);
 
 	let expect;
@@ -234,39 +231,35 @@ test('polka::usage::middleware (wildcard)', t => {
 			res.end('hello from wildcard');
 		});
 
-	let uri = listen(app.server);
+	let uri = await listen(app);
 
 	expect = '/';
-	axios.get(uri).then(r => {
-		t.is(r.status, 200, '~> received 200 status');
-		t.is(r.data, 'hello from wildcard', '~> received "hello from wildcard" response');
-	}).then(_ => {
-		expect = '/hello';
-		axios.get(`${uri}${expect}`).then(r => {
-			t.is(r.status, 200, '~> received 200 status');
-			t.is(r.data, 'hello from wildcard', '~> received "hello from wildcard" response');
-		}).then(_ => {
-			expect = '/a/b/c';
-			axios.get(`${uri}${expect}`).then(r => {
-				t.is(r.status, 200, '~> received 200 status');
-				t.is(r.data, 'hello from wildcard', '~> received "hello from wildcard" response');
-			}).then(_ => {
-				axios.get(`${uri}/bar`).then(r => {
-					t.is(r.status, 200, '~> received 200 status');
-					t.is(r.data, 'hello from bar', '~> received "hello from bar" response');
-				}).then(_ => {
-					axios.get(`${uri}/bar/extra`).then(r => {
-						t.is(r.status, 200, '~> received 200 status');
-						t.is(r.data, 'hello from bar', '~> received "hello from bar" response');
-						app.server.close();
-					});
-				});
-			});
-		});
-	});
+	let r1 = await axios.get(uri);
+	t.is(r1.status, 200, '~> received 200 status');
+	t.is(r1.data, 'hello from wildcard', '~> received "hello from wildcard" response');
+
+	expect = '/hello';
+	let r2 = await axios.get(`${uri}${expect}`);
+	t.is(r2.status, 200, '~> received 200 status');
+	t.is(r2.data, 'hello from wildcard', '~> received "hello from wildcard" response');
+
+	expect = '/a/b/c';
+	let r3 = await axios.get(`${uri}${expect}`);
+	t.is(r3.status, 200, '~> received 200 status');
+	t.is(r3.data, 'hello from wildcard', '~> received "hello from wildcard" response');
+
+	let r4 = await axios.get(`${uri}/bar`);
+	t.is(r4.status, 200, '~> received 200 status');
+	t.is(r4.data, 'hello from bar', '~> received "hello from bar" response');
+
+	let r5 = await axios.get(`${uri}/bar/extra`);
+	t.is(r5.status, 200, '~> received 200 status');
+	t.is(r5.data, 'hello from bar', '~> received "hello from bar" response');
+
+	app.server.close();
 });
 
-test('polka::usage::errors', t => {
+test('polka::usage::errors', async t => {
 	t.plan(9);
 	let a = 41;
 
@@ -278,8 +271,8 @@ test('polka::usage::errors', t => {
 		res.end('OK');
 	});
 
-	let u1 = listen(foo.server);
-	axios.get(u1).catch(err => {
+	let u1 = await listen(foo);
+	await axios.get(u1).catch(err => {
 		let r = err.response;
 		t.is(a, 42, 'exits before route handler if middleware error');
 		t.is(r.data, 'boo', '~> received "boo" text');
@@ -295,8 +288,8 @@ test('polka::usage::errors', t => {
 		res.end('OK');
 	});
 
-	let u2 = listen(bar.server);
-	axios.get(u2).catch(err => {
+	let u2 = await listen(bar);
+	await axios.get(u2).catch(err => {
 		let r = err.response;
 		t.is(a, 42, 'exits without running route handler');
 		t.is(r.data, 'boo~!', '~> received "boo~!" text');
@@ -313,8 +306,8 @@ test('polka::usage::errors', t => {
 		res.end('OK');
 	});
 
-	let u3 = listen(baz.server);
-	axios.get(u3).catch(err => {
+	let u3 = await listen(baz);
+	await axios.get(u3).catch(err => {
 		let r = err.response;
 		t.is(a, 42, 'exits without running route handler');
 		t.is(r.data, 'oh dear', '~> received "oh dear" (custom) text');
@@ -323,7 +316,7 @@ test('polka::usage::errors', t => {
 	});
 });
 
-test('polka::usage::sub-apps', t => {
+test('polka::usage::sub-apps', async t => {
 	t.plan(24);
 
 	let foo = (req, res, next) => {
@@ -363,29 +356,27 @@ test('polka::usage::sub-apps', t => {
 		res.end('hello from main');
 	});
 
-	let uri = listen(app.server);
+	let uri = await listen(app);
 
 	// check sub-app index route
-	axios.get(`${uri}/sub`).then(r => {
-		t.is(r.status, 200, '~> received 200 status');
-		t.is(r.data, 'hello from sub@index', '~> received "hello from sub@index" response');
-	}).then(_ => {
-		// check main-app now
-		axios.get(uri).then(r => {
-			t.is(r.status, 200, '~> received 200 status');
-			t.is(r.data, 'hello from main', '~> received "hello from main" response');
-		}).then(_ => {
-			// check sub-app pattern route
-			axios.get(`${uri}/sub/hi?a=0`).then(r => {
-				t.is(r.status, 200, '~> received 200 status');
-				t.is(r.data, 'hello from sub@show', '~> received "hello from sub@show" response');
-				app.server.close();
-			});
-		});
-	});
+	let r1 = await axios.get(`${uri}/sub`);
+	t.is(r1.status, 200, '~> received 200 status');
+	t.is(r1.data, 'hello from sub@index', '~> received "hello from sub@index" response');
+
+	// check main-app now
+	let r2 = await axios.get(uri);
+	t.is(r2.status, 200, '~> received 200 status');
+	t.is(r2.data, 'hello from main', '~> received "hello from main" response');
+
+	// check sub-app pattern route
+	let r3 = await axios.get(`${uri}/sub/hi?a=0`)
+	t.is(r3.status, 200, '~> received 200 status');
+	t.is(r3.data, 'hello from sub@show', '~> received "hello from sub@show" response');
+
+	app.server.close();
 });
 
-test('polka::options::onError', t => {
+test('polka::options::onError', async t => {
 	t.plan(7);
 
 	let abc = new Error('boo~!');
@@ -404,8 +395,8 @@ test('polka::options::onError', t => {
 
 	t.is(app.onError, foo, 'replaces `app.onError` with the option value');
 
-	let uri = listen(app.server);
-	axios.get(uri).catch(err => {
+	let uri = await listen(app);
+	await axios.get(uri).catch(err => {
 		let r = err.response;
 		t.is(r.status, 418, '~> response gets the error code');
 		t.is(r.data, 'error: boo~!', '~> response gets the formatted error message');
@@ -413,7 +404,7 @@ test('polka::options::onError', t => {
 	});
 });
 
-test('polka::options::onNoMatch', t => {
+test('polka::options::onNoMatch', async t => {
 	t.plan(6);
 
 	let foo = (req, res) => {
@@ -428,8 +419,8 @@ test('polka::options::onNoMatch', t => {
 	t.is(app.onNoMatch, foo, 'replaces `app.onNoMatch` with the option value');
 	t.not(app.onError, foo, 'does not affect the `app.onError` handler');
 
-	let uri = listen(app.server);
-	axios.post(uri).catch(err => {
+	let uri = await listen(app);
+	await axios.post(uri).catch(err => {
 		let r = err.response;
 		t.is(r.status, 405, '~> response gets the error code');
 		t.is(r.data, 'prefer: Method Not Found', '~> response gets the formatted error message');
