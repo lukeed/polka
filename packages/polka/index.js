@@ -42,6 +42,8 @@ class Polka extends Router {
 	use(base, ...fns) {
 		if (typeof base === 'function') {
 			this.wares = this.wares.concat(base, fns);
+		} else if (base === '/') {
+			this.wares = this.wares.concat(fns);
 		} else {
 			base = lead(base);
 			fns.forEach(fn => {
