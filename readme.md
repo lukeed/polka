@@ -261,7 +261,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function authenticate(req, res, next) {
   let token = req.getHeader('authorization');
-  if (!token) return app.send(res, 401);
+  if (!token) return ((res.statusCode=401) && res.end('No token!'));
   req.user = await Users.find(token); // <== fake
   next(); // done, woot!
 }
