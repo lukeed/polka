@@ -132,7 +132,7 @@ test('polka::usage::middleware (basenames)', async t => {
 	let ccc = (req, res, next) => {
 		if (chk) { // runs 2x
 			t.true(req.url.includes('/foo'), 'defers `bware` URL mutation until after global');
-			t.true(req.pathname.includes('/foo'), 'defers `bware` PATH mutation until after global');
+			t.true(req.path.includes('/foo'), 'defers `bware` PATH mutation until after global');
 			chk = false;
 		}
 		next();
@@ -146,7 +146,7 @@ test('polka::usage::middleware (basenames)', async t => {
 			t.is(req.aaa, 'aaa', '~> runs after `aaa` global middleware');
 			t.is(req.bbb, 'bbb', '~> runs after `bbb` global middleware');
 			t.false(req.url.includes('foo'), '~> strips "foo" base from `req.url`');
-			t.false(req.pathname.includes('foo'), '~> strips "foo" base from `req.pathname`');
+			t.false(req.path.includes('foo'), '~> strips "foo" base from `req.path`');
 			t.ok(req.originalUrl.includes('foo'), '~> keeps "foo" base within `req.originalUrl`');
 			res.end('hello from foo');
 		})
@@ -156,9 +156,9 @@ test('polka::usage::middleware (basenames)', async t => {
 			t.is(req.bbb, 'bbb', '~> runs after `bbb` global middleware');
 			t.is(req.bar, 'bar', '~> runs after `bar` SELF-GROUPED middleware');
 			t.false(req.url.includes('bar'), '~> strips "bar" base from `req.url`');
-			t.false(req.pathname.includes('bar'), '~> strips "bar" base from `req.pathname`');
+			t.false(req.path.includes('bar'), '~> strips "bar" base from `req.path`');
 			t.ok(req.originalUrl.includes('bar'), '~> keeps "bar" base within `req.originalUrl`');
-			t.is(req.pathname, '/hello', '~> matches expected `req.pathname` value');
+			t.is(req.path, '/hello', '~> matches expected `req.path` value');
 			res.end('hello from bar');
 		})
 		.get('/', (req, res) => {
@@ -219,7 +219,7 @@ test('polka::usage::middleware (wildcard)', async t => {
 			t.pass('runs the base middleware for: bar');
 			t.is(req.foo, 'foo', '~> runs after `foo` global middleware');
 			t.false(req.url.includes('bar'), '~> strips "bar" base from `req.url`');
-			t.false(req.pathname.includes('bar'), '~> strips "bar" base from `req.pathname`');
+			t.false(req.path.includes('bar'), '~> strips "bar" base from `req.path`');
 			t.ok(req.originalUrl.includes('bar'), '~> keeps "bar" base within `req.originalUrl`');
 			res.end('hello from bar');
 		})

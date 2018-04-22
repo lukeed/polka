@@ -14,7 +14,7 @@ function value(x) {
 
 function mutate(str, req) {
 	req.url = req.url.substring(str.length) || '/';
-	req.pathname = req.pathname.substring(str.length) || '/';
+	req.path = req.path.substring(str.length) || '/';
 }
 
 function isRootWild(obj) {
@@ -70,16 +70,16 @@ class Polka extends Router {
 		info = info || this.parse(req);
 		let fn, arr=this.wares, obj=this.find(req.method, info.pathname);
 		req.originalUrl = req.originalUrl || req.url;
-		req.pathname = info.pathname;
+		req.path = info.pathname;
 		if (obj) {
 			fn = obj.handler;
 			req.params = obj.params;
 		}
 		if (!obj || isRootWild(obj.params)) {
 			// Looking for sub-apps or extra middleware
-			let base = value(req.pathname);
+			let base = value(req.path);
 			if (this.apps[base] !== void 0) {
-				mutate(base, req); info.pathname=req.pathname; //=> updates
+				mutate(base, req); info.pathname=req.path; //=> updates
 				fn = this.apps[base].handler.bind(null, req, res, info);
 			} else {
 				fn = fn || this.onNoMatch;
