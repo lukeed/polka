@@ -3,10 +3,8 @@ const polka = require('polka');
 
 const { PORT=3000 } = process.env;
 
-const { handler } = polka().get('/', (req, res) => {
+polka({ server: http }).get('/', (req, res) => {
 	res.end('Hello');
-});
-
-http.createServer(handler).listen(PORT, err => {
+}).listen(PORT, err => {
 	console.log(`> Running on localhost:${PORT}`);
 });
