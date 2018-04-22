@@ -72,6 +72,15 @@ Polka extends [Trouter](https://github.com/lukeed/trouter) which means it inheri
 
 Returns an instance of Polka~!
 
+#### options.server
+Type: `Server`<br>
+
+A custom, instantiated server that the Polka instance should attach its [`handler`](#handlerreq-res-parsed) to. This is useful if you have initialized a server elsewhere in your application and want Polka to use _it_ instead of creating a new `http.Server`.
+
+Polka _only_ updates the server when [`polka.listen`](#listenport-hostname) is called. At this time, Polka will create a [`http.Server`](https://nodejs.org/api/http.html#http_class_http_server) if a server was not provided via `options.server`.
+
+> **Important:** The `server` key will be `undefined` until `polka.listen` is invoked, unless a server was provided.
+
 #### options.onError
 Type: `Function`
 
