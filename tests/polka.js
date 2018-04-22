@@ -26,7 +26,7 @@ test('polka::internals', t => {
 	t.isObject(app.bwares, 'app.bwares is an object');
 	t.isEmpty(app.bwares, 'app.bwares is empty');
 
-	t.ok(app.server instanceof http.Server, 'app.server is an HTTP server');
+	t.is(app.server, undefined, 'app.server is undefined by default (pre-listen)');
 
 	t.isFunction(app.onError, 'app.onError is a function');
 	t.isFunction(app.onNoMatch, 'app.onNoMatch is a function');
