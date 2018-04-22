@@ -125,7 +125,7 @@ Wraps the native [`server.listen`](https://nodejs.org/dist/latest-v9.x/docs/api/
 
 ### handler(req, res, parsed)
 
-The main Polka [`ClientRequest`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_clientrequest) handler. It receives all requests and tries to match the incoming URL against known routes.
+The main Polka [`IncomingMessage`](https://nodejs.org/api/http.html#http_class_http_incomingmessage) handler. It receives all requests and tries to match the incoming URL against known routes.
 
 If the `req.url` is not immediately matched, Polka will look for sub-applications or middleware groups matching the `req.url`'s [`base`](#base) path. If any are found, they are appended to the loop, running _after_ any global middleware.
 
@@ -134,7 +134,7 @@ If the `req.url` is not immediately matched, Polka will look for sub-application
 At the end of the loop, if a middleware hasn't yet terminated the response (or thrown an error), the route handler will be executed, if found &mdash; otherwise a `(404) Not found` response is returned, configurable via [`options.onNoMatch`](#optionsonnomatch).
 
 #### req
-Type: `ClientRequest`
+Type: `IncomingMessage`
 
 #### res
 Type: `ServerResponse`
@@ -238,7 +238,7 @@ Any valid HTTP method is supported! However, only the most common methods are us
 
 ### Handlers
 
-Request handlers accept the incoming [`ClientRequest`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_clientrequest) and the formulating [`ServerResponse`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_serverresponse).
+Request handlers accept the incoming [`IncomingMessage`](https://nodejs.org/api/http.html#http_class_http_incomingmessage) and the formulating [`ServerResponse`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_serverresponse).
 
 Every route definition must contain a valid `handler` function, or else an error will be thrown at runtime.
 
@@ -260,8 +260,8 @@ const app = polka();
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function authenticate(req, res, next) {
-  let token = req.getHeader('authorization');
-  if (!token) return ((res.statusCode=401) && res.end('No token!'));
+  let token = req.headers['authorization'];
+  if (!token) return (res.statusCode=401,res.end('No token!'));
   req.user = await Users.find(token); // <== fake
   next(); // done, woot!
 }
@@ -300,7 +300,7 @@ function logger(req, res, next) {
 
 function authorize(req, res, next) {
   // mutate req; available later
-  req.token = req.getHeader('authorization');
+  req.token = req.headers['authorization'];
   req.token ? next() : ((res.statusCode=401) && res.end('No token!'));
 }
 
