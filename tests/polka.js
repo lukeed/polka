@@ -10,7 +10,7 @@ test('polka', t => {
 	t.end();
 });
 
-test('polka::internals', t => {
+test('polka::internals', async t => {
 	let app = polka();
 	let proto = app.__proto__;
 
@@ -26,7 +26,10 @@ test('polka::internals', t => {
 	t.isObject(app.bwares, 'app.bwares is an object');
 	t.isEmpty(app.bwares, 'app.bwares is empty');
 
-	t.is(app.server, undefined, 'app.server is undefined by default (pre-listen)');
+	t.is(app.server, undefined, 'app.server is `undefined` initially (pre-listen)');
+	await app.listen();
+	t.ok(app.server instanceof http.Server, '~> app.server becomes HTTP server (post-listen)');
+	app.server.close();
 
 	t.isFunction(app.onError, 'app.onError is a function');
 	t.isFunction(app.onNoMatch, 'app.onNoMatch is a function');
@@ -377,14 +380,15 @@ test('polka::usage::sub-apps', async t => {
 });
 
 test('polka::options::server', async t => {
-	t.plan(1);
-
-	const server = http.createServer((req, res) => { req, res });
-
+	let server = http.createServer();
 	let app = polka({ server });
+	t.same(app.server, server, '~> store custom server internally as is');
 
-	t.isString(await listen(app), 'Polka started with server from options');
+	await app.listen();
+	t.same(server._events.request, app.handler, '~> attach `Polka.handler` to custom server');
+
 	app.server.close();
+	t.end();
 });
 
 test('polka::options::onError', async t => {

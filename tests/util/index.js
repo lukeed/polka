@@ -5,9 +5,6 @@ Object.assign(tape.Test.prototype, {
 	isEmpty(val, msg) {
 		this.ok(!Object.keys(val).length, msg);
 	},
-	isString(val, msg) {
-		this.is(typeof val, 'string', msg);
-	},
 	isArray(val, msg) {
 		this.ok(Array.isArray(val), msg);
 	},
