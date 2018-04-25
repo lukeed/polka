@@ -384,6 +384,7 @@ test('polka::options::server', async t => {
 	let app = polka({ server });
 
 	t.isString(await listen(app), 'Polka started with server from options');
+	app.server.close();
 });
 
 test('polka::options::onError', async t => {
