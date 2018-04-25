@@ -376,6 +376,16 @@ test('polka::usage::sub-apps', async t => {
 	app.server.close();
 });
 
+test('polka::options::server', async t => {
+	t.plan(1);
+
+	const server = http.createServer((req, res) => { req, res });
+
+	let app = polka({ server });
+
+	t.isString(await listen(app), 'Polka started with server from options');
+});
+
 test('polka::options::onError', async t => {
 	t.plan(7);
 
