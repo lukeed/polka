@@ -96,7 +96,7 @@ class Polka extends Router {
 		if (len === i) return fn(req, res);
 		// Otherwise loop thru all middlware
 		let next = err => err ? this.onError(err, req, res, next) : loop();
-		let loop = _ => res.finished || (i < len) ? arr[i++](req, res, next) : fn(req, res);
+		let loop = _ => (res.finished || res.headersSent) || (i < len) ? arr[i++](req, res, next) : fn(req, res);
 		loop(); // init
 	}
 }
