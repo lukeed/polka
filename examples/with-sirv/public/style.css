@@ -1,0 +1,22 @@
+#app {
+	opacity: 0;
+	margin: 100px;
+	column-count: 3;
+	column-gap: 25px;
+	column-rule-width: 0;
+	transition: all 250ms 50ms;
+	will-change: transform, opacity;
+	transform: translateY(8px);
+}
+
+#app img {
+	display: block;
+	position: relative;
+	margin-bottom: 25px;
+	width: 100%;
+}
+
+#app.rdy {
+	transform: translateY(0);
+	opacity: 1;
+}
