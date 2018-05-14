@@ -47,10 +47,8 @@ test('polka::internals', async t => {
 
 	METHODS.forEach(k => {
 		t.isFunction(app[k.toLowerCase()], `app.${k.toLowerCase()} is a function`);
-		t.isArray(app.routes[k], `~> routes.${k} is an object`);
-		t.isEmpty(app.routes[k], `~> routes.${k} is empty`);
-		t.isObject(app.handlers[k], `~> handlers.${k} is an object`);
-		t.isEmpty(app.handlers[k], `~> handlers.${k} is empty`);
+		t.is(app.handlers[k], undefined, `~> handlers.${k} is empty`);
+		t.is(app.routes[k], undefined, `~> routes.${k} is empty`);
 	});
 
 	t.end();
