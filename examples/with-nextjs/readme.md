@@ -5,6 +5,7 @@ It uses [`Next.js`](https://github.com/zeit/next.js) a Framework for server-rend
 ## Setup
 ```sh
 $ npm install
+$ npm run build
 $ npm start
 ```
 or
@@ -14,4 +15,4 @@ $ npm run dev
 ```
 
 ## Usage
-Go to localhost:3000 after starting the server and get the welcome message
+Go to `localhost:3000` after starting the server and get the welcome message
