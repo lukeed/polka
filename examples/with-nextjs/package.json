@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "dev": "node index.js",
+    "build": "next build",
+    "start": "NODE_ENV=production node index.js"
+  },
+  "dependencies": {
+    "next": "latest",
+    "polka": "latest",
+    "react": "16.2.0",
+    "react-dom": "16.2.0"
+  }
+}
