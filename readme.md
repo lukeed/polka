@@ -415,52 +415,64 @@ There are three ways to "throw" an error from within a middleware function.
 
 ## Benchmarks
 
-A round of Polka-vs-Express benchmarks across varying Node versions can be [found here](/bench).
+Quick comparison between various frameworks using [`wrk`](https://github.com/wg/wrk) on `Node v10.4.0`.<br> Results are taken with the following command, after one warm-up run:
+
+```
+$ wrk -t4 -c4 -d10s http://localhost:3000/users/123
+```
+
+Additional benchmarks between Polka and Express (using various Node versions) can be [found here](/bench).
 
 > **Important:** Time is mostly spent in _your application code_ rather than Express or Polka code!<br> Switching from Express to Polka will (likely) not show such drastic performance gains.
 
 ```
-Node 8.9.0
-
 Native
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     2.32ms  187.31us   7.59ms   91.40%
-        Req/Sec     5.19k   310.24     8.57k    96.40%
-      415726 requests in 10.10s, 41.23MB read
-    Requests/sec:  41154.58
-    Transfer/sec:      4.08MB
+        Latency    80.82us   37.10us   1.08ms   87.61%
+        Req/Sec    12.22k     2.83k   16.70k    56.93%
+      491258 requests in 10.10s, 48.72MB read
+    Requests/sec:  48640.61
+    Transfer/sec:      4.82MB
 
 Polka
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     2.33ms  171.65us   6.72ms   89.72%
-        Req/Sec     5.18k   271.94     8.17k    97.02%
-      414739 requests in 10.10s, 41.13MB read
-    Requests/sec:  41053.98
-    Transfer/sec:      4.07MB
+        Latency    81.03us   36.72us   1.10ms   83.89%
+        Req/Sec    12.18k     3.02k   16.57k    50.00%
+      489630 requests in 10.10s, 48.56MB read
+    Requests/sec:  48478.90
+    Transfer/sec:      4.81MB
 
-Express
+Rayo
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     5.26ms  504.27us   9.29ms   84.42%
-        Req/Sec     2.29k   163.51     4.44k    98.51%
-      183462 requests in 10.10s, 36.39MB read
-    Requests/sec:  18157.81
-    Transfer/sec:      3.60MB
+        Latency    84.09us   38.08us   1.04ms   87.26%
+        Req/Sec    11.75k     3.19k   16.16k    40.59%
+      472256 requests in 10.10s, 46.84MB read
+    Requests/sec:  46761.11
+    Transfer/sec:      4.64MB
 
 Fastify
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     2.75ms  226.61us  11.96ms   85.59%
-        Req/Sec     4.37k   192.11     5.90k    95.53%
-      350903 requests in 10.10s, 43.50MB read
-    Requests/sec:  34734.29
-    Transfer/sec:      4.31MB
+        Latency    90.56us   42.47us   1.61ms   91.22%
+        Req/Sec    10.93k     3.13k   15.11k    33.42%
+      439399 requests in 10.10s, 60.76MB read
+    Requests/sec:  43505.05
+    Transfer/sec:      6.02MB
 
 Koa
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     3.58ms  445.92us  12.66ms   86.06%
-        Req/Sec     3.37k   231.62     4.53k    84.99%
-      269997 requests in 10.10s, 37.34MB read
-    Requests/sec:  26721.65
-    Transfer/sec:      3.70MB
+        Latency   127.33us   54.31us   1.19ms   84.59%
+        Req/Sec     7.80k     2.48k   10.95k    37.38%
+      313672 requests in 10.10s, 43.38MB read
+    Requests/sec:  31057.11
+    Transfer/sec:      4.29MB
+
+Express
+    Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency   161.92us   70.36us   2.50ms   86.97%
+        Req/Sec     6.16k     1.93k    8.81k    42.82%
+      247613 requests in 10.10s, 34.00MB read
+    Requests/sec:  24516.23
+    Transfer/sec:      3.37MB
 ```
 
 
