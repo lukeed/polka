@@ -1,18 +1,20 @@
+const http = require('http');
 const polka = require('polka');
-const static = require('serve-static');
+const io = require('socket.io');
+const sirv = require('sirv');
 
 const { PORT=3000 } = process.env;
 
-const { server } = polka().use(static('public'));
-const io = require('socket.io')(server);
+const files = sirv('public');
+const server = http.createServer();
 
-server.listen(PORT, _ => {
+polka({ server }).use(files).listen(PORT).then(() => {
 	console.log(`> Running on localhost:${PORT}`);
 });
 
 // Chatroom
 let numUsers = 0;
-io.on('connection', socket => {
+io(server).on('connection', socket => {
 	let added = false;
 
 	// when the client emits 'new message', this listens and executes

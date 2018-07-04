@@ -4,7 +4,7 @@
   },
   "dependencies": {
     "polka": "latest",
-    "serve-static": "^1.13.1",
-    "socket.io": "^2.0.4"
+    "sirv": "latest",
+    "socket.io": "latest"
   }
 }
