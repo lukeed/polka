@@ -9,7 +9,7 @@ Object.assign(tape.Test.prototype, {
 		this.ok(Array.isArray(val), msg);
 	},
 	isObject(val, msg) {
-		this.ok(Boolean(val) && (val.constructor === Object), msg);
+		this.is(Object.prototype.toString.call(val), '[object Object]', msg);
 	},
 	isFunction(val, msg) {
 		this.is(typeof val, 'function', msg);
