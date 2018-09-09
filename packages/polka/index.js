@@ -60,7 +60,7 @@ class Polka extends Router {
 	}
 
 	listen(port, hostname, cb = () => {}) {
-		const callback = [port, hostname, cb].find(el => typeof el === 'Function');
+		const callback = [port, hostname, cb].find(el => typeof el === 'function');
 		(this.server = this.server || http.createServer()).on('request', this.handler);
 		return new Promise((res, rej) => {
 			this.server.listen(port, hostname, err => {
