@@ -102,7 +102,7 @@ Its signature is `(req, res)` and requires that you terminate the response.
 
 Attach [middleware(s)](#middleware) and/or sub-application(s) to the server. These will execute _before_ your routes' [handlers](#handlers).
 
-**Important:** If a `base` pathname is provided, all functions within the same `use()` block will _only_ execute when the `req.pathname` matches the `base` path.
+**Important:** If a `base` pathname is provided, all functions within the same `use()` block will _only_ execute when the `req.path` matches the `base` path.
 
 #### base
 Type: `String`<br>
@@ -296,7 +296,7 @@ Middleware are functions that run in between (hence "middle") receiving the requ
 
 The middleware signature receives the request (`req`), the response (`res`), and a callback (`next`).
 
-These can apply mutations to the `req` and `res` objects, and unlike Express, have access to `req.params`, `req.pathname`, `req.search`, and `req.query`!
+These can apply mutations to the `req` and `res` objects, and unlike Express, have access to `req.params`, `req.path`, `req.search`, and `req.query`!
 
 Most importantly, a middleware ***must*** either call `next()` or terminate the response (`res.end`). Failure to do this will result in a never-ending response, which will eventually crash the `http.Server`.
 
@@ -336,7 +336,7 @@ In Polka, middleware functions are mounted globally, which means that they'll ru
 
 ```js
 function foobar(req, res, next) {
-  if (req.pathname.startsWith('/users')) {
+  if (req.path.startsWith('/users')) {
     // do something magical
   }
   next();
