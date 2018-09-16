@@ -569,6 +569,44 @@ There are, however, a few main differences. Polka does not support or offer:
     app.get('/users/*', _ => {});
     ```
 
+6) **Polka instances are not (directly) the request handler.**
+
+    Most packages in the Express ecosystem expect you to pass your `app` directly into the package. This is because `express()` returns a middleware signature directly.
+
+    In the Polka-sphere, this functionality lives in your application's [`handler`](#handlerreq-res-parsed) instead.
+
+    Here's an example with [`supertest`](https://github.com/visionmedia/supertest), a popular testing utility for Express apps.
+
+    ```js
+    const request = require('supertest');
+    const send = require('@polka/send-type');
+
+    const express = require('express')();
+    const polka = require('polka')();
+
+    express.get('/user', (req, res) => {
+      res.status(200).json({ name: 'john' });
+    });
+
+    polka.get('/user', (req, res) => {
+      send(res, 200, { name: 'john' });
+    });
+
+    function isExpected(app) {
+      request(app)
+        .get('/user')
+        .expect('Content-Type', /json/)
+        .expect('Content-Length', '15')
+        .expect(200);
+    }
+
+    // Express: Pass in the entire application directly
+    isExpected(express);
+
+    // Polka: Pass in the application `handler` instead
+    isExpected(polka.handler);
+    ```
+
 
 ## License
 
