@@ -330,18 +330,48 @@ $ curl -H "authorization: secret" /foobar
 #=> (200) Hello, valid user
 ```
 
-In Polka, middleware functions are mounted globally, which means that they'll run on every request (see [Comparisons](#comparisons)). Instead, you'll have to apply internal filters to determine when & where your middleware should run.
+### Middleware Sequence
 
-> **Note:** This might change in Polka 1.0 :thinking:
+In Polka, middleware functions are organized into tiers.
+
+Unlike Express, Polka middleware are tiered into "global", "filtered", and "route-specific" groups.
+
+* Global middleware are defined via `.use('/', ...fn)` or `.use(...fn)`, which are synonymous.<br>_Because_ every request's `pathname` begins with a `/`, this tier is always triggered.
+
+* Sub-group or "filtered" middleware are defined with a base `pathname` that's more specific than `'/'`. For example, defining `.use('/users', ...fn)` will run on any `/users/**/*` request.<br>These functions will execute _after_ "global" middleware but before the route-specific handler.
+
+* Route handlers match specific paths and execute last in the chain. They must also match the `method` action.
+
+Once the chain of middleware handler(s) has been composed, Polka will iterate through them sequentially until all functions have run, until a chain member has terminated the response early, or until a chain member has thrown an error.
+
+Contrast this with Express, which does not tier your middleware and instead iterates through your entire application in the sequence that you composed it.
 
 ```js
-function foobar(req, res, next) {
-  if (req.path.startsWith('/users')) {
-    // do something magical
-  }
-  next();
-}
+// Express
+express()
+  .get('/', get)
+  .use(foo)
+  .get('/users/123', user)
+  .use('/users', users)
+
+// Polka
+Polka()
+  .get('/', get)
+  .use(foo)
+  .get('/users/123', user)
+  .use('/users', users)
 ```
+
+```sh
+$ curl {APP}/
+# Express :: [get]
+# Polka   :: [foo, get]
+
+$ curl {APP}/users/123
+# Express :: [foo, user]
+# Polka   :: [foo, users, user]
+```
+
 
 ### Middleware Errors
 
@@ -482,11 +512,17 @@ Polka's API aims to be _very_ similar to Express since most Node.js developers a
 
 There are, however, a few main differences. Polka does not support or offer:
 
-1) **Any built-in view/rendering engines.**
+1) **Polka uses a tiered middleware system.**
+
+    Express maintains the sequence of your route & middleware declarations during its runtime, which can pose a problem when composing sub-applications. Typically, this forces you to duplicate groups of logic.
+
+    Please see [Middleware Sequence](#middleware-sequence) for an example and additional details.
+
+2) **Any built-in view/rendering engines.**
 
     Most templating engines can be incorporated into middleware functions or used directly within a route handler.
 
-2) **The ability to `throw` from within middleware.**
+3) **The ability to `throw` from within middleware.**
 
     However, all other forms of middleware-errors are supported. (See [Middleware Errors](#middleware-errors).)
 
@@ -504,11 +540,11 @@ There are, however, a few main differences. Polka does not support or offer:
     }
     ```
 
-3) **Express-like response helpers... yet! (#14)**
+4) **Express-like response helpers... yet! (#14)**
 
     Express has a nice set of [response helpers](http://expressjs.com/en/4x/api.html#res.append). While Polka relies on the [native Node.js response methods](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_serverresponse), it would be very easy/possible to attach a global middleware that contained a similar set of helpers. (_TODO_)
 
-4) **`RegExp`-based route patterns.**
+5) **`RegExp`-based route patterns.**
 
     Polka's router uses string comparison to match paths against patterns. It's a lot quicker & more efficient.
 
