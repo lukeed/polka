@@ -1,10 +1,15 @@
 const { STATUS_CODES } = require('http');
 
-const TYPE = 'Content-Type';
+const TYPE = 'content-type';
 const OSTREAM = 'application/octet-stream';
 
 module.exports = function (res, code=200, data='', headers={}) {
-	let type = headers[TYPE];
+	let k, obj={};
+	for (k in headers) {
+		obj[k.toLowerCase()] = headers[k];
+	}
+
+	let type = obj[TYPE];
 
 	if (!!data && typeof data.pipe === 'function') {
 		res.setHeader(TYPE, type || OSTREAM);
@@ -20,9 +25,9 @@ module.exports = function (res, code=200, data='', headers={}) {
 		data = data || STATUS_CODES[code];
 	}
 
-	headers[TYPE] = type || 'text/plain';
-	headers['Content-Length'] = Buffer.byteLength(data);
+	obj[TYPE] = type || 'text/plain';
+	obj['content-length'] = Buffer.byteLength(data);
 
-	res.writeHead(code, headers);
+	res.writeHead(code, obj);
 	res.end(data);
 }
