@@ -61,12 +61,8 @@ test('polka/url :: /foo/bar?fizz=buzz&hello=world', t => {
 	run(t, '/foo/bar?fizz=buzz&hello=world');
 });
 
-test('polka/url :: /foo/bar?fizz=buzz&hello=world#testing', t => {
-	run(t, '/foo/bar?fizz=buzz&hello=world#testing');
-});
-
-test('polka/url :: /foo.123#hello', t => {
-	run(t, '/foo.123#hello');
+test('polka/url :: /foo.123', t => {
+	run(t, '/foo.123');
 });
 
 test('polka/url :: recycle', t => {
