@@ -55,7 +55,7 @@ test('polka::internals', async t => {
 });
 
 test('polka::usage::basic', t => {
-	t.plan(9);
+	t.plan(15);
 
 	let app = polka();
 	let arr = [['GET','/'], ['POST','/users'], ['PUT','/users/:id']];
@@ -63,11 +63,15 @@ test('polka::usage::basic', t => {
 	arr.forEach(([m,p]) => {
 		app.add(m, p, _ => t.pass(`~> matched ${m}(${p}) route`));
 		t.is(app.routes[m].length, 1, 'added a new `app.route` definition');
-		t.isFunction(app.handlers[m][p], 'added a new `app.handler` function');
+		t.isArray(app.handlers[m][p], 'added the router handler as array');
+		t.is(app.handlers[m][p].length, 1, '~> contains 1 item');
+		t.isFunction(app.handlers[m][p][0], 1, '~> item is a function');
 	});
 
 	arr.forEach(([m, p]) => {
-		app.find(m, p).handler();
+		app.find(m, p).handlers.forEach(fn => {
+			fn()
+		});
 	});
 });
 
