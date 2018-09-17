@@ -59,7 +59,8 @@ polka()
     console.log(`~> Hello, ${req.hello}`);
     res.end(`User: ${req.params.id}`);
   })
-  .listen(3000).then(_ => {
+  .listen(3000, err => {
+    if (err) throw err;
     console.log(`> Running on localhost:3000`);
   });
 ```
@@ -77,7 +78,7 @@ Type: `Server`<br>
 
 A custom, instantiated server that the Polka instance should attach its [`handler`](#handlerreq-res-parsed) to. This is useful if you have initialized a server elsewhere in your application and want Polka to use _it_ instead of creating a new `http.Server`.
 
-Polka _only_ updates the server when [`polka.listen`](#listenport-hostname) is called. At this time, Polka will create a [`http.Server`](https://nodejs.org/api/http.html#http_class_http_server) if a server was not provided via `options.server`.
+Polka _only_ updates the server when [`polka.listen`](#listen) is called. At this time, Polka will create a [`http.Server`](https://nodejs.org/api/http.html#http_class_http_server) if a server was not already provided via `options.server`.
 
 > **Important:** The `server` key will be `undefined` until `polka.listen` is invoked, unless a server was provided.
 
@@ -134,11 +135,26 @@ app.parse = require('parseurl');
 //=> Done!
 ```
 
-### listen(port, hostname)
+### listen()
 
-Returns: `Promise`
+Returns: `Polka`
 
-Wraps the native [`server.listen`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_server_listen) with a Promise, rejecting on any error.
+Boots (or creates) the underlying [`http.Server`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_server) for the first time. All arguments are passed to [`server.listen`](https://nodejs.org/dist/latest-v9.x/docs/api/net.html#net_server_listen) directly with no changes.
+
+As of `v0.5.0`, this method no longer returns a Promise. Instead, the current Polka instance is returned directly, allowing for chained operations.
+
+```js
+// Could not do this before 0.5.0
+const { server, handler } = polka().listen();
+
+// Or this!
+const app = polka().listen(PORT, onAppStart);
+
+app.use('users', require('./users'))
+  .get('/', (req, res) => {
+    res.end('Pretty cool!');
+  });
+```
 
 ### handler(req, res, parsed)
 
