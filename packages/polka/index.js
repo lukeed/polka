@@ -1,6 +1,6 @@
 const http = require('http');
 const Router = require('trouter');
-const parseurl = require('parseurl');
+const parser = require('@polka/url');
 const { parse } = require('querystring');
 
 function lead(x) {
@@ -32,7 +32,7 @@ class Polka extends Router {
 		this.apps = {};
 		this.wares = [];
 		this.bwares = {};
-		this.parse = parseurl;
+		this.parse = parser;
 		this.server = opts.server;
 		this.handler = this.handler.bind(this);
 		this.onError = opts.onError || onError; // catch-all handler

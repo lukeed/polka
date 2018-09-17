@@ -13,7 +13,7 @@
     "url": "https://lukeed.com"
   },
   "dependencies": {
-    "parseurl": "^1.3.2",
+    "@polka/url": "*",
     "trouter": "^2.0.0"
   }
 }

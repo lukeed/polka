@@ -122,9 +122,17 @@ Please see [`Middleware`](#middleware) and [Express' middleware examples](http:/
 
 ### parse(req)
 
-Returns: `Object`
+Returns: `Object` or `undefined`
 
-This is an alias of the awesome [`parseurl`](https://github.com/pillarjs/parseurl#api) module. There are no Polka-specific changes.
+As of `v0.5.0`, this is an alias of the [`@polka/url`](/packages/url) module. For nearly all cases, you'll notice no changes.
+
+But, for whatever reason, you can quickly swap in [`parseurl`](https://github.com/pillarjs/parseurl) again:
+
+```js
+const app = polka();
+app.parse = require('parseurl');
+//=> Done!
+```
 
 ### listen(port, hostname)
 
