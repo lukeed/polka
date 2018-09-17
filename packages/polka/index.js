@@ -68,11 +68,11 @@ class Polka extends Router {
 
 	handler(req, res, info) {
 		info = info || this.parse(req);
-		let fn, arr=this.wares, obj=this.find(req.method, info.pathname);
+		let fns=[], arr=this.wares, obj=this.find(req.method, info.pathname);
 		req.originalUrl = req.originalUrl || req.url;
 		req.path = info.pathname;
 		if (obj) {
-			fn = obj.handler;
+			fns = obj.handlers;
 			req.params = obj.params;
 		}
 		if (!obj || isRootWild(obj.params)) {
@@ -80,9 +80,9 @@ class Polka extends Router {
 			let base = value(req.path);
 			if (this.apps[base] !== void 0) {
 				mutate(base, req); info.pathname=req.path; //=> updates
-				fn = this.apps[base].handler.bind(null, req, res, info);
+				fns.push(this.apps[base].handler.bind(null, req, res, info));
 			} else {
-				fn = fn || this.onNoMatch;
+				fns.length > 0 || fns.push(this.onNoMatch);
 				if (this.bwares[base] !== void 0) {
 					arr = arr.concat(this.bwares[base]);
 				}
@@ -91,12 +91,14 @@ class Polka extends Router {
 		// Grab addl values from `info`
 		req.search = info.search;
 		req.query = parse(info.query);
-		// Exit if no middleware
-		let i=0, len=arr.length;
-		if (len === i) return fn(req, res);
+		// Exit if only a single function
+		let i=0, len=arr.length, num=fns.length;
+		if (len === i && num === 1) return fns[0](req, res);
 		// Otherwise loop thru all middlware
 		let next = err => err ? this.onError(err, req, res, next) : loop();
-		let loop = _ => res.finished || (i < len) ? arr[i++](req, res, next) : fn(req, res);
+		let loop = _ => res.finished || (i < len) && arr[i++](req, res, next);
+		arr = arr.concat(fns);
+		len += num;
 		loop(); // init
 	}
 }
