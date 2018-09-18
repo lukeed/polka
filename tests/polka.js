@@ -10,7 +10,7 @@ test('polka', t => {
 	t.end();
 });
 
-test('polka::internals', async t => {
+test('polka::internals', t => {
 	let app = polka();
 	let proto = app.__proto__;
 
@@ -27,7 +27,7 @@ test('polka::internals', async t => {
 	t.isEmpty(app.bwares, 'app.bwares is empty');
 
 	t.is(app.server, undefined, 'app.server is `undefined` initially (pre-listen)');
-	await app.listen();
+	app.listen();
 	t.ok(app.server instanceof http.Server, '~> app.server becomes HTTP server (post-listen)');
 	app.server.close();
 
@@ -92,7 +92,7 @@ test('polka::usage::middleware', async t => {
 
 	t.is(app.wares.length, 2, 'added 2 middleware functions');
 
-	let uri = await listen(app);
+	let uri = listen(app);
 	let r = await axios.get(uri);
 	t.is(r.status, 200, '~> received 200 status');
 	t.is(r.data, 'Hello', '~> received "Hello" response');
@@ -117,7 +117,7 @@ test('polka::usage::middleware (async)', async t => {
 
 	t.is(app.wares.length, 2, 'added 2 middleware functions');
 
-	let uri = await listen(app);
+	let uri = listen(app);
 
 	let r = await axios.get(uri);
 	t.is(r.status, 200, '~> received 200 status');
@@ -178,7 +178,7 @@ test('polka::usage::middleware (basenames)', async t => {
 	t.is(keys.length, 2, 'added 2 basename middleware groups');
 	t.deepEqual(keys, ['/foo', '/bar'], '~> has middleware groups for `/foo` & `/bar` path matches');
 
-	let uri = await listen(app);
+	let uri = listen(app);
 
 	let r1 = await axios.get(uri);
 	t.is(r1.status, 200, '~> received 200 status');
@@ -236,7 +236,7 @@ test('polka::usage::middleware (wildcard)', async t => {
 			res.end('hello from wildcard');
 		});
 
-	let uri = await listen(app);
+	let uri = listen(app);
 
 	expect = '/';
 	let r1 = await axios.get(uri);
@@ -276,7 +276,7 @@ test('polka::usage::errors', async t => {
 		res.end('OK');
 	});
 
-	let u1 = await listen(foo);
+	let u1 = listen(foo);
 	await axios.get(u1).catch(err => {
 		let r = err.response;
 		t.is(a, 42, 'exits before route handler if middleware error');
@@ -293,7 +293,7 @@ test('polka::usage::errors', async t => {
 		res.end('OK');
 	});
 
-	let u2 = await listen(bar);
+	let u2 = listen(bar);
 	await axios.get(u2).catch(err => {
 		let r = err.response;
 		t.is(a, 42, 'exits without running route handler');
@@ -311,7 +311,7 @@ test('polka::usage::errors', async t => {
 		res.end('OK');
 	});
 
-	let u3 = await listen(baz);
+	let u3 = listen(baz);
 	await axios.get(u3).catch(err => {
 		let r = err.response;
 		t.is(a, 42, 'exits without running route handler');
@@ -361,7 +361,7 @@ test('polka::usage::sub-apps', async t => {
 		res.end('hello from main');
 	});
 
-	let uri = await listen(app);
+	let uri = listen(app);
 
 	// check sub-app index route
 	let r1 = await axios.get(`${uri}/sub`);
@@ -381,12 +381,12 @@ test('polka::usage::sub-apps', async t => {
 	app.server.close();
 });
 
-test('polka::options::server', async t => {
+test('polka::options::server', t => {
 	let server = http.createServer();
 	let app = polka({ server });
 	t.same(app.server, server, '~> store custom server internally as is');
 
-	await app.listen();
+	app.listen();
 	t.same(server._events.request, app.handler, '~> attach `Polka.handler` to custom server');
 
 	app.server.close();
@@ -412,7 +412,7 @@ test('polka::options::onError', async t => {
 
 	t.is(app.onError, foo, 'replaces `app.onError` with the option value');
 
-	let uri = await listen(app);
+	let uri = listen(app);
 	await axios.get(uri).catch(err => {
 		let r = err.response;
 		t.is(r.status, 418, '~> response gets the error code');
@@ -436,7 +436,7 @@ test('polka::options::onNoMatch', async t => {
 	t.is(app.onNoMatch, foo, 'replaces `app.onNoMatch` with the option value');
 	t.not(app.onError, foo, 'does not affect the `app.onError` handler');
 
-	let uri = await listen(app);
+	let uri = listen(app);
 	await axios.post(uri).catch(err => {
 		let r = err.response;
 		t.is(r.status, 405, '~> response gets the error code');
