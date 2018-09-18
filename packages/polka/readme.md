@@ -197,7 +197,7 @@ app.METHOD(pattern, handler);
 wherein:
 
 * `app` is an instance of `polka`
-* [`METHOD`](#methods) is any valid HTTP method, lowercased
+* [`METHOD`](#methods) is any valid HTTP/1.1 method, lowercased
 * [`pattern`](#patterns) is a routing pattern (string)
 * [`handler`](#handlers) is the function to execute when `pattern` is matched
 
@@ -265,9 +265,9 @@ $ curl /users/123/books/Narnia
 
 ### Methods
 
-Any valid HTTP method is supported! However, only the most common methods are used throughout this documentation for demo purposes.
+Any valid HTTP/1.1 method is supported! However, only the most common methods are used throughout this documentation for demo purposes.
 
-> **Note:** For a full list of valid METHODs, please see [this list](http://expressjs.com/en/4x/api.html#routing-methods).
+> **Note:** For a full list of valid METHODs, please see [this list](https://github.com/lukeed/trouter#method).
 
 ### Handlers
 
