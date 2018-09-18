@@ -75,6 +75,76 @@ test('polka::usage::basic', t => {
 	});
 });
 
+test.only('polka::usage::variadic', async t => {
+	t.plan(20);
+
+	function foo(req, res, next) {
+		req.foo = req.foo || 0;
+		req.foo += 250;
+		next();
+	}
+
+	function bar(req, res, next) {
+		req.bar = req.bar || '';
+		req.bar += 'bar';
+		next();
+	}
+
+	function onError(err, req, res, next) {
+		t.pass('2nd "/err" handler threw error!');
+		t.is(err, 'error', '~> receives the "error" message');
+		t.is(req.foo, 500, '~> foo() ran twice');
+		t.is(req.bar, 'bar', '~> bar() ran once');
+		res.statusCode = 400;
+		res.end('error');
+	}
+
+	let app = polka({ onError }).use(foo, bar)
+		.get('/one', foo, bar, (req, res) => {
+			t.pass('3rd "/one" handler');
+			t.is(req.foo, 500, '~> foo() ran twice');
+			t.is(req.bar, 'barbar', '~> bar() ran twice');
+			res.end('one');
+		})
+		.get('/two', foo, (req, res, next) => {
+			t.pass('2nd "/two" handler')
+			t.is(req.foo, 500, '~> foo() ran twice');
+			t.is(req.bar, 'bar', '~> bar() ran once');
+			req.hello = 'world';
+			next();
+		}, (req, res) => {
+			t.pass('3rd "/two" handler')
+			t.is(req.hello, 'world', '~> preserves route handler order');
+			t.is(req.foo, 500, '~> original `req` object all the way');
+			res.end('two');
+		})
+		.get('/err', foo, (req, res, next) => {
+			if (true) next('error');
+		}, (req, res) => {
+			t.pass('SHOULD NOT RUN');
+			res.end('wut');
+		});
+
+	t.is(app.handlers['GET']['/one'].length, 3, 'adds all handlers to GET /one');
+
+	let uri = listen(app);
+	let r = await axios.get(uri + '/one');
+	t.is(r.status, 200, '~> received 200 status');
+	t.is(r.data, 'one', '~> received "one" response');
+
+	r = await axios.get(uri + '/two');
+	t.is(r.status, 200, '~> received 200 status');
+	t.is(r.data, 'two', '~> received "two" response');
+
+	await axios.get(uri + '/err').catch(err => {
+		let r = err.response;
+		t.is(r.status, 400, '~> received 400 status');
+		t.is(r.data, 'error', '~> received "error" response');
+	});
+
+	app.server.close();
+});
+
 test('polka::usage::middleware', async t => {
 	t.plan(7);
 
