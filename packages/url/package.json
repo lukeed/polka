@@ -1,6 +1,6 @@
 {
   "name": "@polka/url",
-  "version": "0.0.0",
+  "version": "0.5.0",
   "description": "Super fast, memoized `req.url` parser",
   "repository": "lukeed/polka",
   "license": "MIT",

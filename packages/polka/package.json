@@ -1,6 +1,6 @@
 {
   "name": "polka",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A micro web server so fast, it'll make you dance! :dancers:",
   "repository": "lukeed/polka",
   "license": "MIT",
@@ -13,7 +13,7 @@
     "url": "https://lukeed.com"
   },
   "dependencies": {
-    "@polka/url": "*",
+    "@polka/url": "^0.5.0",
     "trouter": "^2.0.1"
   }
 }
