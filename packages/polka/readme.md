@@ -59,7 +59,8 @@ polka()
     console.log(`~> Hello, ${req.hello}`);
     res.end(`User: ${req.params.id}`);
   })
-  .listen(3000).then(_ => {
+  .listen(3000, err => {
+    if (err) throw err;
     console.log(`> Running on localhost:3000`);
   });
 ```
@@ -77,7 +78,7 @@ Type: `Server`<br>
 
 A custom, instantiated server that the Polka instance should attach its [`handler`](#handlerreq-res-parsed) to. This is useful if you have initialized a server elsewhere in your application and want Polka to use _it_ instead of creating a new `http.Server`.
 
-Polka _only_ updates the server when [`polka.listen`](#listenport-hostname) is called. At this time, Polka will create a [`http.Server`](https://nodejs.org/api/http.html#http_class_http_server) if a server was not provided via `options.server`.
+Polka _only_ updates the server when [`polka.listen`](#listen) is called. At this time, Polka will create a [`http.Server`](https://nodejs.org/api/http.html#http_class_http_server) if a server was not already provided via `options.server`.
 
 > **Important:** The `server` key will be `undefined` until `polka.listen` is invoked, unless a server was provided.
 
@@ -102,7 +103,7 @@ Its signature is `(req, res)` and requires that you terminate the response.
 
 Attach [middleware(s)](#middleware) and/or sub-application(s) to the server. These will execute _before_ your routes' [handlers](#handlers).
 
-**Important:** If a `base` pathname is provided, all functions within the same `use()` block will _only_ execute when the `req.pathname` matches the `base` path.
+**Important:** If a `base` pathname is provided, all functions within the same `use()` block will _only_ execute when the `req.path` matches the `base` path.
 
 #### base
 Type: `String`<br>
@@ -122,15 +123,38 @@ Please see [`Middleware`](#middleware) and [Express' middleware examples](http:/
 
 ### parse(req)
 
-Returns: `Object`
+Returns: `Object` or `undefined`
 
-This is an alias of the awesome [`parseurl`](https://github.com/pillarjs/parseurl#api) module. There are no Polka-specific changes.
+As of `v0.5.0`, this is an alias of the [`@polka/url`](/packages/url) module. For nearly all cases, you'll notice no changes.
 
-### listen(port, hostname)
+But, for whatever reason, you can quickly swap in [`parseurl`](https://github.com/pillarjs/parseurl) again:
 
-Returns: `Promise`
+```js
+const app = polka();
+app.parse = require('parseurl');
+//=> Done!
+```
 
-Wraps the native [`server.listen`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_server_listen) with a Promise, rejecting on any error.
+### listen()
+
+Returns: `Polka`
+
+Boots (or creates) the underlying [`http.Server`](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_server) for the first time. All arguments are passed to [`server.listen`](https://nodejs.org/dist/latest-v9.x/docs/api/net.html#net_server_listen) directly with no changes.
+
+As of `v0.5.0`, this method no longer returns a Promise. Instead, the current Polka instance is returned directly, allowing for chained operations.
+
+```js
+// Could not do this before 0.5.0
+const { server, handler } = polka().listen();
+
+// Or this!
+const app = polka().listen(PORT, onAppStart);
+
+app.use('users', require('./users'))
+  .get('/', (req, res) => {
+    res.end('Pretty cool!');
+  });
+```
 
 ### handler(req, res, parsed)
 
@@ -296,7 +320,7 @@ Middleware are functions that run in between (hence "middle") receiving the requ
 
 The middleware signature receives the request (`req`), the response (`res`), and a callback (`next`).
 
-These can apply mutations to the `req` and `res` objects, and unlike Express, have access to `req.params`, `req.pathname`, `req.search`, and `req.query`!
+These can apply mutations to the `req` and `res` objects, and unlike Express, have access to `req.params`, `req.path`, `req.search`, and `req.query`!
 
 Most importantly, a middleware ***must*** either call `next()` or terminate the response (`res.end`). Failure to do this will result in a never-ending response, which will eventually crash the `http.Server`.
 
@@ -330,18 +354,48 @@ $ curl -H "authorization: secret" /foobar
 #=> (200) Hello, valid user
 ```
 
-In Polka, middleware functions are mounted globally, which means that they'll run on every request (see [Comparisons](#comparisons)). Instead, you'll have to apply internal filters to determine when & where your middleware should run.
+### Middleware Sequence
 
-> **Note:** This might change in Polka 1.0 :thinking:
+In Polka, middleware functions are organized into tiers.
+
+Unlike Express, Polka middleware are tiered into "global", "filtered", and "route-specific" groups.
+
+* Global middleware are defined via `.use('/', ...fn)` or `.use(...fn)`, which are synonymous.<br>_Because_ every request's `pathname` begins with a `/`, this tier is always triggered.
+
+* Sub-group or "filtered" middleware are defined with a base `pathname` that's more specific than `'/'`. For example, defining `.use('/users', ...fn)` will run on any `/users/**/*` request.<br>These functions will execute _after_ "global" middleware but before the route-specific handler.
+
+* Route handlers match specific paths and execute last in the chain. They must also match the `method` action.
+
+Once the chain of middleware handler(s) has been composed, Polka will iterate through them sequentially until all functions have run, until a chain member has terminated the response early, or until a chain member has thrown an error.
+
+Contrast this with Express, which does not tier your middleware and instead iterates through your entire application in the sequence that you composed it.
 
 ```js
-function foobar(req, res, next) {
-  if (req.pathname.startsWith('/users')) {
-    // do something magical
-  }
-  next();
-}
+// Express
+express()
+  .get('/', get)
+  .use(foo)
+  .get('/users/123', user)
+  .use('/users', users)
+
+// Polka
+Polka()
+  .get('/', get)
+  .use(foo)
+  .get('/users/123', user)
+  .use('/users', users)
 ```
+
+```sh
+$ curl {APP}/
+# Express :: [get]
+# Polka   :: [foo, get]
+
+$ curl {APP}/users/123
+# Express :: [foo, user]
+# Polka   :: [foo, users, user]
+```
+
 
 ### Middleware Errors
 
@@ -415,52 +469,64 @@ There are three ways to "throw" an error from within a middleware function.
 
 ## Benchmarks
 
-A round of Polka-vs-Express benchmarks across varying Node versions can be [found here](/bench).
+Quick comparison between various frameworks using [`wrk`](https://github.com/wg/wrk) on `Node v10.4.0`.<br> Results are taken with the following command, after one warm-up run:
+
+```
+$ wrk -t4 -c4 -d10s http://localhost:3000/users/123
+```
+
+Additional benchmarks between Polka and Express (using various Node versions) can be [found here](/bench).
 
 > **Important:** Time is mostly spent in _your application code_ rather than Express or Polka code!<br> Switching from Express to Polka will (likely) not show such drastic performance gains.
 
 ```
-Node 8.9.0
-
 Native
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     2.32ms  187.31us   7.59ms   91.40%
-        Req/Sec     5.19k   310.24     8.57k    96.40%
-      415726 requests in 10.10s, 41.23MB read
-    Requests/sec:  41154.58
-    Transfer/sec:      4.08MB
+        Latency     1.91ms  110.95us   5.54ms   93.08%
+        Req/Sec    13.11k   308.16    13.46k    94.31%
+      526992 requests in 10.10s, 52.27MB read
+    Requests/sec:  52177.09
+    Transfer/sec:      5.18MB
 
 Polka
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     2.33ms  171.65us   6.72ms   89.72%
-        Req/Sec     5.18k   271.94     8.17k    97.02%
-      414739 requests in 10.10s, 41.13MB read
-    Requests/sec:  41053.98
-    Transfer/sec:      4.07MB
+        Latency     1.97ms  103.56us   4.63ms   92.30%
+        Req/Sec    12.76k   172.50    13.13k    85.75%
+      507836 requests in 10.00s, 50.37MB read
+    Requests/sec:  50779.77
+    Transfer/sec:      5.04MB
 
-Express
+Rayo
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     5.26ms  504.27us   9.29ms   84.42%
-        Req/Sec     2.29k   163.51     4.44k    98.51%
-      183462 requests in 10.10s, 36.39MB read
-    Requests/sec:  18157.81
-    Transfer/sec:      3.60MB
+        Latency     2.02ms  116.55us   6.66ms   92.55%
+        Req/Sec    12.43k   262.32    12.81k    91.58%
+      499795 requests in 10.10s, 49.57MB read
+    Requests/sec:  49481.55
+    Transfer/sec:      4.91MB
 
 Fastify
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     2.75ms  226.61us  11.96ms   85.59%
-        Req/Sec     4.37k   192.11     5.90k    95.53%
-      350903 requests in 10.10s, 43.50MB read
-    Requests/sec:  34734.29
-    Transfer/sec:      4.31MB
+        Latency     2.10ms  138.04us   5.46ms   91.50%
+        Req/Sec    11.96k   414.14    15.82k    95.04%
+      479518 requests in 10.10s, 66.31MB read
+    Requests/sec:  47476.75
+    Transfer/sec:      6.57MB
 
 Koa
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     3.58ms  445.92us  12.66ms   86.06%
-        Req/Sec     3.37k   231.62     4.53k    84.99%
-      269997 requests in 10.10s, 37.34MB read
-    Requests/sec:  26721.65
-    Transfer/sec:      3.70MB
+        Latency     2.95ms  247.10us   6.91ms   72.18%
+        Req/Sec     8.52k   277.12     9.09k    70.30%
+      342518 requests in 10.10s, 47.36MB read
+    Requests/sec:  33909.82
+    Transfer/sec:      4.69MB
+
+Express
+    Thread Stats   Avg      Stdev     Max   +/- Stdev
+        Latency     4.91ms  484.52us  10.65ms   89.71%
+        Req/Sec     5.11k   350.75     9.69k    98.51%
+      204520 requests in 10.10s, 40.57MB read
+    Requests/sec:  20249.80
+    Transfer/sec:      4.02MB
 ```
 
 
@@ -470,11 +536,17 @@ Polka's API aims to be _very_ similar to Express since most Node.js developers a
 
 There are, however, a few main differences. Polka does not support or offer:
 
-1) **Any built-in view/rendering engines.**
+1) **Polka uses a tiered middleware system.**
+
+    Express maintains the sequence of your route & middleware declarations during its runtime, which can pose a problem when composing sub-applications. Typically, this forces you to duplicate groups of logic.
+
+    Please see [Middleware Sequence](#middleware-sequence) for an example and additional details.
+
+2) **Any built-in view/rendering engines.**
 
     Most templating engines can be incorporated into middleware functions or used directly within a route handler.
 
-2) **The ability to `throw` from within middleware.**
+3) **The ability to `throw` from within middleware.**
 
     However, all other forms of middleware-errors are supported. (See [Middleware Errors](#middleware-errors).)
 
@@ -492,11 +564,11 @@ There are, however, a few main differences. Polka does not support or offer:
     }
     ```
 
-3) **Express-like response helpers... yet! (#14)**
+4) **Express-like response helpers... yet! (#14)**
 
     Express has a nice set of [response helpers](http://expressjs.com/en/4x/api.html#res.append). While Polka relies on the [native Node.js response methods](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_serverresponse), it would be very easy/possible to attach a global middleware that contained a similar set of helpers. (_TODO_)
 
-4) **`RegExp`-based route patterns.**
+5) **`RegExp`-based route patterns.**
 
     Polka's router uses string comparison to match paths against patterns. It's a lot quicker & more efficient.
 
@@ -519,6 +591,44 @@ There are, however, a few main differences. Polka does not support or offer:
     app.get('/users/:id?', _ => {});
     app.get('/users/:id/books/:title', _ => {});
     app.get('/users/*', _ => {});
+    ```
+
+6) **Polka instances are not (directly) the request handler.**
+
+    Most packages in the Express ecosystem expect you to pass your `app` directly into the package. This is because `express()` returns a middleware signature directly.
+
+    In the Polka-sphere, this functionality lives in your application's [`handler`](#handlerreq-res-parsed) instead.
+
+    Here's an example with [`supertest`](https://github.com/visionmedia/supertest), a popular testing utility for Express apps.
+
+    ```js
+    const request = require('supertest');
+    const send = require('@polka/send-type');
+
+    const express = require('express')();
+    const polka = require('polka')();
+
+    express.get('/user', (req, res) => {
+      res.status(200).json({ name: 'john' });
+    });
+
+    polka.get('/user', (req, res) => {
+      send(res, 200, { name: 'john' });
+    });
+
+    function isExpected(app) {
+      request(app)
+        .get('/user')
+        .expect('Content-Type', /json/)
+        .expect('Content-Length', '15')
+        .expect(200);
+    }
+
+    // Express: Pass in the entire application directly
+    isExpected(express);
+
+    // Polka: Pass in the application `handler` instead
+    isExpected(polka.handler);
     ```
 
 
