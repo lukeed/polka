@@ -75,7 +75,7 @@ test('polka::usage::basic', t => {
 	});
 });
 
-test.only('polka::usage::variadic', async t => {
+test('polka::usage::variadic', async t => {
 	t.plan(20);
 
 	function foo(req, res, next) {
