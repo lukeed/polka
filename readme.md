@@ -6,13 +6,19 @@
 
 <div align="center">
   <a href="https://npmjs.org/package/polka">
-    <img src="https://img.shields.io/npm/v/polka.svg" alt="version" />
+    <img src="https://badgen.now.sh/npm/v/polka" alt="version" />
   </a>
   <a href="https://travis-ci.org/lukeed/polka">
-    <img src="https://img.shields.io/travis/lukeed/polka.svg" alt="travis" />
+    <img src="https://badgen.now.sh/travis/lukeed/polka" alt="travis" />
+  </a>
+  <a href="https://codecov.io/gh/lukeed/polka">
+    <img src="https://badgen.now.sh/codecov/c/github/lukeed/polka" alt="codecov" />
   </a>
   <a href="https://npmjs.org/package/polka">
-    <img src="https://img.shields.io/npm/dm/polka.svg" alt="downloads" />
+    <img src="https://badgen.now.sh/npm/dm/polka" alt="downloads" />
+  </a>
+  <a href="https://packagephobia.now.sh/result?p=polka">
+    <img src="https://packagephobia.now.sh/badge?p=polka" alt="install size" />
   </a>
 </div>
 
