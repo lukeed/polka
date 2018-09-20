@@ -1,6 +1,8 @@
+const fs = require('fs');
 const axios = require('axios');
+const { join } = require('path');
 const { Response } = require('./util/mock');
-const { test, toStatusText, listen } = require('./util');
+const { test, toStatusText } = require('./util');
 const send = require('../packages/send-type');
 
 const TYPE = 'Content-Type';
@@ -113,4 +115,36 @@ test('polka/send-type::usage::custom::headers::buffer', t => {
 	t.is(res.getHeader(LENGTH), str.length, `custom header[length]: ${str.length}`);
 	t.is(res.body, str, `custom body: ${str}`);
 	t.end();
+});
+
+test('polka/send-type::usage (Stream)', t => {
+	t.plan(5);
+
+	let input = join(__dirname, 'url.js');
+	let output = join(__dirname, 'out.js');
+
+	// "Response" stand-in (accepts pipe)
+	let rw = fs.createWriteStream(output).on('pipe', x => {
+		t.is(x.constructor.name, 'ReadStream', '~> "response" receives the pipe');
+	});
+
+	rw.setHeader = (key, val) => {
+		rw.headers = { [key]: val };
+	};
+
+	let rr = fs.createReadStream(input).on('end', () => {
+		try {
+			let info = fs.statSync(output);
+			t.pass('~> "response" output exists');
+			t.true(info.size > 0, '~~> data piped successfully');
+		} catch (err) {
+			//
+		}
+		fs.unlinkSync(output); // ~> cleanup
+	});
+
+
+	let out = send(rw, 200, rr);
+	t.same(out, rw, 'returns the "response" to itself');
+	t.is(rw.headers[TYPE.toLowerCase()], 'application/octet-stream', 'applies `Content-Type: application/octet-stream` header');
 });

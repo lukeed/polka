@@ -150,7 +150,7 @@ test('polka::usage::middleware', async t => {
 
 	let app = polka().use((req, res, next) => {
 		(req.one='hello') && next();
-	}).use((req, res, next) => {
+	}).use('/', (req, res, next) => {
 		(req.two='world') && next();
 	}).get('/', (req, res) => {
 		t.pass('~> matches the GET(/) route');
