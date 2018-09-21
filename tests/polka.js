@@ -146,12 +146,16 @@ test('polka::usage::variadic', async t => {
 });
 
 test('polka::usage::middleware', async t => {
-	t.plan(7);
+	t.plan(11);
 
 	let app = polka().use((req, res, next) => {
 		(req.one='hello') && next();
 	}).use('/', (req, res, next) => {
 		(req.two='world') && next();
+	}).use('/about', (req, res, next) => {
+		t.is(req.one, 'hello', '~> sub-mware runs after first global middleware');
+		t.is(req.two, 'world', '~> sub-mware runs after second global middleware');
+		res.end('About');
 	}).get('/', (req, res) => {
 		t.pass('~> matches the GET(/) route');
 		t.is(req.one, 'hello', '~> route handler runs after first middleware');
@@ -167,6 +171,10 @@ test('polka::usage::middleware', async t => {
 	t.is(r.status, 200, '~> received 200 status');
 	t.is(r.data, 'Hello', '~> received "Hello" response');
 	t.is(r.headers['x-type'], 'text/foo', '~> received custom header');
+
+	r = await axios.get(uri + '/about');
+	t.is(r.status, 200, '~> received 200 status');
+	t.is(r.data, 'About', '~> received "About" response');
 	app.server.close();
 });
 
