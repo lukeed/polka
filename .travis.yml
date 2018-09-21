@@ -5,6 +5,6 @@ node_js:
   - 8
 
 after_success:
-  - if [[ $TRAVIS_NODE_VERSION == "10" ]]; then npm i -g c8 codecov; fi
-  - if [[ $TRAVIS_NODE_VERSION == "10" ]]; then c8 --exclude=tests --reporter=text --reporter=lcovonly npm test; fi
+  - if [[ $TRAVIS_NODE_VERSION == "10" ]]; then npm i -g nyc codecov; fi
+  - if [[ $TRAVIS_NODE_VERSION == "10" ]]; then nyc --exclude tests npm test; fi
   - if [[ $TRAVIS_NODE_VERSION == "10" ]]; then codecov; fi

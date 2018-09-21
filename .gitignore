@@ -1,5 +1,6 @@
-node_modules
 .DS_Store
+node_modules
+.nyc_output
 coverage
 *.lock
 *.log
