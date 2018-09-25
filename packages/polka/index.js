@@ -35,6 +35,12 @@ class Polka extends Router {
 		this.onNoMatch = opts.onNoMatch || this.onError.bind(null, { code:404 });
 	}
 
+	add(method, pattern, ...fns) {
+		let base = lead(value(pattern));
+		if (this.apps[base] !== void 0) throw new Error(`Cannot mount ".${method.toLowerCase()}('${lead(pattern)}')" because a Polka application at ".use('${base}')" already exists! You should move this handler into your Polka application instead.`);
+		return super.add(method, pattern, ...fns);
+	}
+
 	use(base, ...fns) {
 		if (typeof base === 'function') {
 			this.wares = this.wares.concat(base, fns);
