@@ -1,7 +1,7 @@
 const http = require('http');
 const Router = require('trouter');
-const parser = require('@polka/url');
 const { parse } = require('querystring');
+const parser = require('@polka/url');
 
 function lead(x) {
 	return x.charCodeAt(0) === 47 ? x : ('/' + x);
@@ -47,7 +47,7 @@ class Polka extends Router {
 					this.apps[base] = fn;
 				} else {
 					let arr = this.bwares[base] || [];
-					(arr.length === 0) && arr.push((r, _, nxt) => (mutate(base, r),nxt()));
+					arr.length > 0 || arr.push((r, _, nxt) => (mutate(base, r),nxt()));
 					this.bwares[base] = arr.concat(fn);
 				}
 			});
