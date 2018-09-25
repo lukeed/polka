@@ -17,10 +17,6 @@ function mutate(str, req) {
 	req.path = req.path.substring(str.length) || '/';
 }
 
-function isRootWild(obj) {
-	return Object.keys(obj).length === 1 && obj['*'];
-}
-
 function onError(err, req, res, next) {
 	let code = (res.statusCode = err.code || err.status || 500);
 	res.end(err.length && err || err.message || http.STATUS_CODES[code]);
@@ -69,23 +65,18 @@ class Polka extends Router {
 		info = info || this.parse(req);
 		let fns=[], arr=this.wares, obj=this.find(req.method, info.pathname);
 		req.originalUrl = req.originalUrl || req.url;
-		req.path = info.pathname;
+		let base = value(req.path = info.pathname);
+		if (this.bwares[base] !== void 0) {
+			arr = arr.concat(this.bwares[base]);
+		}
 		if (obj) {
 			fns = obj.handlers;
 			req.params = obj.params;
-		}
-		if (!obj || isRootWild(obj.params)) {
-			// Looking for sub-apps or extra middleware
-			let base = value(req.path);
-			if (this.apps[base] !== void 0) {
-				mutate(base, req); info.pathname=req.path; //=> updates
-				fns.push(this.apps[base].handler.bind(null, req, res, info));
-			} else {
-				fns.length > 0 || fns.push(this.onNoMatch);
-				if (this.bwares[base] !== void 0) {
-					arr = arr.concat(this.bwares[base]);
-				}
-			}
+		} else if (this.apps[base] !== void 0) {
+			mutate(base, req); info.pathname=req.path; //=> updates
+			fns.push(this.apps[base].handler.bind(null, req, res, info));
+		} else if (fns.length === 0) {
+			fns.push(this.onNoMatch);
 		}
 		// Grab addl values from `info`
 		req.search = info.search;
