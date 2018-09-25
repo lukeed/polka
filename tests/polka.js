@@ -482,6 +482,59 @@ test('polka::usage::sub-apps', async t => {
 	app.server.close();
 });
 
+test('polka::usage::middleware w/ sub-app', async t => {
+	t.plan(19);
+
+	function verify(req, res, next) {
+		t.is(req.main, true, '~> VERIFY middleware ran after MAIN');
+		req.verify = true; next();
+	}
+
+	// Construct the "API" sub-application
+	const api = polka().use((req, res, next) => {
+		t.is(req.main, true, '~> API middleware ran after MAIN');
+		t.is(req.verify, true, '~> API middleware ran after VERIFY');
+		req.api = true; next();
+	});
+
+	api.use('/users', (req, res, next) => {
+		t.is(req.main, true, '~> API/users middleware ran after MAIN');
+		t.is(req.verify, true, '~> API middleware ran after VERIFY');
+		t.is(req.api, true, '~> API/users middleware ran after API');
+		req.users = true; next();
+	});
+
+	api.get('/users/:id', (req, res, next) => {
+		t.is(req.main, true, '~> GET API/users/:id #1 ran after MAIN');
+		t.is(req.verify, true, '~> API middleware ran after VERIFY');
+		t.is(req.api, true, '~> GET API/users/:id #1 ran after API');
+		t.is(req.users, true, '~> GET API/users/:id #1 ran after API/users');
+		t.is(req.params.id, 'BOB', '~> GET /API/users/:id #1 received the `params.id` value');
+		req.userid = true; next();
+	}, (req, res) => {
+		t.is(req.main, true, '~> GET API/users/:id #2 ran after MAIN');
+		t.is(req.verify, true, '~> API middleware ran after VERIFY');
+		t.is(req.api, true, '~> GET API/users/:id #2 ran after API');
+		t.is(req.users, true, '~> GET API/users/:id #2 ran after API/users');
+		t.is(req.userid, true, '~> GET API/users/:id #2 ran after GET API/users/:id #1');
+		t.is(req.params.id, 'BOB', '~> GET /API/users/:id #2 received the `params.id` value');
+		res.end(`Hello, ${req.params.id}`);
+	});
+
+	// Construct the main application
+	const main = polka()
+		.use((req, res, next) => {req.main=true;next();})
+		.use('/api', verify, api);
+
+	let uri = listen(main);
+
+	let r = await axios.get(uri + '/api/users/BOB');
+	t.is(r.status, 200, '~> received 200 status');
+	t.is(r.data, 'Hello, BOB', '~> received "Hello, BOB" response');
+
+	main.server.close();
+});
+
 test('polka::options::server', t => {
 	let server = http.createServer();
 	let app = polka({ server });
