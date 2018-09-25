@@ -488,19 +488,19 @@ Additional benchmarks between Polka and Express (using various Node versions) ca
 ```
 Native
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     1.91ms  110.95us   5.54ms   93.08%
-        Req/Sec    13.11k   308.16    13.46k    94.31%
-      526992 requests in 10.10s, 52.27MB read
-    Requests/sec:  52177.09
-    Transfer/sec:      5.18MB
+        Latency     1.96ms  119.06us   5.33ms   92.57%
+        Req/Sec    12.78k   287.46    13.13k    90.00%
+      508694 requests in 10.00s, 50.45MB read
+    Requests/sec:  50867.22
+    Transfer/sec:      5.05MB
 
 Polka
     Thread Stats   Avg      Stdev     Max   +/- Stdev
-        Latency     1.97ms  103.56us   4.63ms   92.30%
-        Req/Sec    12.76k   172.50    13.13k    85.75%
-      507836 requests in 10.00s, 50.37MB read
-    Requests/sec:  50779.77
-    Transfer/sec:      5.04MB
+        Latency     1.98ms  119.26us   4.45ms   92.87%
+        Req/Sec    12.68k   287.74    13.05k    94.06%
+      509817 requests in 10.10s, 50.56MB read
+    Requests/sec:  50475.67
+    Transfer/sec:      5.01MB
 
 Rayo
     Thread Stats   Avg      Stdev     Max   +/- Stdev
