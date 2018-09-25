@@ -146,7 +146,7 @@ test('polka::usage::variadic', async t => {
 });
 
 test('polka::usage::middleware', async t => {
-	t.plan(11);
+	t.plan(16);
 
 	let app = polka().use((req, res, next) => {
 		(req.one='hello') && next();
@@ -156,6 +156,14 @@ test('polka::usage::middleware', async t => {
 		t.is(req.one, 'hello', '~> sub-mware runs after first global middleware');
 		t.is(req.two, 'world', '~> sub-mware runs after second global middleware');
 		res.end('About');
+	}).use('/subgroup', (req, res, next) => {
+		req.subgroup = true;
+		t.is(req.one, 'hello', '~> sub-mware runs after first global middleware');
+		t.is(req.two, 'world', '~> sub-mware runs after second global middleware');
+		next();
+	}).post('/subgroup', (req, res) => {
+		t.is(req.subgroup, true, '~~> POST /subgroup ran after its shared middleware');
+		res.end('subgroup');
 	}).get('/', (req, res) => {
 		t.pass('~> matches the GET(/) route');
 		t.is(req.one, 'hello', '~> route handler runs after first middleware');
@@ -175,6 +183,11 @@ test('polka::usage::middleware', async t => {
 	r = await axios.get(uri + '/about');
 	t.is(r.status, 200, '~> received 200 status');
 	t.is(r.data, 'About', '~> received "About" response');
+
+	r = await axios.post(uri + '/subgroup');
+	t.is(r.status, 200, '~> received 200 status');
+	t.is(r.data, 'subgroup', '~> received "subgroup" response');
+
 	app.server.close();
 });
 
