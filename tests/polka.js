@@ -420,7 +420,7 @@ test('polka::usage::errors', async t => {
 });
 
 test('polka::usage::sub-apps', async t => {
-	t.plan(24);
+	t.plan(25);
 
 	let foo = (req, res, next) => {
 		req.foo = 'hello';
@@ -458,6 +458,9 @@ test('polka::usage::sub-apps', async t => {
 		t.is(req.originalUrl, '/', '~> always sets `req.originalUrl` key');
 		res.end('hello from main');
 	});
+
+	// sub-app already exists Error checking
+	t.throws(() => app.get('/sub'), `Cannot mount ".get('/sub')" because`, 'throws Error when attempting to add route-handler ona path where Polka (sub)-app exists');
 
 	let uri = listen(app);
 
