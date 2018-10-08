@@ -4,10 +4,6 @@ const Router = require('./trouter');
 const { parse } = require('querystring');
 const parser = require('@polka/url');
 
-function lead(x) {
-	return x.charCodeAt(0) === 47 ? x : ('/' + x);
-}
-
 function value(x) {
   let y = x.indexOf('/', 1);
   return y > 1 ? x.substring(0, y) : x;
@@ -48,7 +44,7 @@ class Polka extends Router {
 		} else if (base === '/') {
 			this.wares = this.wares.concat(fns);
 		} else {
-			base = lead(base);
+			if (base.charCodeAt(0) !== 47) base=('/' + base);
 			fns.forEach(fn => {
 				if (fn instanceof Polka) {
 					this.apps[base] = fn;
