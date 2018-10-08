@@ -4,12 +4,8 @@ const Router = require('./trouter');
 const { parse } = require('querystring');
 const parser = require('@polka/url');
 
-function value(x) {
-  let y = x.indexOf('/', 1);
-  return y > 1 ? x.substring(0, y) : x;
-}
-
 function mutate(str, req) {
+	if (req.path.indexOf(str) !== 0) return;
 	req.url = req.url.substring(str.length) || '/';
 	req.path = req.path.substring(str.length) || '/';
 }
@@ -21,21 +17,13 @@ function onError(err, req, res, next) {
 
 class Polka extends Router {
 	constructor(opts={}) {
-		this.apps = {};
 		super();
 		this.wares = [];
-		this.bwares = {};
 		this.parse = parser;
 		this.server = opts.server;
 		this.handler = this.handler.bind(this);
 		this.onError = opts.onError || onError; // catch-all handler
 		this.onNoMatch = opts.onNoMatch || this.onError.bind(null, { code:404 });
-	}
-
-	add(method, pattern, ...fns) {
-		let base = lead(value(pattern));
-		if (this.apps[base] !== void 0) throw new Error(`Cannot mount ".${method.toLowerCase()}('${lead(pattern)}')" because a Polka application at ".use('${base}')" already exists! You should move this handler into your Polka application instead.`);
-		return super.add(method, pattern, ...fns);
 	}
 
 	use(base, ...fns) {
@@ -45,14 +33,9 @@ class Polka extends Router {
 			this.wares = this.wares.concat(fns);
 		} else {
 			if (base.charCodeAt(0) !== 47) base=('/' + base);
+			this.add('', base, (r, _, nxt) => (mutate(base, r),nxt()));
 			fns.forEach(fn => {
-				if (fn instanceof Polka) {
-					this.apps[base] = fn;
-				} else {
-					let arr = this.bwares[base] || [];
-					arr.length > 0 || arr.push((r, _, nxt) => (mutate(base, r),nxt()));
-					this.bwares[base] = arr.concat(fn);
-				}
+				this.add('', base, fn instanceof Polka ? fn.handler : fn);
 			});
 		}
 		return this; // chainable
@@ -64,31 +47,24 @@ class Polka extends Router {
 		return this;
 	}
 
-	handler(req, res, info) {
-		info = info || this.parse(req);
-		let fns=[], arr=this.wares, obj=this.find(req.method, info.pathname);
+	handler(req, res, next) {
+		let info = this.parse(req);
 		req.originalUrl = req.originalUrl || req.url;
-		let base = value(req.path = info.pathname);
-		if (this.bwares[base] !== void 0) {
-			arr = arr.concat(this.bwares[base]);
-		}
-		if (obj) {
-			fns = obj.handlers;
-			req.params = obj.params;
-		} else if (this.apps[base] !== void 0) {
-			mutate(base, req); info.pathname=req.path; //=> updates
-			fns.push(this.apps[base].handler.bind(null, req, res, info));
-		} else if (fns.length === 0) {
-			fns.push(this.onNoMatch);
-		}
-		// Grab addl values from `info`
+		let obj = this.find(req.method, req.path=info.pathname);
+
+		let fns = obj.handlers;
+		fns.length > 0 || fns.push(this.onNoMatch);
+
+		req.params = obj.params;
 		req.search = info.search;
 		req.query = parse(info.query);
+
 		// Exit if only a single function
-		let i=0, len=arr.length, num=fns.length;
+		let i=0, arr=this.wares, len=arr.length, num=fns.length;
 		if (len === i && num === 1) return fns[0](req, res);
-		// Otherwise loop thru all middlware
-		let next = err => err ? this.onError(err, req, res, next) : loop();
+
+		// Otherwise loop thru all middleware
+		next = next || (err => err ? this.onError(err, req, res, next) : loop());
 		let loop = _ => res.finished || (i < len) && arr[i++](req, res, next);
 		arr = arr.concat(fns);
 		len += num;
