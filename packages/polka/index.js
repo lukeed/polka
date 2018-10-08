@@ -1,5 +1,6 @@
 const http = require('http');
-const Router = require('trouter');
+// const Router = require('trouter');
+const Router = require('./trouter');
 const { parse } = require('querystring');
 const parser = require('@polka/url');
 
@@ -24,8 +25,8 @@ function onError(err, req, res, next) {
 
 class Polka extends Router {
 	constructor(opts={}) {
-		super(opts);
 		this.apps = {};
+		super();
 		this.wares = [];
 		this.bwares = {};
 		this.parse = parser;
