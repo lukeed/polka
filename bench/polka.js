@@ -1,4 +1,4 @@
-const polka = require('../lib');
+const polka = require('../packages/polka');
 
 function one(req, res, next) {
 	req.one = true;
