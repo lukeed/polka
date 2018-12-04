@@ -9,8 +9,7 @@ const { PORT=3000 } = process.env;
 polka()
 	.use(cors, compress, json(), serve)
 	.use('api', require('./api'))
-	.listen(PORT)
-	.then(_ => {
+	.listen(PORT, err => {
+		if (err) throw err;
 		console.log(`> Running on localhost:${PORT}`);
 	});
-

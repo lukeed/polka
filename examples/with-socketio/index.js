@@ -8,7 +8,8 @@ const { PORT=3000 } = process.env;
 const files = sirv('public');
 const server = http.createServer();
 
-polka({ server }).use(files).listen(PORT).then(() => {
+polka({ server }).use(files).listen(PORT, err => {
+	if (err) throw err;
 	console.log(`> Running on localhost:${PORT}`);
 });
 
