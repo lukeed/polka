@@ -10,7 +10,8 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
 	polka()
 		.get('*', handle)
-		.listen(PORT).then(() => {
+		.listen(PORT, err => {
+			if (err) throw err;
 			console.log(`> Ready on http://localhost:${PORT}`);
 		});
 });

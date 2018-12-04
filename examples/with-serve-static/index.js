@@ -10,6 +10,7 @@ polka()
 	.get('/health', (req, res) => {
 		res.end('OK');
 	})
-	.listen(PORT).then(_ => {
+	.listen(PORT, err => {
+		if (err) throw err;
 		console.log(`> Running on localhost:${PORT}`);
 	});

@@ -23,7 +23,8 @@ if (dev) {
 }
 
 function listen() {
-	return app.listen(PORT).then(_ => {
+	return app.listen(PORT, err => {
+		if (err) throw err;
 		console.log(`> Ready on localhost:${PORT}`);
 	});
 }

@@ -14,6 +14,7 @@ global.fetch = (url, opts) => {
 
 polka()
 	.use(compression, static, sapper)
-	.listen(PORT).then(_ => {
+	.listen(PORT, err => {
+		if (err) throw err;
 		console.log(`> Running on localhost:${PORT}`);
 	});
