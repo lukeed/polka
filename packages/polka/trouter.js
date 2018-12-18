@@ -16,10 +16,10 @@ class Trouter {
 		this.put = this.add.bind(this, 'PUT');
 	}
 
-	add(method, pattern, ...fns) {
-		let obj = parse(pattern);
+	add(method, route, ...fns) {
+		let { keys, pattern } = parse(route);
 		fns.forEach(handler => {
-			this.routes.push(Object.assign({ method, handler }, obj));
+			this.routes.push({ keys, pattern, method, handler });
 		});
 		return this;
 	}
