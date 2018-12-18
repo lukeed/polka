@@ -1,9 +1,14 @@
 module.exports = function (req) {
 	let url = req.url;
-	if (url === void 0) return url;
+	if (url == null) return;
 
 	let obj = req._parsedUrl;
 	if (obj && obj._raw === url) return obj;
+
+	if (url.length > 1 && !req._decoded) {
+		url = req.url = decodeURIComponent(url);
+		req._decoded = true;
+	}
 
 	obj = {};
 	obj.query = obj.search = null;
