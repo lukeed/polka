@@ -29,7 +29,7 @@ class Trouter {
 		let matches=[], params={}, handlers=[];
 		for (; i < arr.length; i++) {
 			tmp = arr[i];
-			if (method.indexOf(tmp.method) !== 0) continue;
+			if (tmp.method && tmp.method !== method) continue;
 			if ((len = tmp.keys.length) > 0) {
 				matches = tmp.pattern.exec(url);
 				if (matches === null) continue;
