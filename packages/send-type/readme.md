@@ -61,6 +61,8 @@ Default: `{}`
 
 The `headers` for your response.
 
+The `Content-Type` header is a little unique – it will be set with the value you provide in `headers`. However, if you _did not_ set a value explicitly, then `send-type` will reuse the existing value via [`res.getHeader`](https://nodejs.org/api/http.html#http_response_getheader_name).<br>If neither existed, then the `Content-Type` will be inferred by the data type.
+
 See [Data Detections](#data-detections) for special behaviors.
 
 
@@ -76,7 +78,7 @@ The following operations will be performed for the following data types:
 
 ### Objects
 - Casts [`data`](#data) to string via `JSON.stringify`
-- Sets `Content-Type` to `'application/json; charset=utf-8'`
+- Sets `Content-Type` to `'application/json; charset=utf-8'`, unless one exists in [`headers`](#headers)
 - Sets `Content-Length`
 
 ### Streams
