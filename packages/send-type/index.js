@@ -9,7 +9,7 @@ module.exports = function (res, code=200, data='', headers={}) {
 		obj[k.toLowerCase()] = headers[k];
 	}
 
-	let type = obj[TYPE];
+	let type = obj[TYPE] || res.getHeader(TYPE);
 
 	if (!!data && typeof data.pipe === 'function') {
 		res.setHeader(TYPE, type || OSTREAM);
