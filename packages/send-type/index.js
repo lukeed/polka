@@ -20,7 +20,7 @@ module.exports = function (res, code=200, data='', headers={}) {
 		type = type || OSTREAM; // prefer given
 	} else if (typeof data === 'object') {
 		data = JSON.stringify(data);
-		type = 'application/json;charset=utf-8';
+		type = type || 'application/json;charset=utf-8';
 	} else {
 		data = data || STATUS_CODES[code];
 	}
