@@ -25,6 +25,9 @@ class Response {
 	getHeader(key) {
 		return this.headers[key.toLowerCase()];
 	}
+	setHeader(key, val) {
+		this.headers[key.toLowerCase()] = val;
+	}
 	hasHeader(key) {
 		return this.headers[key.toLowerCase()] !== void 0;
 	}
