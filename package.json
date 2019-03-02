@@ -6,17 +6,17 @@
     "url": "https://lukeed.com"
   },
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "bootstrap": "lerna bootstrap --hoist",
     "lint": "eslint packages --env node,es6",
     "pretest": "npm run lint && npm run bootstrap",
     "test": "tape tests/*.js | tap-spec"
   },
   "devDependencies": {
-    "axios": "^0.17.1",
-    "eslint": "^5.15.0",
-    "lerna": "^2.8.0",
-    "tap-spec": "^4.1.1",
-    "tape": "^4.8.0"
+    "axios": "0.18.0",
+    "eslint": "5.15.0",
+    "lerna": "3.13.1",
+    "tap-spec": "5.0.0",
+    "tape": "4.10.1"
   },
   "eslintConfig": {
     "extends": "eslint:recommended"
