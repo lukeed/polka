@@ -32,7 +32,7 @@ class Polka extends Router {
 		} else if (base === '/') {
 			this.wares = this.wares.concat(fns);
 		} else {
-			if (base.charCodeAt(0) !== 47) base=('/' + base);
+			if (base.charCodeAt(0) !== 47) base=`/${base}`;
 			this.add('', base, (r, _, nxt) => (mutate(base, r),nxt()));
 			fns.forEach(fn => {
 				this.add('', base, fn instanceof Polka ? fn.handler : fn);
@@ -42,7 +42,8 @@ class Polka extends Router {
 	}
 
 	listen() {
-		(this.server = this.server || http.createServer()).on('request', this.handler);
+		let handler = (r1, r2) => setImmediate(this.handler, r1, r2);
+		(this.server = this.server || http.createServer()).on('request', handler);
 		this.server.listen.apply(this.server, arguments);
 		return this;
 	}
@@ -50,18 +51,18 @@ class Polka extends Router {
 	handler(req, res, next) {
 		let info = this.parse(req);
 		let obj = this.find(req.method, req.path=info.pathname);
-		let fns = obj.handlers.concat(this.onNoMatch);
+		let fns = obj.handlers;
 
 		req.params = obj.params;
 		req.originalUrl = req.originalUrl || req.url;
 		req.query = info.query ? parse(info.query) : {};
 		req.search = info.search;
 
-		let i=0, arr=this.wares, len=arr.length, num=fns.length;
+		let i=0, len=0, arr=this.wares;
+		let loop = () => res.finished || (i < len) && arr[i++](req, res, next);
 		next = next || (err => err ? this.onError(err, req, res, next) : loop());
-		let loop = _ => res.finished || (i < len) && arr[i++](req, res, next);
-		arr = arr.concat(fns);
-		len += num;
+		arr = arr.concat(fns, this.onNoMatch);
+		len = arr.length;
 		loop(); // init
 	}
 }
