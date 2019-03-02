@@ -49,13 +49,13 @@ class Polka extends Router {
 
 	handler(req, res, next) {
 		let info = this.parse(req);
-		req.originalUrl = req.originalUrl || req.url;
 		let obj = this.find(req.method, req.path=info.pathname);
 		let fns = obj.handlers.concat(this.onNoMatch);
 
 		req.params = obj.params;
+		req.originalUrl = req.originalUrl || req.url;
+		req.query = info.query ? parse(info.query) : {};
 		req.search = info.search;
-		req.query = parse(info.query);
 
 		let i=0, arr=this.wares, len=arr.length, num=fns.length;
 		next = next || (err => err ? this.onError(err, req, res, next) : loop());
