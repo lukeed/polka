@@ -1,7 +1,7 @@
 const http = require('http');
 const axios = require('axios');
-const polka = require('../packages/polka');
-const { test, sleep, listen } = require('./util');
+const { test, sleep, listen } = require('../../../test');
+const polka = require('../');
 
 const METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
 
@@ -61,7 +61,7 @@ test('polka::usage::basic', t => {
 	let arr = [['GET','/'], ['POST','/users'], ['PUT','/users/:id']];
 
 	arr.forEach(([m,p]) => {
-		app.add(m, p, _ => t.pass(`~> matched ${m}(${p}) route`));
+		app.add(m, p, () => t.pass(`~> matched ${m}(${p}) route`));
 		t.is(app.routes[m].length, 1, 'added a new `app.route` definition');
 		t.isArray(app.handlers[m][p], 'added the router handler as array');
 		t.is(app.handlers[m][p].length, 1, '~> contains 1 item');
@@ -90,7 +90,7 @@ test('polka::usage::variadic', async t => {
 		next();
 	}
 
-	function onError(err, req, res, next) {
+	function onError(err, req, res) {
 		t.pass('2nd "/err" handler threw error!');
 		t.is(err, 'error', '~> receives the "error" message');
 		t.is(req.foo, 500, '~> foo() ran twice');
@@ -119,7 +119,7 @@ test('polka::usage::variadic', async t => {
 			res.end('two');
 		})
 		.get('/err', foo, (req, res, next) => {
-			if (true) next('error');
+			next('error');
 		}, (req, res) => {
 			t.pass('SHOULD NOT RUN');
 			res.end('wut');
@@ -152,7 +152,7 @@ test('polka::usage::middleware', async t => {
 		(req.one='hello') && next();
 	}).use('/', (req, res, next) => {
 		(req.two='world') && next();
-	}).use('/about', (req, res, next) => {
+	}).use('/about', (req, res) => {
 		t.is(req.one, 'hello', '~> sub-mware runs after first global middleware');
 		t.is(req.two, 'world', '~> sub-mware runs after second global middleware');
 		res.end('About');
@@ -202,9 +202,9 @@ test('polka::usage::middleware (async)', async t => {
 	t.plan(7);
 
 	let app = polka().use((req, res, next) => {
-		sleep(10).then(_ => { req.foo=123 }).then(next);
+		sleep(10).then(() => { req.foo=123 }).then(next);
 	}).use((req, res, next) => {
-		sleep(1).then(_ => { req.bar=456 }).then(next);
+		sleep(1).then(() => { req.bar=456 }).then(next);
 	}).get('/', (req, res) => {
 		t.pass('~> matches the GET(/) route');
 		t.is(req.foo, 123, '~> route handler runs after first middleware');
@@ -585,7 +585,7 @@ test('polka::options::onNoMatch', async t => {
 		res.end('prefer: Method Not Found');
 	};
 
-	let app = polka({ onNoMatch:foo }).get('/', _ => {});
+	let app = polka({ onNoMatch:foo }).get('/', () => {});
 
 	t.is(app.onNoMatch, foo, 'replaces `app.onNoMatch` with the option value');
 	t.not(app.onError, foo, 'does not affect the `app.onError` handler');

@@ -9,7 +9,7 @@
     "bootstrap": "lerna bootstrap --hoist",
     "lint": "eslint packages --env node,es6",
     "pretest": "npm run lint && npm run bootstrap",
-    "test": "tape tests/*.js | tap-spec"
+    "test": "tape packages/*/test/*.js | tap-spec"
   },
   "devDependencies": {
     "axios": "0.18.0",
@@ -19,7 +19,10 @@
     "tape": "4.10.1"
   },
   "eslintConfig": {
-    "extends": "eslint:recommended"
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 8
+    }
   },
   "eslintIgnore": [
     "**/node_modules/**"

@@ -1,9 +1,8 @@
 const fs = require('fs');
-const axios = require('axios');
 const { join } = require('path');
-const { Response } = require('./util/mock');
-const { test, toStatusText } = require('./util');
-const send = require('../packages/send-type');
+const { test, toStatusText } = require('../../../test');
+const { Response } = require('../../../test/mock');
+const send = require('../');
 
 const TYPE = 'Content-Type';
 const LENGTH = 'Content-Length';

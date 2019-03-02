@@ -1,6 +1,6 @@
 const { parse } = require('url');
-const { test } = require('./util');
-const fn = require('../packages/url');
+const { test } = require('../../../test');
+const fn = require('../');
 
 const keys = ['protocol', 'slashes', 'auth', 'host', 'port', 'hostname', 'hash'];
 

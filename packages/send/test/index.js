@@ -1,13 +1,13 @@
-const send = require('../packages/send');
-const { Response } = require('./util/mock');
-const { test, toStatusText } = require('./util');
+const { test, toStatusText } = require('../../../test');
+const { Response } = require('../../../test/mock');
+const send = require('../');
 
-test('polka/send', t => {
+test('(send) exports', t => {
 	t.is(typeof send, 'function', 'exports a function');
 	t.end();
 });
 
-test('polka/send::usage::basic', t => {
+test('(send) basic', t => {
 	let res = new Response();
 	let str = toStatusText(200);
 	send(res);
@@ -17,7 +17,7 @@ test('polka/send::usage::basic', t => {
 	t.end();
 });
 
-test('polka/send::usage::custom::code', t => {
+test('(send) custom code', t => {
 	let res = new Response();
 	let str = toStatusText(404);
 	send(res, 404);
@@ -27,7 +27,7 @@ test('polka/send::usage::custom::code', t => {
 	t.end();
 });
 
-test('polka/send::usage::custom::body', t => {
+test('(send) custom body', t => {
 	let res = new Response();
 	send(res, 405, 'FOOBAR');
 	t.is(res.statusCode, 405, 'custom statusCode: 405');
@@ -36,7 +36,7 @@ test('polka/send::usage::custom::body', t => {
 	t.end();
 });
 
-test('polka/send::usage::custom::headers', t => {
+test('(send) custom headers', t => {
 	let res = new Response();
 	send(res, 405, 'Hello', {
 		'x-foo': 'hello',
