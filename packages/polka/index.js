@@ -10,7 +10,7 @@ function mutate(str, req) {
 	req.path = req.path.substring(str.length) || '/';
 }
 
-function onError(err, req, res, next) {
+function onError(err, req, res) {
 	let code = (res.statusCode = err.code || err.status || 500);
 	res.end(err.length && err || err.message || http.STATUS_CODES[code]);
 }

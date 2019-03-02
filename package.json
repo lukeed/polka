@@ -6,14 +6,22 @@
     "url": "https://lukeed.com"
   },
   "scripts": {
-    "pretest": "lerna bootstrap",
-    "prepublish": "cp readme.md packages/polka/.",
+    "bootstrap": "lerna bootstrap",
+    "lint": "eslint packages --env node,es6",
+    "pretest": "npm run lint && npm run bootstrap",
     "test": "tape tests/*.js | tap-spec"
   },
   "devDependencies": {
     "axios": "^0.17.1",
+    "eslint": "^5.15.0",
     "lerna": "^2.8.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.8.0"
-  }
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended"
+  },
+  "eslintIgnore": [
+    "**/node_modules/**"
+  ]
 }
