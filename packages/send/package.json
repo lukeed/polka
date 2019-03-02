@@ -1,6 +1,6 @@
 {
-  "name": "@polka/send",
   "version": "0.5.2",
+  "name": "@polka/send",
   "description": "A response helper that detects & handles Content-Types",
   "repository": "lukeed/polka",
   "license": "MIT",
