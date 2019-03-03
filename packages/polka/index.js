@@ -72,7 +72,7 @@ class Polka extends Router {
 		let fns=[], arr=this.wares, obj=this.find(req.method, info.pathname);
 		req.originalUrl = req.originalUrl || req.url;
 		try {
-			req.path = info.pathname
+			req.path = info.pathname;
 		} catch (e) {
 			Object.defineProperty(req, 'path', {
 					writeable: false,
