@@ -14,7 +14,6 @@ function value(x) {
 
 function mutate(str, req) {
 	req.url = req.url.substring(str.length) || '/';
-	req.path = req.path.substring(str.length) || '/';
 }
 
 function onError(err, req, res, next) {
@@ -71,7 +70,7 @@ class Polka extends Router {
 		info = info || this.parse(req);
 		let fns=[], arr=this.wares, obj=this.find(req.method, info.pathname);
 		req.originalUrl = req.originalUrl || req.url;
-		let base = value(req.path = info.pathname);
+		let base = value(info.pathname);
 		if (this.bwares[base] !== void 0) {
 			arr = arr.concat(this.bwares[base]);
 		}
