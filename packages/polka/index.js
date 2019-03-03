@@ -14,6 +14,7 @@ function value(x) {
 
 function mutate(str, req) {
 	req.url = req.url.substring(str.length) || '/';
+	req.path = req.path.substring(str.length) || '/';
 }
 
 function onError(err, req, res, next) {
