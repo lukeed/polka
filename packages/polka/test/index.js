@@ -265,6 +265,56 @@ test('(polka) middleware – async', async t => {
 });
 
 
+test('(polka) middleware – sequencing', async t => {
+	t.plan(12);
+
+	function foo(req, res, next) {
+		t.is(req.val = 1, 1, '~> foo saw 1');
+		next();
+	}
+
+	function bar(req, res, next) {
+		t.is(++req.val, 2, '~> bar saw 2');
+		next();
+	}
+
+	let app = (
+		polka()
+			.use(foo, bar)
+			.get('/sub', (req, res) => {
+				t.is(++req.val, 3, '~> get("/sub") saw 3');
+				res.end('ran=' + req.val);
+			})
+			.use('/sub', (req, res, next) => {
+				t.is(++req.val, 3, '~> use("/sub") saw 3');
+				next();
+			})
+			.post('*', (req, res, next) => {
+				t.is(++req.val, 4, '~> post("*") saw 4');
+				next();
+			})
+			.post('/sub', (req, res) => {
+				t.is(++req.val, 5, '~> post("/sub") saw 5');
+				res.end('ran=' + req.val);
+			})
+	);
+
+	let uri = listen(app);
+
+	console.log('GET "/sub"');
+	let r1 = await get(uri + '/sub');
+	t.is(r1.statusCode, 200, '~> received 200 status');
+	t.is(r1.data, 'ran=3', '~> received "ran=3" response');
+
+	console.log('POST "/sub"');
+	let r2 = await post(uri + '/sub');
+	t.is(r2.statusCode, 200, '~> received 200 status');
+	t.is(r2.data, 'ran=5', '~> received "ran=5" response');
+
+	app.server.close();
+});
+
+
 test('(polka) middleware – originalUrl + mutation', async t => {
 	t.plan(47);
 
@@ -620,6 +670,7 @@ test('(polka) sub-application', async t => {
 
 	app.server.close();
 });
+
 
 test('(polka) sub-application & middleware', async t => {
 	t.plan(19);
