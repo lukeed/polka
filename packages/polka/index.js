@@ -24,6 +24,7 @@ class Polka extends Router {
 		this.handler = this.handler.bind(this);
 		this.onError = opts.onError || onError; // catch-all handler
 		this.onNoMatch = opts.onNoMatch || this.onError.bind(null, { code:404 });
+		this.attach = (req, res) => setImmediate(this.handler, req, res);
 	}
 
 	use(base, ...fns) {
@@ -35,15 +36,14 @@ class Polka extends Router {
 			if (base.charCodeAt(0) !== 47) base=`/${base}`;
 			this.add('', base, (r, _, nxt) => (mutate(base, r),nxt()));
 			fns.forEach(fn => {
-				this.add('', base, fn instanceof Polka ? fn.handler : fn);
+				this.add('', base, fn instanceof Polka ? fn.attach : fn);
 			});
 		}
 		return this; // chainable
 	}
 
 	listen() {
-		let handler = (r1, r2) => setImmediate(this.handler, r1, r2);
-		(this.server = this.server || http.createServer()).on('request', handler);
+		(this.server = this.server || http.createServer()).on('request', this.attach);
 		this.server.listen.apply(this.server, arguments);
 		return this;
 	}
