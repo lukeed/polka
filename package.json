@@ -14,6 +14,7 @@
   "devDependencies": {
     "axios": "0.18.0",
     "eslint": "5.15.0",
+    "httpie": "1.1.0",
     "lerna": "3.13.1",
     "tap-spec": "5.0.0",
     "tape": "4.10.1"

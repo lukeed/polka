@@ -1,5 +1,4 @@
 const tape = require('tape');
-const { STATUS_CODES } = require('http');
 
 Object.assign(tape.Test.prototype, {
 	isEmpty(val, msg) {
@@ -17,10 +16,6 @@ Object.assign(tape.Test.prototype, {
 });
 
 exports.test = tape;
-
-exports.toStatusText = code => STATUS_CODES[code];
-
-exports.sleep = ms => new Promise(r => setTimeout(r, ms));
 
 exports.listen = function (app, host) {
 	app.listen(); // boots

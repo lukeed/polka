@@ -1,18 +1,19 @@
 const fs = require('fs');
+const test = require('tape');
 const { join } = require('path');
-const { test, toStatusText } = require('../../../test');
-const { Response } = require('../../../test/mock');
+const { Response, toStatusText } = require('./util');
 const send = require('../');
 
 const TYPE = 'Content-Type';
 const LENGTH = 'Content-Length';
+const INPUT = require.resolve('../');
 
-test('polka/send-type', t => {
+test('(send) exports', t => {
 	t.is(typeof send, 'function', 'exports a function');
 	t.end();
 });
 
-test('polka/send-type::usage::basic', t => {
+test('(send) basic', t => {
 	let res = new Response();
 	let str = toStatusText(200);
 	send(res);
@@ -24,7 +25,7 @@ test('polka/send-type::usage::basic', t => {
 	t.end();
 });
 
-test('polka/send-type::usage::custom::code', t => {
+test('(send) custom code', t => {
 	let res = new Response();
 	let str = toStatusText(404);
 	send(res, 404);
@@ -36,7 +37,7 @@ test('polka/send-type::usage::custom::code', t => {
 	t.end();
 });
 
-test('polka/send-type::usage::custom::body', t => {
+test('(send) body – String', t => {
 	let str = 'FOOBAR';
 	let res = new Response();
 	send(res, 405, str);
@@ -48,7 +49,7 @@ test('polka/send-type::usage::custom::body', t => {
 	t.end();
 });
 
-test('polka/send-type::usage::custom::body::object', t => {
+test('(send) body – Object', t => {
 	let res = new Response();
 	let obj = { foo:123, bar:456 };
 	let str = JSON.stringify(obj);
@@ -61,7 +62,7 @@ test('polka/send-type::usage::custom::body::object', t => {
 	t.end();
 });
 
-test('polka/send-type::usage::custom::body::object', t => {
+test('(send) body – Buffer', t => {
 	let res = new Response();
 	let str = Buffer.from('foobar');
 	send(res, 200, str);
@@ -73,7 +74,7 @@ test('polka/send-type::usage::custom::body::object', t => {
 	t.end();
 });
 
-test('polka/send-type::usage::custom::headers', t => {
+test('(send) headers – String', t => {
 	let str = 'Hello';
 	let res = new Response();
 	send(res, 500, str, {
@@ -91,7 +92,7 @@ test('polka/send-type::usage::custom::headers', t => {
 	t.end();
 });
 
-test('polka/send-type::usage::custom::headers::object', t => {
+test('(send) headers – Object', t => {
 	let obj = { foo:123 };
 	let str = JSON.stringify(obj);
 	let res = new Response();
@@ -104,7 +105,7 @@ test('polka/send-type::usage::custom::headers::object', t => {
 	t.end();
 });
 
-test('polka/send-type::usage::reuse::headers::object', t => {
+test('(send) headers – Object :: respect existing', t => {
 	let obj = { foo:123 };
 	let str = JSON.stringify(obj);
 	let res = new Response();
@@ -118,7 +119,7 @@ test('polka/send-type::usage::reuse::headers::object', t => {
 	t.end();
 });
 
-test('polka/send-type::usage::custom::headers::buffer', t => {
+test('(send) headers – Buffer', t => {
 	let str = Buffer.from('hello');
 	let res = new Response();
 	send(res, 200, str, { [TYPE]: 'foo/bar' });
@@ -130,13 +131,11 @@ test('polka/send-type::usage::custom::headers::buffer', t => {
 	t.end();
 });
 
-test('polka/send-type::usage (Stream)', t => {
+test('(send) body – Stream', t => {
 	t.plan(5);
 
-	let input = join(__dirname, 'url.js');
-	let output = join(__dirname, 'out.js');
-
 	// "Response" stand-in (accepts pipe)
+	let output = join(__dirname, 'out.js');
 	let rw = fs.createWriteStream(output).on('pipe', x => {
 		t.is(x.constructor.name, 'ReadStream', '~> "response" receives the pipe');
 	});
@@ -151,7 +150,7 @@ test('polka/send-type::usage (Stream)', t => {
 		return rw.headers[key];
 	};
 
-	let rr = fs.createReadStream(input).on('end', () => {
+	let rr = fs.createReadStream(INPUT).on('end', () => {
 		try {
 			let info = fs.statSync(output);
 			t.pass('~> "response" output exists');
@@ -167,13 +166,11 @@ test('polka/send-type::usage (Stream)', t => {
 	t.is(rw.headers[TYPE.toLowerCase()], 'application/octet-stream', 'applies `Content-Type: application/octet-stream` header');
 });
 
-test('polka/send-type::usage (Stream – respect existing header)', t => {
+test('(send) body – Stream :: respect existing', t => {
 	t.plan(5);
 
-	let input = join(__dirname, 'url.js');
-	let output = join(__dirname, 'out.js');
-
 	// "Response" stand-in (accepts pipe)
+	let output = join(__dirname, 'out.js');
 	let rw = fs.createWriteStream(output).on('pipe', x => {
 		t.is(x.constructor.name, 'ReadStream', '~> "response" receives the pipe');
 	});
@@ -188,7 +185,7 @@ test('polka/send-type::usage (Stream – respect existing header)', t => {
 		return rw.headers[key];
 	};
 
-	let rr = fs.createReadStream(input).on('end', () => {
+	let rr = fs.createReadStream(INPUT).on('end', () => {
 		try {
 			let info = fs.statSync(output);
 			t.pass('~> "response" output exists');

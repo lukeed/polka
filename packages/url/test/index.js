@@ -1,8 +1,12 @@
+const test = require('tape');
 const { parse } = require('url');
-const { test } = require('../../../test');
 const fn = require('../');
 
 const keys = ['protocol', 'slashes', 'auth', 'host', 'port', 'hostname', 'hash'];
+
+test.Test.prototype.isObject = function (val, msg) {
+	this.is(Object.prototype.toString.call(val), '[object Object]', msg);
+};
 
 function fmt(str) {
 	let obj = parse(str);
@@ -26,12 +30,12 @@ function run(t, url) {
 	t.end();
 }
 
-test('polka/url', t => {
+test('(url) exports', t => {
 	t.is(typeof fn, 'function', 'exports a function');
 	t.end();
 });
 
-test('polka/url :: usage', t => {
+test('(url) basics', t => {
 	t.throws(fn, /Cannot read property/, 'throws if no input');
 	t.is(fn({}), undefined, 'returns `undefined` for empty object input');
 
@@ -45,27 +49,27 @@ test('polka/url :: usage', t => {
 	t.end();
 });
 
-test('polka/url :: /', t => {
+test('(url) "/" output', t => {
 	run(t, '/');
 });
 
-test('polka/url :: /foo/bar', t => {
+test('(url) "/foo/bar" output', t => {
 	run(t, '/foo/bar');
 });
 
-test('polka/url :: /foo/bar?fizz=buzz', t => {
+test('(url) "/foo/bar?fizz=buzz" output', t => {
 	run(t, '/foo/bar?fizz=buzz');
 });
 
-test('polka/url :: /foo/bar?fizz=buzz&hello=world', t => {
+test('(url) "/foo/bar?fizz=buzz&hello=world" output', t => {
 	run(t, '/foo/bar?fizz=buzz&hello=world');
 });
 
-test('polka/url :: /foo.123', t => {
+test('(url) "/foo.123" output', t => {
 	run(t, '/foo.123');
 });
 
-test('polka/url :: recycle', t => {
+test('(url) recycle', t => {
 	let req = { url: '/foo/bar' };
 	let out = fn(req);
 	out.foobar = 123;
@@ -80,7 +84,7 @@ test('polka/url :: recycle', t => {
 	t.end();
 });
 
-test('polka/url :: rerun if changed', t => {
+test('(url) rerun if changed', t => {
 	let req = { url: '/foo/bar?fizz=buzz' };
 	let out = fn(req);
 	out.foobar = 123;

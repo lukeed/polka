@@ -1,5 +1,9 @@
+const { STATUS_CODES } = require('http');
+
+exports.toStatusText = code => STATUS_CODES[code];
+
 // Incomplete but sufficient mock
-class Response {
+exports.Response = class Response {
 	constructor() {
 		this.body = '';
 		this.headers = {};
@@ -31,6 +35,4 @@ class Response {
 	hasHeader(key) {
 		return this.headers[key.toLowerCase()] !== void 0;
 	}
-}
-
-exports.Response = Response;
+};
