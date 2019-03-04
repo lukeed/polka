@@ -18,8 +18,9 @@ class Trouter {
 
 	add(method, route, ...fns) {
 		let { keys, pattern } = parse(route);
+		let path = '/' + route.match(/^\/?(.*?)\/?(:|\*|$)/)[1];
 		fns.forEach(handler => {
-			this.routes.push({ keys, pattern, method, handler });
+			this.routes.push({ keys, pattern, path, method, handler });
 		});
 		return this;
 	}
@@ -35,7 +36,7 @@ class Trouter {
 				if (matches === null) continue;
 				for (j=0; j < len;) params[tmp.keys[j]]=matches[++j];
 				handlers.push(tmp.handler);
-			} else if (tmp.pattern.test(url)) {
+			} else if (tmp.method.length > 0 ? tmp.pattern.test(url) : url.startsWith(tmp.path)) {
 				handlers.push(tmp.handler);
 			} // else not a match
 		}
