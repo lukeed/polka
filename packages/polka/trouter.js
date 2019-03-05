@@ -16,12 +16,10 @@ class Trouter {
 		this.put = this.add.bind(this, 'PUT');
 	}
 
-	add(method, route, ...fns) {
+	add(method, route, ...handler) {
 		let { keys, pattern } = parse(route);
 		let path = '/' + route.match(/^\/?(.*?)\/?(:|\*|$)/)[1];
-		fns.forEach(handler => {
-			this.routes.push({ keys, pattern, path, method, handler });
-		});
+		this.routes.push({ keys, pattern, path, method, handler });
 		return this;
 	}
 
@@ -30,14 +28,17 @@ class Trouter {
 		let matches=[], params={}, handlers=[];
 		for (; i < arr.length; i++) {
 			tmp = arr[i];
-			if (tmp.method.length > 0 && tmp.method !== method) continue;
-			if ((len = tmp.keys.length) > 0) {
-				matches = tmp.pattern.exec(url);
-				if (matches === null) continue;
-				for (j=0; j < len;) params[tmp.keys[j]]=matches[++j];
-				handlers.push(tmp.handler);
-			} else if (tmp.method.length > 0 ? tmp.pattern.test(url) : url.startsWith(tmp.path)) {
-				handlers.push(tmp.handler);
+			if (tmp.method.length === 0 && url.startsWith(tmp.path)) {
+				handlers = handlers.concat(tmp.handler);
+			} else if (tmp.method === method) {
+				if ((len = tmp.keys.length) > 0) {
+					matches = tmp.pattern.exec(url);
+					if (matches === null) continue;
+					for (j=0; j < len;) params[tmp.keys[j]]=matches[++j];
+					handlers = handlers.concat(tmp.handler);
+				} else if (tmp.pattern.test(url)) {
+					handlers = handlers.concat(tmp.handler);
+				}
 			} // else not a match
 		}
 
