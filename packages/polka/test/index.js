@@ -315,6 +315,56 @@ test('(polka) middleware – sequencing', async t => {
 });
 
 
+test('(polka) middleware – use("foo/bar")', async t => {
+	t.plan(12);
+
+	function foo(req, res, next) {
+		t.is(req.val = 1, 1, '~> foo saw 1');
+		next();
+	}
+
+	function bar(req, res, next) {
+		t.is(++req.val, 2, '~> bar saw 2');
+		next();
+	}
+
+	let app = (
+		polka()
+			.use(foo, bar)
+			.get('/api/v1', (req, res) => {
+				t.is(++req.val, 3, '~> get("/api/v1") saw 3');
+				res.end('ran=' + req.val);
+			})
+			.use('/api/v1', (req, res, next) => {
+				t.is(++req.val, 3, '~> use("/api/v1") saw 3');
+				next();
+			})
+			.post('*', (req, res, next) => {
+				t.is(++req.val, 4, '~> post("*") saw 4');
+				next();
+			})
+			.post('/api/v1/hello', (req, res) => {
+				t.is(++req.val, 5, '~> post("/api/v1/hello") saw 5');
+				res.end('ran=' + req.val);
+			})
+	);
+
+	let uri = listen(app);
+
+	console.log('GET "/api/v1"');
+	let r1 = await get(uri + '/api/v1');
+	t.is(r1.statusCode, 200, '~> received 200 status');
+	t.is(r1.data, 'ran=3', '~> received "ran=3" response');
+
+	console.log('POST "/api/v1/hello"');
+	let r2 = await post(uri + '/api/v1/hello');
+	t.is(r2.statusCode, 200, '~> received 200 status');
+	t.is(r2.data, 'ran=5', '~> received "ran=5" response');
+
+	app.server.close();
+});
+
+
 test('(polka) middleware – originalUrl + mutation', async t => {
 	t.plan(47);
 
