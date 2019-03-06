@@ -4,10 +4,13 @@ exports.toStatusText = code => STATUS_CODES[code];
 
 // Incomplete but sufficient mock
 exports.Response = class Response {
-	constructor() {
+	constructor(req={}) {
 		this.body = '';
 		this.headers = {};
 		this.statusCode = 200;
+		this.socket = {
+			parser: { incoming:req }
+		};
 	}
 	end(str) {
 		this.body = str;

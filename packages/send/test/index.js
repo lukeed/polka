@@ -25,7 +25,7 @@ test('(send) basic', t => {
 	t.end();
 });
 
-test('(send) custom code', t => {
+test('(send) statusCode', t => {
 	let res = new Response();
 	let str = toStatusText(404);
 	send(res, 404);
@@ -37,7 +37,7 @@ test('(send) custom code', t => {
 	t.end();
 });
 
-test('(send) custom code – unknown statusText', t => {
+test('(send) statusCode – unknown', t => {
 	let res = new Response();
 	let str = '123';
 	send(res, 123);
@@ -67,6 +67,33 @@ test('(send) statusCode – 304', t => {
 	t.is(res.getHeaderNames().length, 0, 'custom headers added: 0');
 	t.false(res.hasHeader(TYPE), '~> removes header[type]');
 	t.false(res.hasHeader(LENGTH), '~> removes header[length]');
+	t.is(res.body, '', 'empty body');
+	t.end();
+});
+
+test('(send) HEAD – String', t => {
+	let str = 'FOOBAR';
+	let method = 'HEAD';
+	let res = new Response({ method });
+	send(res, 200, str);
+	t.is(res.statusCode, 200, 'set statusCode: 200');
+	t.is(res.getHeaderNames().length, 2, 'custom headers added: 2');
+	t.is(res.getHeader(TYPE), 'text/plain', 'custom header[type]: text/plain');
+	t.is(res.getHeader(LENGTH), str.length, `custom header[length]: ${str.length}`);
+	t.is(res.body, '', 'empty body');
+	t.end();
+});
+
+test('(send) HEAD – Object', t => {
+	let method = 'HEAD';
+	let obj = { foo:123, bar:456 };
+	let res = new Response({ method });
+	let str = JSON.stringify(obj);
+	send(res, 200, obj);
+	t.is(res.statusCode, 200, 'set statusCode: 200');
+	t.is(res.getHeaderNames().length, 2, 'custom headers added: 2');
+	t.is(res.getHeader(TYPE), 'application/json; charset=utf-8', 'custom header[type]: application/json');
+	t.is(res.getHeader(LENGTH), str.length, `custom header[length]: ${str.length}`);
 	t.is(res.body, '', 'empty body');
 	t.end();
 });
