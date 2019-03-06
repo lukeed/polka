@@ -28,7 +28,7 @@ class Trouter {
 		let matches=[], params={}, handlers=[];
 		for (; i < arr.length; i++) {
 			tmp = arr[i];
-			if (tmp.method.length === 0 && url.startsWith(tmp.path)) {
+			if (tmp.method.length === 0 && url.indexOf(tmp.path) === 0) {
 				handlers = handlers.concat(tmp.handler);
 			} else if (tmp.method === method) {
 				if ((len = tmp.keys.length) > 0) {
