@@ -1,0 +1,18 @@
+{
+  "version": "0.0.0",
+  "name": "@polka/cluster",
+  "description": "Intialize and run a HTTP cluster",
+  "repository": "lukeed/polka",
+  "license": "MIT",
+  "files": [
+    "*.js"
+  ],
+  "author": {
+    "name": "Luke Edwards",
+    "email": "luke@lukeed.com",
+    "url": "https://lukeed.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
