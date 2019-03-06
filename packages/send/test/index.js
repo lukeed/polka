@@ -49,6 +49,28 @@ test('(send) custom code – unknown statusText', t => {
 	t.end();
 });
 
+test('(send) statusCode – 204', t => {
+	let res = new Response();
+	send(res, 204);
+	t.is(res.statusCode, 204, 'set statusCode: 204');
+	t.is(res.getHeaderNames().length, 0, 'custom headers added: 0');
+	t.false(res.hasHeader(TYPE), '~> removes header[type]');
+	t.false(res.hasHeader(LENGTH), '~> removes header[length]');
+	t.is(res.body, '', 'empty body');
+	t.end();
+});
+
+test('(send) statusCode – 304', t => {
+	let res = new Response();
+	send(res, 304);
+	t.is(res.statusCode, 304, 'set statusCode: 304');
+	t.is(res.getHeaderNames().length, 0, 'custom headers added: 0');
+	t.false(res.hasHeader(TYPE), '~> removes header[type]');
+	t.false(res.hasHeader(LENGTH), '~> removes header[length]');
+	t.is(res.body, '', 'empty body');
+	t.end();
+});
+
 test('(send) body – String', t => {
 	let str = 'FOOBAR';
 	let res = new Response();

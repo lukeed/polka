@@ -29,6 +29,14 @@ module.exports = function (res, code=200, data='', headers={}) {
 	obj[TYPE] = type || 'text/plain';
 	obj[LENGTH] = Buffer.byteLength(data);
 
+	if (code === 204 || code === 304) {
+		res.removeHeader(TYPE);
+		res.removeHeader(LENGTH);
+		delete obj[LENGTH];
+		delete obj[TYPE];
+		data = '';
+	}
+
 	res.writeHead(code, obj);
 	res.end(data);
 }

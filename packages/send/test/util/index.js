@@ -32,6 +32,9 @@ exports.Response = class Response {
 	setHeader(key, val) {
 		this.headers[key.toLowerCase()] = val;
 	}
+	removeHeader(key) {
+		delete this.headers[key.toLowerCase()];
+	}
 	hasHeader(key) {
 		return this.headers[key.toLowerCase()] !== void 0;
 	}
