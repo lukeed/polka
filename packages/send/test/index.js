@@ -56,7 +56,7 @@ test('(send) body – Object', t => {
 	send(res, 200, obj); // send object
 	t.is(res.statusCode, 200, 'set statusCode: 200');
 	t.is(res.getHeaderNames().length, 2, 'custom headers added: 2');
-	t.is(res.getHeader(TYPE), 'application/json;charset=utf-8', 'custom header[type]: application/json');
+	t.is(res.getHeader(TYPE), 'application/json; charset=utf-8', 'custom header[type]: application/json');
 	t.is(res.getHeader(LENGTH), str.length, `custom header[length]: ${str.length}`);
 	t.is(res.body, str, `custom body: ${str} (as JSON string)`);
 	t.end();
@@ -163,7 +163,7 @@ test('(send) body – Stream', t => {
 
 	let out = send(rw, 200, rr);
 	t.same(out, rw, 'returns the "response" to itself');
-	t.is(rw.headers[TYPE.toLowerCase()], 'application/octet-stream', 'applies `Content-Type: application/octet-stream` header');
+	t.is(rw.headers[TYPE], 'application/octet-stream', 'applies `Content-Type: application/octet-stream` header');
 });
 
 test('(send) body – Stream :: respect existing', t => {
