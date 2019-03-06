@@ -1,8 +1,8 @@
 {
   "version": "0.0.0",
   "name": "@polka/parse",
-  "description": "WIP",
   "repository": "lukeed/polka",
+  "description": "WIP",
   "license": "MIT",
   "files": [
     "*.js"

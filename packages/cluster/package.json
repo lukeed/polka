@@ -1,8 +1,8 @@
 {
   "version": "0.0.0",
   "name": "@polka/cluster",
-  "description": "Intialize and run a HTTP cluster",
   "repository": "lukeed/polka",
+  "description": "Intialize and run a HTTP cluster",
   "license": "MIT",
   "files": [
     "*.js"
