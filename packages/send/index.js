@@ -23,7 +23,7 @@ module.exports = function (res, code=200, data='', headers={}) {
 		data = JSON.stringify(data);
 		type = type || 'application/json; charset=utf-8';
 	} else {
-		data = data || STATUS_CODES[code];
+		data = data || STATUS_CODES[code] || String(code);
 	}
 
 	obj[TYPE] = type || 'text/plain';

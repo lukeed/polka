@@ -37,6 +37,18 @@ test('(send) custom code', t => {
 	t.end();
 });
 
+test('(send) custom code – unknown statusText', t => {
+	let res = new Response();
+	let str = '123';
+	send(res, 123);
+	t.is(res.statusCode, 123, 'set statusCode: 123');
+	t.is(res.getHeaderNames().length, 2, 'custom headers added: 2');
+	t.is(res.getHeader(TYPE), 'text/plain', 'custom header[type]: text/plain');
+	t.is(res.getHeader(LENGTH), str.length, `custom header[length]: ${str.length}`);
+	t.is(res.body, str, `fallback body: ${str}`);
+	t.end();
+});
+
 test('(send) body – String', t => {
 	let str = 'FOOBAR';
 	let res = new Response();
