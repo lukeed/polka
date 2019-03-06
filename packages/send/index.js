@@ -1,4 +1,5 @@
 const { STATUS_CODES } = require('http');
+const { createHash } = require('crypto');
 
 const TYPE = 'Content-Type';
 const LENGTH = 'Content-Length';
@@ -28,6 +29,12 @@ module.exports = function (res, code=200, data='', headers={}) {
 
 	obj[TYPE] = type || 'text/plain';
 	obj[LENGTH] = Buffer.byteLength(data);
+
+	if (obj.etag) {
+		let hash = createHash('sha1').update(data).digest('base64').substring(0, 27);
+		res.setHeader('ETag', `W/"${obj[LENGTH].toString(16)}-${hash}"`);
+		delete obj.etag;
+	}
 
 	if (code === 204 || code === 304) {
 		res.removeHeader(TYPE);

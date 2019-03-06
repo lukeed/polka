@@ -264,3 +264,43 @@ test('(send) body – Stream :: respect existing', t => {
 	t.same(out, rw, 'returns the "response" to itself');
 	t.is(rw.headers[TYPE.toLowerCase()], 'custom/stream', 'maintains `Content-Type: custom/stream` header');
 });
+
+test('(send) ETag', t => {
+	let str = 'FOOBAR';
+	let res = new Response();
+	send(res, 200, str, { etag:true });
+	t.is(res.statusCode, 200, 'set statusCode: 200');
+	t.is(res.getHeaderNames().length, 3, 'custom headers added: 3');
+	t.is(res.getHeader(TYPE), 'text/plain', 'custom header[type]: text/plain');
+	t.is(res.getHeader(LENGTH), str.length, `custom header[length]: ${str.length}`);
+	t.is(res.getHeader('ETag'), 'W/"6-8zkP4uVUbaw9GWiXDfGiIqOjnAA"', 'custom header[ETag]: correct');
+	t.is(res.body, str, `custom body: ${str}`);
+	t.end();
+});
+
+test('(send) ETag – HEAD', t => {
+	let str = 'FOOBAR';
+	let method = 'HEAD';
+	let res = new Response({ method });
+	send(res, 200, str, { etag:true });
+	t.is(res.statusCode, 200, 'set statusCode: 200');
+	t.is(res.getHeaderNames().length, 3, 'custom headers added: 3');
+	t.is(res.getHeader(TYPE), 'text/plain', 'custom header[type]: text/plain');
+	t.is(res.getHeader(LENGTH), str.length, `custom header[length]: ${str.length}`);
+	t.is(res.getHeader('ETag'), 'W/"6-8zkP4uVUbaw9GWiXDfGiIqOjnAA"', 'custom header[ETag]: correct');
+	t.is(res.body, '', 'empty body');
+	t.end();
+});
+
+test('(send) ETag – 204', t => {
+	let str = 'FOOBAR';
+	let res = new Response();
+	send(res, 204, str, { etag:true });
+	t.is(res.statusCode, 204, 'set statusCode: 204');
+	t.is(res.getHeaderNames().length, 1, 'custom headers added: 1');
+	t.false(res.hasHeader(TYPE), '~> removes header[type]');
+	t.false(res.hasHeader(LENGTH), '~> removes header[length]');
+	t.is(res.getHeader('ETag'), 'W/"6-8zkP4uVUbaw9GWiXDfGiIqOjnAA"', 'custom header[ETag]: correct');
+	t.is(res.body, '', 'empty body');
+	t.end();
+});
