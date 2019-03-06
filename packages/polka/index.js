@@ -4,12 +4,6 @@ const Router = require('./trouter');
 const { parse } = require('querystring');
 const parser = require('@polka/url');
 
-function mutate(str, req) {
-	if (req.path.indexOf(str) !== 0) return;
-	req.url = req.url.substring(str.length) || '/';
-	req.path = req.path.substring(str.length) || '/';
-}
-
 function onError(err, req, res) {
 	let code = (res.statusCode = err.code || err.status || 500);
 	res.end(err.length && err || err.message || http.STATUS_CODES[code]);
@@ -34,10 +28,19 @@ class Polka extends Router {
 			this.wares = this.wares.concat(fns);
 		} else {
 			if (base.charCodeAt(0) !== 47) base=`/${base}`;
-			this.add('', base, (r, _, nxt) => (mutate(base, r),nxt()));
-			fns.forEach(fn => {
-				this.add('', base, fn instanceof Polka ? fn.attach : fn);
-			});
+			this.add('', base,
+				(req, _, next) => {
+					req.url = req.url.substring(base.length) || '/';
+					req.path = req.path.substring(base.length) || '/';
+					next();
+				},
+				...fns.map(fn => fn instanceof Polka ? fn.attach : fn),
+				(req, _, next) => {
+					req.url = req._parsedUrl.url;
+					req.path = req._parsedUrl.pathname;
+					next()
+				}
+			);
 		}
 		return this; // chainable
 	}
