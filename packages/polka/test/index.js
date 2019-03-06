@@ -58,7 +58,7 @@ test('(polka) listen', t => {
 
 // TODO: Trouter internals & definitions
 test('(polka) basics', t => {
-	t.plan(21);
+	t.plan(24);
 
 	let num = 0;
 	let app = polka();
@@ -75,7 +75,8 @@ test('(polka) basics', t => {
 		let obj = app.routes[num++];
 		t.is(app.routes.length, num, 'added a new `app.routes` entry');
 		t.isObject(obj, '~> entry is an Object');
-		t.isFunction(obj.handler, '~~> entry.handler is a function');
+		t.isArray(obj.handler, '~~> entry.handler is an Array');
+		t.isFunction(obj.handler[0], '~~> entry.handler items are Functions');
 		t.true(obj.pattern instanceof RegExp, '~~> entry.pattern is RegExp');
 		t.same(obj.keys, keys, '~~> entry.keys are correct');
 		t.is(obj.method, method, '~~> entry.method matches');
@@ -143,7 +144,7 @@ test('(polka) variadic handlers', async t => {
 	);
 
 	t.is(app.wares.length, 2, 'added 2 middleware');
-	t.is(app.routes.length, 9, 'added 9 routes in total');
+	t.is(app.routes.length, 3, 'added 3 routes in total');
 	t.is(app.find('GET', '/one').handlers.length, 3, '~> has 3 handlers for "GET /one" route');
 	t.is(app.find('GET', '/two').handlers.length, 3, '~> has 3 handlers for "GET /two" route');
 	t.is(app.find('GET', '/err').handlers.length, 3, '~> has 3 handlers for "GET /err" route');
@@ -208,7 +209,7 @@ test('(polka) middleware', async t => {
 	);
 
 	t.is(app.wares.length, 2, 'added 2 middleware functions');
-	t.is(app.routes.length, 7, 'added 7 routes in total');
+	t.is(app.routes.length, 5, 'added 5 routes in total');
 
 	let uri = listen(app);
 	let r = await get(uri);
@@ -468,11 +469,11 @@ test('(polka) middleware – originalUrl + mutation', async t => {
 	);
 
 	t.is(app.wares.length, 3, 'added 3 middleware');
-	t.is(app.routes.length, 6, 'added 6 routes in total');
-	t.is(app.find('GET', '/foo').handlers.length, 2, '~> has 2 handlers for "GET /foo" route');
-	t.is(app.find('POST', '/foo').handlers.length, 2, '~> has 2 handlers for "POST /foo" route');
-	t.is(app.find('GET', '/bar').handlers.length, 3, '~> has 3 handlers for "GET /bar" route');
-	t.is(app.find('POST', '/bar').handlers.length, 3, '~> has 3 handlers for "POST /bar" route');
+	t.is(app.routes.length, 3, 'added 3 routes in total');
+	t.is(app.find('GET', '/foo').handlers.length, 3, '~> has 3 handlers for "GET /foo" route');
+	t.is(app.find('POST', '/foo').handlers.length, 3, '~> has 3 handlers for "POST /foo" route');
+	t.is(app.find('GET', '/bar').handlers.length, 4, '~> has 4 handlers for "GET /bar" route');
+	t.is(app.find('POST', '/bar').handlers.length, 4, '~> has 4 handlers for "POST /bar" route');
 
 	let uri = listen(app);
 
