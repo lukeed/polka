@@ -43,6 +43,14 @@ test('(redirect) exports', t => {
 	t.end();
 });
 
+test('(redirect) defaults', t => {
+	let res = Response('/foo/bar/baz');
+	fn(res);
+	t.is(res.statusCode, 302, '~> uses 302 statusCode (default)');
+	t.is(res.headers['Location'], '', '~> sets "Location" as empty (default)');
+	t.end();
+});
+
 test('(redirect) location only', t => {
 	let res = Response('/foo/bar/baz');
 	fn(res, '/users/123');
