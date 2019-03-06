@@ -1,0 +1,18 @@
+{
+  "version": "0.0.0",
+  "name": "@polka/redirect",
+  "repository": "lukeed/polka",
+  "description": "A response helper for URL redirects",
+  "license": "MIT",
+  "files": [
+    "*.js"
+  ],
+  "author": {
+    "name": "Luke Edwards",
+    "email": "luke@lukeed.com",
+    "url": "https://lukeed.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

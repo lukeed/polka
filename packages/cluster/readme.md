@@ -63,7 +63,7 @@ By default, your cluster will spawn one [Worker](https://nodejs.org/api/cluster.
 
 ## Support
 
-Any issues or questions can be sent to the [Polka][polka] repository.<br>However, please specify that your inquiry is about `@polka/url` specifically.
+Any issues or questions can be sent to the [Polka][polka] repository.<br>However, please specify that your inquiry is about `@polka/cluster` specifically.
 
 
 ## License
