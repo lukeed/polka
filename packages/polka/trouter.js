@@ -24,20 +24,21 @@ class Trouter {
 	}
 
 	find(method, url) {
+		let isHEAD = (method === 'HEAD');
 		let i=0, j=0, tmp, len, arr=this.routes;
 		let matches=[], params={}, handlers=[];
 		for (; i < arr.length; i++) {
 			tmp = arr[i];
 			if (tmp.method.length === 0 && url.indexOf(tmp.path) === 0) {
-				handlers = handlers.concat(tmp.handler);
-			} else if (tmp.method === method) {
+				tmp.handler.length > 1 ? (handlers=handlers.concat(tmp.handler)) : handlers.push(tmp.handler[0]);
+			} else if (tmp.method === method || isHEAD && tmp.method === 'GET') {
 				if ((len = tmp.keys.length) > 0) {
 					matches = tmp.pattern.exec(url);
 					if (matches === null) continue;
 					for (j=0; j < len;) params[tmp.keys[j]]=matches[++j];
-					handlers = handlers.concat(tmp.handler);
+					tmp.handler.length > 1 ? (handlers=handlers.concat(tmp.handler)) : handlers.push(tmp.handler[0]);
 				} else if (tmp.pattern.test(url)) {
-					handlers = handlers.concat(tmp.handler);
+					tmp.handler.length > 1 ? (handlers=handlers.concat(tmp.handler)) : handlers.push(tmp.handler[0]);
 				}
 			} // else not a match
 		}
