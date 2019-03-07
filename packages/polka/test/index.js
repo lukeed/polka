@@ -845,7 +845,7 @@ test('(polka) sub-application & middleware', async t => {
 });
 
 
-test('(polka) options – server', t => {
+test('(polka) options.server', t => {
 	let server = http.createServer();
 	let app = polka({ server });
 	t.same(app.server, server, '~> store custom server internally as is');
@@ -858,36 +858,89 @@ test('(polka) options – server', t => {
 });
 
 
-test('(polka) options – onError', async t => {
-	t.plan(7);
+test('(polka) options.onError', async t => {
+	t.plan(3);
 
-	let abc = new Error('boo~!');
-	abc.code = 418; // teapot lol
-
-	let foo = (err, req, res, next) => {
-		t.same(err, abc, '~> receives the `err` object directly as 1st param');
-		t.ok(req.url, '~> receives the `req` object as 2nd param');
-		t.isFunction(res.end, '~> receives the `res` object as 3rd param');
-		t.isFunction(next, '~> receives the `next` function 4th param'); // in case want to skip?
-		res.statusCode = err.code;
-		res.end('error: ' + err.message);
-	};
-
-	let app = polka({ onError:foo }).use((req, res, next) => next(abc));
-
-	t.is(app.onError, foo, 'replaces `app.onError` with the option value');
+	let app = polka().use((req, res, next) => next('Oops!'));
+	t.isFunction(app.onError, '~> attaches default `app.onError` handler');
 
 	let uri = listen(app);
 	await get(uri).catch(err => {
-		t.is(err.statusCode, 418, '~> response gets the error code');
-		t.is(err.data, 'error: boo~!', '~> response gets the formatted error message');
+		t.is(err.statusCode, 500, '~> response gets 500 code (default)');
+		t.is(err.data, 'Oops!', '~> response body is "Oops!" string');
 	});
 
 	app.server.close();
 });
 
 
-test('(polka) options – onNoMatch', async t => {
+test('(polka) options.onError (err.code)', async t => {
+	t.plan(3);
+
+	let foo = new Error('Oops!');
+	foo.code = 418;
+
+	let app = polka().use((req, res, next) => next(foo));
+	t.isFunction(app.onError, '~> attaches default `app.onError` handler');
+
+	let uri = listen(app);
+	await get(uri).catch(err => {
+		t.is(err.statusCode, 418, '~> response has 418 code (via "err.code" key)');
+		t.is(err.data, 'Oops!', '~> response body is "Oops!" string');
+	});
+
+	app.server.close();
+});
+
+
+test('(polka) options.onError (err.status)', async t => {
+	t.plan(3);
+
+	let foo = new Error('Oops!');
+	foo.status = 418;
+
+	let app = polka().use((req, res, next) => next(foo));
+	t.isFunction(app.onError, '~> attaches default `app.onError` handler');
+
+	let uri = listen(app);
+	await get(uri).catch(err => {
+		t.is(err.statusCode, 418, '~> response has 418 code (via "err.status" key)');
+		t.is(err.data, 'Oops!', '~> response body is "Oops!" string');
+	});
+
+	app.server.close();
+});
+
+
+test('(polka) options.onError – custom', async t => {
+	t.plan(7);
+
+	let foo = new Error('boo~!');
+	foo.code = 418;
+
+	function onError(err, req, res, next) {
+		t.same(err, foo, '~> receives the `err` object directly as 1st param');
+		t.ok(req.url, '~> receives the `req` object as 2nd param');
+		t.isFunction(res.end, '~> receives the `res` object as 3rd param');
+		t.isFunction(next, '~> receives the `next` function 4th param'); // in case want to skip?
+		res.statusCode = err.code;
+		res.end('error: ' + err.message);
+	}
+
+	let app = polka({ onError }).use((req, res, next) => next(foo));
+	t.is(app.onError, onError, 'replaces `app.onError` with the option value');
+	let uri = listen(app);
+
+	await get(uri).catch(err => {
+		t.is(err.statusCode, 418, '~> response has 418 statusCode');
+		t.is(err.data, 'error: boo~!', '~> response body is formatted string');
+	});
+
+	app.server.close();
+});
+
+
+test('(polka) options.onNoMatch', async t => {
 	t.plan(7);
 
 	let foo = (req, res, next) => {
