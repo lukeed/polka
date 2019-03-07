@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 const http = require('http');
-const { get, post } = require('httpie');
+const { get, send, post } = require('httpie');
 const { test, listen } = require('./util');
 const polka = require('../');
 
@@ -212,19 +212,23 @@ test('(polka) middleware', async t => {
 	t.is(app.routes.length, 5, 'added 5 routes in total');
 
 	let uri = listen(app);
+	console.log('GET /');
 	let r = await get(uri);
 	t.is(r.statusCode, 200, '~> received 200 status');
 	t.is(r.data, 'Hello', '~> received "Hello" response');
 	t.is(r.headers['x-type'], 'text/foo', '~> received custom header');
 
+	console.log('GET /about');
 	r = await get(uri + '/about');
 	t.is(r.statusCode, 200, '~> received 200 status');
 	t.is(r.data, 'About', '~> received "About" response');
 
+	console.log('POST /subgroup');
 	r = await post(uri + '/subgroup');
 	t.is(r.statusCode, 200, '~> received 200 status');
 	t.is(r.data, 'POST /subgroup', '~> received "POST /subgroup" response');
 
+	console.log('GET /subgroup/foo');
 	r = await get(uri + '/subgroup/foo');
 	t.is(r.statusCode, 200, '~> received 200 status');
 	t.is(r.data, 'GET /subgroup/foo', '~> received "GET /subgroup/foo" response');
@@ -904,6 +908,71 @@ test('(polka) options – onNoMatch', async t => {
 		t.is(err.statusCode, 405, '~> response gets the error code');
 		t.is(err.data, 'prefer: Method Not Found', '~> response gets the formatted error message');
 	});
+
+	app.server.close();
+});
+
+
+test('(polka) HEAD', async t => {
+	t.plan(21);
+
+	function foo(req, res, next) {
+		req.foo = req.foo || 0;
+		req.foo += 250;
+		next();
+	}
+
+	function bar(req, res, next) {
+		req.bar = req.bar || '';
+		req.bar += 'bar';
+		next();
+	}
+
+	let app = (
+		polka()
+			.head('/hello', foo, bar, (req, res) => {
+				t.pass('~> inside "HEAD /hello" handler');
+				t.is(req.foo, 250, '~> foo() ran once');
+				t.is(req.bar, 'bar', '~> bar() ran once');
+				res.end('world');
+			})
+			.head('/posts/*', (req, res, next) => {
+				t.pass('~> inside "HEAD /posts/*" handler');
+				req.head = true;
+				next();
+			})
+			.get('/posts/:title', foo, bar, (req, res) => {
+				t.pass('~> inside GET "/posts/:title" handler');
+				if (req.method === 'HEAD') {
+					t.is(req.head, true, '~> ran after "HEAD posts/*" handler');
+				}
+				t.is(req.foo, 250, '~> foo() ran once');
+				t.is(req.bar, 'bar', '~> bar() ran once');
+				res.end(req.params.title);
+			})
+	);
+
+	t.is(app.routes.length, 3, 'added 3 routes in total');
+	t.is(app.find('HEAD', '/hello').handlers.length, 3, '~> has 3 handlers for "HEAD /hello" route');
+	t.is(app.find('GET', '/posts/hello').handlers.length, 3, '~> has 3 handlers for "GET /posts/hello" route');
+	t.is(app.find('HEAD', '/posts/hello').handlers.length, 4, '~> has 4 handlers for "HEAD /posts/hello" route');
+
+	let uri = listen(app);
+
+	console.log('HEAD /hello');
+	let r = await send('HEAD', uri + '/hello');
+	t.is(r.statusCode, 200, '~> received 200 status');
+	t.is(r.data, '', '~> received empty response');
+
+	console.log('HEAD /posts/narnia');
+	r = await send('HEAD', uri + '/posts/narnia');
+	t.is(r.statusCode, 200, '~> received 200 status');
+	t.is(r.data, '', '~> received empty response');
+
+	console.log('GET /posts/narnia');
+	r = await get(uri + '/posts/narnia');
+	t.is(r.statusCode, 200, '~> received 200 status');
+	t.is(r.data, 'narnia', '~> received "narnia" response');
 
 	app.server.close();
 });
