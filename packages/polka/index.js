@@ -28,7 +28,7 @@ class Polka extends Router {
 			this.wares = this.wares.concat(fns);
 		} else {
 			if (base.charCodeAt(0) !== 47) base=`/${base}`;
-			this.add('', base,
+			this.all(base,
 				(req, _, next) => {
 					req.url = req.url.substring(base.length) || '/';
 					req.path = req.path.substring(base.length) || '/';
