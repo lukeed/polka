@@ -75,8 +75,8 @@ test('(polka) basics', t => {
 		let obj = app.routes[num++];
 		t.is(app.routes.length, num, 'added a new `app.routes` entry');
 		t.isObject(obj, '~> entry is an Object');
-		t.isArray(obj.handler, '~~> entry.handler is an Array');
-		t.isFunction(obj.handler[0], '~~> entry.handler items are Functions');
+		t.isArray(obj.handlers, '~~> entry.handlers is an Array');
+		t.isFunction(obj.handlers[0], '~~> entry.handlers items are Functions');
 		t.true(obj.pattern instanceof RegExp, '~~> entry.pattern is RegExp');
 		t.same(obj.keys, keys, '~~> entry.keys are correct');
 		t.is(obj.method, method, '~~> entry.method matches');
@@ -425,7 +425,7 @@ test('(polka) middleware – use("foo/:bar")', async t => {
 
 
 test('(polka) middleware – originalUrl + mutation', async t => {
-	t.plan(47);
+	t.plan(43);
 
 	let chk = false;
 	let aaa = (req, res, next) => (req.aaa='aaa',next());
@@ -433,8 +433,8 @@ test('(polka) middleware – originalUrl + mutation', async t => {
 	let bar = (req, res, next) => (req.bar='bar',next());
 	let ccc = (req, res, next) => {
 		if (chk) { // runs 2x
-			t.true(req.url.includes('/foo'), 'defers `bware` URL mutation until after global');
-			t.true(req.path.includes('/foo'), 'defers `bware` PATH mutation until after global');
+			t.true(req.url.includes('/foo'), 'defers URL mutation until after global');
+			t.true(req.path.includes('/foo'), 'defers PATH mutation until after global');
 			chk = false;
 		}
 		next();
