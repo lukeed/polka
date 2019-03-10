@@ -1,8 +1,9 @@
 {
+  "private": true,
   "version": "1.0.0-next.0",
-  "name": "@polka/redirect",
+  "name": "@polka/compat",
   "repository": "lukeed/polka",
-  "description": "A response helper for URL redirects",
+  "description": "WIP",
   "license": "MIT",
   "files": [
     "*.js"
@@ -11,6 +12,12 @@
     "name": "Luke Edwards",
     "email": "luke@lukeed.com",
     "url": "https://lukeed.com"
+  },
+  "dependencies": {
+    "@polka/redirect": "^1.0.0-next.0",
+    "@polka/send": "^1.0.0-next.0",
+    "@polka/sendfile": "^1.0.0-next.0",
+    "mime": "^2.4.0"
   },
   "publishConfig": {
     "access": "public"

@@ -1,6 +1,7 @@
 {
+  "private": true,
   "version": "1.0.0-next.0",
-  "name": "@polka/parse",
+  "name": "@polka/uws",
   "repository": "lukeed/polka",
   "description": "WIP",
   "license": "MIT",
@@ -11,5 +12,12 @@
     "name": "Luke Edwards",
     "email": "luke@lukeed.com",
     "url": "https://lukeed.com"
+  },
+  "dependencies": {
+    "polka": "^1.0.0-next.0",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v15.5.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
