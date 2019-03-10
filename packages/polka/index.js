@@ -1,6 +1,5 @@
 const http = require('http');
-// const Router = require('trouter');
-const Router = require('./trouter');
+const Router = require('trouter');
 const { parse } = require('querystring');
 const parser = require('@polka/url');
 
@@ -27,8 +26,8 @@ class Polka extends Router {
 		} else if (base === '/') {
 			this.wares = this.wares.concat(fns);
 		} else {
-			if (base.charCodeAt(0) !== 47) base=`/${base}`;
-			this.all(base,
+			base.startsWith('/') || (base=`/${base}`);
+			super.use(base,
 				(req, _, next) => {
 					req.url = req.url.substring(base.length) || '/';
 					req.path = req.path.substring(base.length) || '/';
