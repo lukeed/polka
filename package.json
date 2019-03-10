@@ -12,7 +12,6 @@
     "test": "tape packages/*/test/*.js | tap-spec"
   },
   "devDependencies": {
-    "axios": "0.18.0",
     "eslint": "5.15.0",
     "httpie": "1.1.0",
     "lerna": "3.13.1",
@@ -23,7 +22,17 @@
     "extends": "eslint:recommended",
     "parserOptions": {
       "ecmaVersion": 8
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "packages/*/test/**/*.js"
+        ],
+        "rules": {
+          "no-console": 0
+        }
+      }
+    ]
   },
   "eslintIgnore": [
     "**/node_modules/**"
