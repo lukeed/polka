@@ -1,14 +1,12 @@
-# @polka/send-type [![npm](https://img.shields.io/npm/v/@polka/send-type.svg)](https://npmjs.org/package/@polka/send-type)
+# @polka/send [![npm](https://badgen.now.sh/npm/v/@polka/redirect)](https://npmjs.org/package/@polka/send)
 
 > An HTTP response helper that detects `Content-Type`s & handles them accordingly &mdash; _not_ limited to [Polka][polka]!
-
-For a simpler, bare-bones alternative, check out [`@polka/send`][send] instead~
 
 
 ## Install
 
 ```
-$ npm install --save @polka/send-type
+$ npm install --save @polka/send
 ```
 
 
@@ -16,7 +14,7 @@ $ npm install --save @polka/send-type
 
 ```js
 const { createReadStream } = require('fs');
-const send = require('@polka/send-type');
+const send = require('@polka/send');
 
 module.exports = function (req, res) {
   if (!req.getHeader('authorization')) {
@@ -61,7 +59,7 @@ Default: `{}`
 
 The `headers` for your response.
 
-The `Content-Type` header is a little unique – it will be set with the value you provide in `headers`. However, if you _did not_ set a value explicitly, then `send-type` will reuse the existing value via [`res.getHeader`](https://nodejs.org/api/http.html#http_response_getheader_name).<br>If neither existed, then the `Content-Type` will be inferred by the data type.
+The `Content-Type` header is a little unique – it will be set with the value you provide in `headers`. However, if you _did not_ set a value explicitly, then `@polka/send` will reuse the existing value via [`res.getHeader`](https://nodejs.org/api/http.html#http_response_getheader_name).<br>If neither existed, then the `Content-Type` will be inferred by the data type.
 
 See [Data Detections](#data-detections) for special behaviors.
 
@@ -88,7 +86,7 @@ The following operations will be performed for the following data types:
 
 ## Support
 
-Any issues or questions can be sent to the [Polka][polka] repo, but please specify that you are using `@polka/send-type`.
+Any issues or questions can be sent to the [Polka][polka] repo, but please specify that you are using `@polka/send`.
 
 
 ## License
@@ -96,4 +94,3 @@ Any issues or questions can be sent to the [Polka][polka] repo, but please speci
 MIT © [Luke Edwards](https://lukeed.com)
 
 [polka]: https://github.com/lukeed/polka
-[send]: https://github.com/lukeed/polka/tree/master/packages/send
