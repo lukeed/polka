@@ -24,7 +24,7 @@ module.exports = function (req, toDecode) {
 	};
 
 	if (url.length > 1) {
-		if (toDecode && !req._decoded) {
+		if (toDecode && !req._decoded && !!~url.indexOf('%', 1)) {
 			url = req.url = obj.href = obj.path = obj.pathname = obj._raw = decodeURIComponent(url);
 			req._decoded = true;
 		}
