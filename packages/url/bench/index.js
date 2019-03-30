@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 global.native = require('url');
 const { Suite } = require('benchmark');
 global.querystring = require('querystring');
@@ -5,7 +6,7 @@ global.parseurl = require('parseurl');
 global.parse = require('../');
 
 global.nativeDecode = function (url) {
-	let obj = native.parse(url, true);
+	let obj = global.native.parse(url, true);
 	obj.href = obj.path = decodeURIComponent(url);
 	obj.pathname = decodeURIComponent(obj.pathname);
 	obj.search = decodeURIComponent(obj.search);
@@ -13,8 +14,8 @@ global.nativeDecode = function (url) {
 }
 
 global.parseurlDecode = function (req) {
-	let obj = parseurl(req);
-	obj.query = querystring.parse(obj.query);
+	let obj = global.parseurl(req);
+	obj.query = global.querystring.parse(obj.query);
 	obj.path = obj.href = decodeURIComponent(obj.href);
 	obj.pathname = decodeURIComponent(obj.pathname);
 	obj.search = decodeURIComponent(obj.search);
