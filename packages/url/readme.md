@@ -74,29 +74,7 @@ Additionally, the `req` is mutated with `req._decoded = true` so as to prevent r
 
 ## Benchmarks
 
-> Running the `parseurl` benchmark suite on Node 10.9.0
-
-```
-Parsing: "/foo/bar?user=tj&pet=fluffy"
-  nativeurl  x  3,496,593 ops/sec ±0.78% (194 runs sampled)
-  parseurl   x  5,702,515 ops/sec ±0.59% (194 runs sampled)
-  @polka/url x 11,510,281 ops/sec ±1.93% (192 runs sampled)
-
-REPEAT: "/foo/bar?user=tj&pet=fluffy"
-  nativeurl  x  3,344,884 ops/sec ±0.13% (191 runs sampled)
-  parseurl   x 20,386,848 ops/sec ±0.22% (192 runs sampled)
-  @polka/url x 21,088,923 ops/sec ±0.58% (191 runs sampled)
-
-Parsing: "/foo/bar"
-  nativeurl  x  9,808,119 ops/sec ±0.51% (190 runs sampled)
-  parseurl   x 26,186,627 ops/sec ±0.16% (195 runs sampled)
-  @polka/url x 43,946,765 ops/sec ±0.55% (194 runs sampled)
-
-Parsing: "/"
-  nativeurl  x 15,698,746 ops/sec ±0.79% (192 runs sampled)
-  parseurl   x 36,861,339 ops/sec ±0.19% (195 runs sampled)
-  @polka/url x 48,295,119 ops/sec ±0.51% (194 runs sampled)
-```
+Check out the [`bench`](/bench) directory for in-depth benchmark results and comparisons.
 
 
 ## Support
