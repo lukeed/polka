@@ -16,16 +16,22 @@ function fmt(str) {
 	return obj;
 }
 
-function run(t, url) {
+function run(t, url, isDecode) {
 	let req = { url };
-	let out = fn(req);
+	let out = fn(req, isDecode);
+	let expect = isDecode ? decodeURIComponent(url) : url;
 
 	t.isObject(out);
-	t.is(out._raw, url);
+	t.is(out._raw, expect);
 	t.isObject(req._parsedUrl);
 
-	delete out._raw;
-	t.same(out, fmt(url), '~> matches values from `url.parse` output');
+	if (isDecode) {
+		t.true(req._decoded, '~> (decode) leaves "req._decoded" trace');
+		out.query && t.isObject(out.query, '~> (decode) "req.query" is an object');
+	} else {
+		delete out._raw;
+		t.same(out, fmt(url), '~> matches values from `url.parse` output');
+	}
 
 	t.end();
 }
@@ -69,15 +75,31 @@ test('(url) "/foo.123" output', t => {
 	run(t, '/foo.123');
 });
 
+test('(url) "/f%C3%B8%C3%B8%C3%9F%E2%88%82r" output', t => {
+	run(t, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r');
+});
+
+test('(url) "/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309" output', t => {
+	run(t, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309');
+});
+
+test('(url) "/f%C3%B8%C3%B8%C3%9F%E2%88%82r" output :: decode', t => {
+	run(t, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r', true);
+});
+
+test('(url) "/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309" output :: decode', t => {
+	run(t, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309', true);
+});
+
 test('(url) recycle', t => {
 	let req = { url: '/foo/bar' };
 	let out = fn(req);
 	out.foobar = 123;
 
-  t.is(out.foobar, 123);
-  t.is(out.pathname, '/foo/bar');
+	t.is(out.foobar, 123);
+	t.is(out.pathname, '/foo/bar');
 
-  out = fn(req); // 2nd time
+	out = fn(req); // 2nd time
 	t.is(out.foobar, 123);
 	t.is(out.pathname, '/foo/bar');
 
@@ -89,15 +111,53 @@ test('(url) rerun if changed', t => {
 	let out = fn(req);
 	out.foobar = 123;
 
-  t.is(out.foobar, 123);
-  t.is(out.query, 'fizz=buzz');
-  t.is(out.pathname, '/foo/bar');
+	t.is(out.foobar, 123);
+	t.is(out.query, 'fizz=buzz');
+	t.is(out.pathname, '/foo/bar');
 
 	req.url = '/foo';
-  out = fn(req); // 2nd time
+	out = fn(req); // 2nd time
 	t.is(out.foobar, undefined);
-  t.is(out.query, null);
+	t.is(out.query, null);
 	t.is(out.pathname, '/foo');
+
+	t.end();
+});
+
+test('(url) decoded', t => {
+	let req = { url: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r' };
+
+	let out = fn(req, true);
+
+	t.true(req._decoded);
+	t.same(req._parsedUrl, out);
+	t.same(out, {
+		path: '/føøß∂r',
+		pathname: '/føøß∂r',
+		href: '/føøß∂r',
+		search: null,
+		query: null,
+		_raw: '/føøß∂r'
+	});
+
+	t.end();
+});
+
+test('(url) decoded w/ query', t => {
+	let req = { url: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309' };
+
+	let out = fn(req, true);
+
+	t.true(req._decoded);
+	t.same(req._parsedUrl, out);
+	t.same(out, {
+		path: '/føøß∂r?phone=+8675309',
+		pathname: '/føøß∂r',
+		href: '/føøß∂r?phone=+8675309',
+		search: '?phone=+8675309',
+		query: { phone: '+8675309' },
+		_raw: '/føøß∂r?phone=+8675309'
+	});
 
 	t.end();
 });
