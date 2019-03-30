@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "devDependencies": {
+    "benchmark": "2.1.4",
+    "parseurl": "1.3.2"
+  }
+}
