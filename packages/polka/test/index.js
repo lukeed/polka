@@ -1029,3 +1029,29 @@ test('(polka) HEAD', async t => {
 
 	app.server.close();
 });
+
+
+test('(polka) decode url', async t => {
+	t.plan(8);
+
+	let sub = (
+		polka()
+			.get('/:foo', (req, res) => {
+				t.pass('~> inside "GET /sub/:foo" handler')
+				t.true(req._decoded, '~> marked as decoded');
+				t.is(req.path, '/føøß∂r', '~> decoded "path" value');
+				t.is(req.url, '/føøß∂r?phone=+8675309', '~> decoded "url" value fully');
+				t.is(req.params.foo, 'føøß∂r', '~> decoded "params.foo" segment');
+				t.is(req.query.phone, '+8675309', '~~> does NOT decode "req.query" keys twice');
+				res.end('done');
+			})
+	);
+
+	let app = polka().use('/sub', sub);
+	let uri = listen(app);
+
+	let r = await get(uri + '/sub/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309')
+	t.is(r.statusCode, 200, '~> received 200 status');
+	t.is(r.data, 'done', '~> received response');
+	app.server.close();
+});
