@@ -124,6 +124,15 @@ test('(url) rerun if changed', t => {
 	t.end();
 });
 
+test('(url) repeat query keys', t => {
+	let url = '/foo?bar=1&bar=2&bar=3&baz=&bat';
+
+	t.same(fn({ url }).query, 'bar=1&bar=2&bar=3&baz=&bat');
+	t.same(fn({ url }, true).query, { bar:['1','2','3'], baz:'', bat:'' });
+
+	t.end();
+});
+
 test('(url) decoded', t => {
 	let req = { url: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r' };
 
