@@ -271,7 +271,7 @@ test('(polka) middleware – async', async t => {
 
 
 test('(polka) middleware – sequencing', async t => {
-	t.plan(12);
+	t.plan(15);
 
 	function foo(req, res, next) {
 		t.is(req.val = 1, 1, '~> foo saw 1');
@@ -285,6 +285,10 @@ test('(polka) middleware – sequencing', async t => {
 
 	let app = (
 		polka()
+			.get('/foo', (req, res) => {
+				t.is(req.val, undefined, '~> get("/foo") ran before any mware');
+				res.end('foo');
+			})
 			.use(foo, bar)
 			.get('/sub', (req, res) => {
 				t.is(++req.val, 3, '~> get("/sub") saw 3');
@@ -315,6 +319,11 @@ test('(polka) middleware – sequencing', async t => {
 	let r2 = await post(uri + '/sub');
 	t.is(r2.statusCode, 200, '~> received 200 status');
 	t.is(r2.data, 'ran=5', '~> received "ran=5" response');
+
+	console.log('GET "/foo"');
+	let r3 = await get(uri + '/foo');
+	t.is(r3.statusCode, 200, '~> received 200 status');
+	t.is(r3.data, 'foo', '~> received "foo" response');
 
 	app.server.close();
 });
