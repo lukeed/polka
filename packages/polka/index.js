@@ -10,7 +10,6 @@ function onError(err, req, res) {
 class Polka extends Router {
 	constructor(opts={}) {
 		super();
-		this.wares = [];
 		this.parse = parser;
 		this.server = opts.server;
 		this.handler = this.handler.bind(this);
@@ -21,9 +20,9 @@ class Polka extends Router {
 
 	use(base, ...fns) {
 		if (typeof base === 'function') {
-			this.wares = this.wares.concat(base, fns);
+			super.use('/', base, fns);
 		} else if (base === '/') {
-			this.wares = this.wares.concat(fns);
+			super.use(base, fns);
 		} else {
 			base.startsWith('/') || (base=`/${base}`);
 			super.use(base,
@@ -32,7 +31,7 @@ class Polka extends Router {
 					req.path = req.path.substring(base.length) || '/';
 					next();
 				},
-				...fns.map(fn => fn instanceof Polka ? fn.attach : fn),
+				fns.map(fn => fn instanceof Polka ? fn.attach : fn),
 				(req, _, next) => {
 					req.url = req._parsedUrl.url;
 					req.path = req._parsedUrl.pathname;
@@ -59,7 +58,7 @@ class Polka extends Router {
 		req.search = info.search;
 
 		try {
-			let i=0, arr=this.wares.concat(obj.handlers, this.onNoMatch), len=arr.length;
+			let i=0, arr=obj.handlers.concat(this.onNoMatch), len=arr.length;
 			let loop = () => res.finished || (i < len) && arr[i++](req, res, next);
 			next = next || (err => err ? this.onError(err, req, res, next) : loop());
 			loop(); // init
