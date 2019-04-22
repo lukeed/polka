@@ -16,9 +16,6 @@ test('(polka) internals', t => {
 	let app = polka();
 	let proto = app.__proto__;
 
-	t.isArray(app.wares, 'app.wares is an array');
-	t.isEmpty(app.wares, '~> is empty');
-
 	t.same(app.server, undefined, 'app.server is `undefined` initially');
 
 	t.isFunction(app.parse, 'app.parse is a function');
@@ -90,7 +87,7 @@ test('(polka) basics', t => {
 
 
 test('(polka) variadic handlers', async t => {
-	t.plan(24);
+	t.plan(23);
 
 	function foo(req, res, next) {
 		req.foo = req.foo || 0;
@@ -143,11 +140,10 @@ test('(polka) variadic handlers', async t => {
 			})
 	);
 
-	t.is(app.wares.length, 2, 'added 2 middleware');
-	t.is(app.routes.length, 3, 'added 3 routes in total');
-	t.is(app.find('GET', '/one').handlers.length, 3, '~> has 3 handlers for "GET /one" route');
-	t.is(app.find('GET', '/two').handlers.length, 3, '~> has 3 handlers for "GET /two" route');
-	t.is(app.find('GET', '/err').handlers.length, 3, '~> has 3 handlers for "GET /err" route');
+	t.is(app.routes.length, 4, 'added 3 routes in total'); // use(foo, bar) ~> 1 declaration
+	t.is(app.find('GET', '/one').handlers.length, 5, '~> has 5 handlers for "GET /one" route');
+	t.is(app.find('GET', '/two').handlers.length, 5, '~> has 5 handlers for "GET /two" route');
+	t.is(app.find('GET', '/err').handlers.length, 5, '~> has 5 handlers for "GET /err" route');
 
 	let uri = listen(app);
 	let r = await get(uri + '/one');
@@ -168,7 +164,7 @@ test('(polka) variadic handlers', async t => {
 
 
 test('(polka) middleware', async t => {
-	t.plan(22);
+	t.plan(21);
 
 	let app = (
 		polka()
@@ -208,8 +204,7 @@ test('(polka) middleware', async t => {
 			})
 	);
 
-	t.is(app.wares.length, 2, 'added 2 middleware functions');
-	t.is(app.routes.length, 5, 'added 5 routes in total');
+	t.is(app.routes.length, 7, 'added 7 routes in total');
 
 	let uri = listen(app);
 	console.log('GET /');
@@ -238,7 +233,7 @@ test('(polka) middleware', async t => {
 
 
 test('(polka) middleware – async', async t => {
-	t.plan(8);
+	t.plan(7);
 
 	let app = (
 		polka().use(async (req, res, next) => {
@@ -256,8 +251,7 @@ test('(polka) middleware – async', async t => {
 		})
 	);
 
-	t.is(app.wares.length, 2, 'added 2 middleware');
-	t.is(app.routes.length, 1, 'added 1 routes in total');
+	t.is(app.routes.length, 3, 'added 3 routes in total');
 
 	let uri = listen(app);
 
@@ -434,7 +428,7 @@ test('(polka) middleware – use("foo/:bar")', async t => {
 
 
 test('(polka) middleware – originalUrl + mutation', async t => {
-	t.plan(43);
+	t.plan(42);
 
 	let chk = false;
 	let aaa = (req, res, next) => (req.aaa='aaa',next());
@@ -481,12 +475,12 @@ test('(polka) middleware – originalUrl + mutation', async t => {
 			})
 	);
 
-	t.is(app.wares.length, 3, 'added 3 middleware');
-	t.is(app.routes.length, 3, 'added 3 routes in total');
-	t.is(app.find('GET', '/foo').handlers.length, 3, '~> has 3 handlers for "GET /foo" route');
-	t.is(app.find('POST', '/foo').handlers.length, 3, '~> has 3 handlers for "POST /foo" route');
-	t.is(app.find('GET', '/bar').handlers.length, 4, '~> has 4 handlers for "GET /bar" route');
-	t.is(app.find('POST', '/bar').handlers.length, 4, '~> has 4 handlers for "POST /bar" route');
+	t.is(app.routes.length, 4, 'added 4 routes in total');
+	// .use('/any') ~> adds 1 BEFORE & 1 AFTER middleware (prep + cleanup)
+	t.is(app.find('GET', '/foo').handlers.length, 6, '~> has 6 handlers for "GET /foo" route');
+	t.is(app.find('POST', '/foo').handlers.length, 6, '~> has 6 handlers for "POST /foo" route');
+	t.is(app.find('GET', '/bar').handlers.length, 7, '~> has 7 handlers for "GET /bar" route');
+	t.is(app.find('POST', '/bar').handlers.length, 7, '~> has 7 handlers for "POST /bar" route');
 
 	let uri = listen(app);
 
