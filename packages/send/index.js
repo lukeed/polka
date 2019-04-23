@@ -42,7 +42,7 @@ module.exports = function (res, code=200, data='', headers={}) {
 		delete obj[LENGTH];
 		delete obj[TYPE];
 		data = '';
-	} else if (res.socket.parser.incoming.method === 'HEAD') {
+	} else if (res.socket.parser && res.socket.parser.incoming.method === 'HEAD') {
 		data = '';
 	}
 
