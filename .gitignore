@@ -5,3 +5,5 @@ package-lock.json
 coverage
 *.lock
 *.log
+
+packages/*/index.js

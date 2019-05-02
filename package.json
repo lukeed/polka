@@ -7,11 +7,13 @@
   },
   "scripts": {
     "bootstrap": "lerna bootstrap --hoist",
+    "build": "lerna exec bundt index.mjs",
     "lint": "eslint packages --env node,es6",
     "pretest": "npm run lint && npm run bootstrap",
     "test": "tape packages/*/test/*.js | tap-spec"
   },
   "devDependencies": {
+    "bundt": "0.4.0",
     "eslint": "5.15.0",
     "httpie": "1.1.0",
     "lerna": "3.13.4",
