@@ -6,15 +6,17 @@
     "url": "https://lukeed.com"
   },
   "scripts": {
+    "prepack": "npm run build",
     "bootstrap": "lerna bootstrap --hoist",
     "build": "lerna exec bundt index.mjs",
     "lint": "eslint packages --env node,es6",
     "pretest": "npm run lint && npm run bootstrap",
-    "test": "tape packages/*/test/*.js | tap-spec"
+    "test": "tape -r esm packages/*/test/*.js | tap-spec"
   },
   "devDependencies": {
     "bundt": "0.4.0",
     "eslint": "5.15.0",
+    "esm": "3.2.22",
     "httpie": "1.1.0",
     "lerna": "3.13.4",
     "tap-spec": "5.0.0",
@@ -23,7 +25,8 @@
   "eslintConfig": {
     "extends": "eslint:recommended",
     "parserOptions": {
-      "ecmaVersion": 8
+      "ecmaVersion": 10,
+      "sourceType": "module"
     },
     "overrides": [
       {

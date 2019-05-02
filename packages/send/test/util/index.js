@@ -1,9 +1,9 @@
-const { STATUS_CODES } = require('http');
+import { STATUS_CODES } from 'http';
 
-exports.toStatusText = code => STATUS_CODES[code];
+export const toStatusText = code => STATUS_CODES[code];
 
 // Incomplete but sufficient mock
-exports.Response = class Response {
+export class Response {
 	constructor(req={}) {
 		this.body = '';
 		this.headers = {};
@@ -41,4 +41,4 @@ exports.Response = class Response {
 	hasHeader(key) {
 		return this.headers[key.toLowerCase()] !== void 0;
 	}
-};
+}

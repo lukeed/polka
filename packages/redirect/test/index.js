@@ -1,5 +1,5 @@
-const test = require('tape');
-const fn = require('../');
+import test from 'tape';
+import fn from '../index.mjs';
 
 test.Test.prototype.isRedirect = function (arr, code=302) {
 	let [starting, next, result] = arr;

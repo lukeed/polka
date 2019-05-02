@@ -1,4 +1,4 @@
-const tape = require('tape');
+import tape from 'tape';
 
 Object.assign(tape.Test.prototype, {
 	isEmpty(val, msg) {
@@ -15,10 +15,10 @@ Object.assign(tape.Test.prototype, {
 	}
 });
 
-exports.test = tape;
+export const test = tape;
 
-exports.listen = function (app, host) {
+export function listen(app, host) {
 	app.listen(); // boots
 	let { port } = app.server.address();
 	return `http://${host || 'localhost'}:${port}`;
-};
+}

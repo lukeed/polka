@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-const http = require('http');
-const { get, send, post } = require('httpie');
-const { test, listen } = require('./util');
-const polka = require('../');
+import http from 'http';
+import { get, send, post } from 'httpie';
+import { test, listen } from './util';
+import polka from '../index.mjs';
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 

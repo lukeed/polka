@@ -1,6 +1,6 @@
-const test = require('tape');
-const { parse } = require('url');
-const fn = require('../');
+import test from 'tape';
+import { parse } from 'url';
+import fn from '../index.mjs';
 
 const keys = ['protocol', 'slashes', 'auth', 'host', 'port', 'hostname', 'hash'];
 

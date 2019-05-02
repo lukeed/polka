@@ -1,8 +1,8 @@
-const fs = require('fs');
-const test = require('tape');
-const { join } = require('path');
-const { Response, toStatusText } = require('./util');
-const send = require('../');
+import fs from 'fs';
+import test from 'tape';
+import { join } from 'path';
+import { Response, toStatusText } from './util';
+import send from '../index.mjs';
 
 const TYPE = 'Content-Type';
 const LENGTH = 'Content-Length';
