@@ -6,9 +6,8 @@
     "url": "https://lukeed.com"
   },
   "scripts": {
-    "prepack": "npm run build",
-    "bootstrap": "lerna bootstrap --hoist",
     "build": "lerna exec bundt index.mjs",
+    "bootstrap": "lerna bootstrap --hoist",
     "lint": "eslint packages --env node,es6",
     "pretest": "npm run lint && npm run bootstrap",
     "test": "tape -r esm packages/*/test/*.js | tap-spec"
