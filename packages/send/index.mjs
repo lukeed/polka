@@ -1,11 +1,11 @@
-const { STATUS_CODES } = require('http');
-const { createHash } = require('crypto');
+import { STATUS_CODES } from 'http';
+import { createHash } from 'crypto';
 
 const TYPE = 'Content-Type';
 const LENGTH = 'Content-Length';
 const OSTREAM = 'application/octet-stream';
 
-module.exports = function (res, code=200, data='', headers={}) {
+export default function (res, code=200, data='', headers={}) {
 	let k, obj={};
 	for (k in headers) {
 		obj[k.toLowerCase()] = headers[k];

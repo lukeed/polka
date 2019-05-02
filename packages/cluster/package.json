@@ -3,9 +3,12 @@
   "name": "@polka/cluster",
   "repository": "lukeed/polka",
   "description": "Intialize and run a HTTP cluster",
+  "module": "index.mjs",
+  "main": "index.js",
   "license": "MIT",
   "files": [
-    "*.js"
+    "*.js",
+    "*.mjs"
   ],
   "author": {
     "name": "Luke Edwards",

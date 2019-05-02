@@ -1,6 +1,6 @@
-const { resolve } = require('url');
+import { resolve } from 'url';
 
-module.exports = function (res, code=302, location='') {
+export default function (res, code=302, location='') {
 	if (!location && typeof code === 'string') {
 		location = code;
 		code = 302;
@@ -19,4 +19,4 @@ module.exports = function (res, code=302, location='') {
 	});
 
 	res.end();
-};
+}

@@ -1,8 +1,8 @@
-const { parse } = require('querystring');
+import { decode } from 'querystring';
 
 const noop = x => x;
 
-exports.parse = function (opts={}) {
+export function parse(opts={}) {
 	const { type, encoding='utf-8', parser=noop } = opts;
 	const limit = opts.limit || 100 * 1024; // 100kb
 
@@ -49,25 +49,25 @@ exports.parse = function (opts={}) {
 	};
 }
 
-exports.json = function (opts={}) {
+export function json(opts={}) {
 	const { limit, parser=JSON.parse } = opts;
 	const type = opts.type || 'application/json';
-	return exports.parse({ type, parser, limit });
+	return parse({ type, parser, limit });
 }
 
-exports.urlencoded = function (opts={}) {
-	const { parser=parse, limit } = opts;
+export function urlencoded(opts={}) {
+	const { parser=decode, limit } = opts;
 	const type = opts.type || 'application/x-www-form-urlencoded';
-	return exports.parse({ type, parser, limit });
+	return parse({ type, parser, limit });
 }
 
-exports.raw = function (opts={}) {
+export function raw(opts={}) {
 	const { limit, encoding=null } = opts;
 	const type = opts.type || 'application/octet-stream';
-	return exports.parse({ limit, type, encoding });
+	return parse({ limit, type, encoding });
 }
 
-exports.text = function (opts={}) {
+export function text(opts={}) {
 	const { limit, type='text/plain' } = opts;
-	return exports.parse({ limit, type });
+	return parse({ limit, type });
 }

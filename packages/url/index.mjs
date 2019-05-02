@@ -7,7 +7,7 @@ function parse(str) {
 	return out;
 }
 
-module.exports = function (req, toDecode) {
+export default function (req, toDecode) {
 	let url = req.url;
 	if (url == null) return;
 

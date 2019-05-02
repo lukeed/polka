@@ -3,9 +3,12 @@
   "name": "@polka/parse",
   "repository": "lukeed/polka",
   "description": "WIP",
+  "module": "index.mjs",
+  "main": "index.js",
   "license": "MIT",
   "files": [
-    "*.js"
+    "*.js",
+    "*.mjs"
   ],
   "author": {
     "name": "Luke Edwards",

@@ -3,9 +3,12 @@
   "name": "@polka/url",
   "repository": "lukeed/polka",
   "description": "Super fast, memoized `req.url` parser",
+  "module": "index.mjs",
+  "main": "index.js",
   "license": "MIT",
   "files": [
-    "*.js"
+    "*.js",
+    "*.mjs"
   ],
   "author": {
     "name": "Luke Edwards",

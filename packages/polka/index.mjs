@@ -1,6 +1,6 @@
-const http = require('http');
-const Router = require('trouter');
-const parser = require('@polka/url');
+import http from 'http';
+import Router from 'trouter';
+import parser from '@polka/url';
 
 function onError(err, req, res) {
 	let code = (res.statusCode = err.code || err.status || 500);
@@ -68,4 +68,6 @@ class Polka extends Router {
 	}
 }
 
-module.exports = opts => new Polka(opts);
+export default function (opts) {
+	return new Polka(opts);
+}

@@ -3,9 +3,12 @@
   "name": "@polka/redirect",
   "repository": "lukeed/polka",
   "description": "A response helper for URL redirects",
+  "module": "index.mjs",
+  "main": "index.js",
   "license": "MIT",
   "files": [
-    "*.js"
+    "*.js",
+    "*.mjs"
   ],
   "author": {
     "name": "Luke Edwards",
