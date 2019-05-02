@@ -7,7 +7,7 @@ before_script:
   - npm i -g nyc codecov
 
 script:
-  - nyc npm test
+  - nyc --extension=.mjs npm test
 
 after_success:
   - nyc report --reporter=text-lcov > coverage.lcov
