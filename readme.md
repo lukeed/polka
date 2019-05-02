@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/lukeed/polka/raw/master/polka.png" alt="Polka" width="400" height="300" />
+  <img src="https://github.com/lukeed/polka/raw/master/polka.png" alt="Polka" width="400" />
 </div>
 
 <h1 align="center">Polka</h1>
