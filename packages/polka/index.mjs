@@ -33,7 +33,7 @@ class Polka extends Router {
 				},
 				fns.map(fn => fn instanceof Polka ? fn.attach : fn),
 				(req, _, next) => {
-					req.url = req._parsedUrl.url;
+					req.url = req._parsedUrl.href;
 					req.path = req._parsedUrl.pathname;
 					next()
 				}

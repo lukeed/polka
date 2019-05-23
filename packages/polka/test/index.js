@@ -516,6 +516,34 @@ test('(polka) middleware – originalUrl + mutation', async t => {
 });
 
 
+test('(polka) middleware only w/ mutation', async t => {
+	t.plan(5);
+
+	let app = (
+		polka()
+			.use('/foo', (req, rest, next) => {
+				t.is(req.url, '/123', '~> use("/foo") saw truncated url');
+				next();
+			})
+			.use('/foo/:id', (req, res, next) => {
+				t.is(req.url, '/', '~> use("/foo/:id") saw truncated url');
+				next();
+			})
+			.get('/foo/:id', (req, res) => {
+				t.is(req.url, '/foo/123', '~> get("/foo/:id") saw full url');
+				res.end(req.url);
+			})
+	);
+
+	let uri = listen(app);
+
+	let res = await get(uri + '/foo/123');
+	t.is(res.statusCode, 200, '~> received 200 status');
+	t.is(res.data, '/foo/123', '~> received "/foo/123" response');
+	app.server.close();
+});
+
+
 test('(polka) middleware w/ wildcard', async t => {
 	t.plan(29);
 	let expect;
