@@ -324,7 +324,7 @@ test('(polka) middleware – sequencing', async t => {
 
 
 test('(polka) middleware – use("foo/bar")', async t => {
-	t.plan(12);
+	t.plan(16);
 
 	function foo(req, res, next) {
 		t.is(req.val = 1, 1, '~> foo saw 1');
@@ -341,18 +341,22 @@ test('(polka) middleware – use("foo/bar")', async t => {
 			.use(foo, bar)
 			.get('/api/v1', (req, res) => {
 				t.is(++req.val, 3, '~> get("/api/v1") saw 3');
+				t.is(req.url, '/api/v1', '~> get("/api/v1") had correct url'); // 1
 				res.end('ran=' + req.val);
 			})
 			.use('/api/v1', (req, res, next) => {
 				t.is(++req.val, 3, '~> use("/api/v1") saw 3');
+				t.is(req.url, '/hello', '~> use("/api/v1") had correct url'); // 1
 				next();
 			})
 			.post('*', (req, res, next) => {
 				t.is(++req.val, 4, '~> post("*") saw 4');
+				t.is(req.url, '/api/v1/hello', '~> post("*") had correct url'); //
 				next();
 			})
 			.post('/api/v1/hello', (req, res) => {
 				t.is(++req.val, 5, '~> post("/api/v1/hello") saw 5');
+				t.is(req.url, '/api/v1/hello', '~> post("/api/v1/hello") had correct url');
 				res.end('ran=' + req.val);
 			})
 	);
@@ -374,7 +378,7 @@ test('(polka) middleware – use("foo/bar")', async t => {
 
 
 test('(polka) middleware – use("foo/:bar")', async t => {
-	t.plan(16);
+	t.plan(20);
 
 	function foo(req, res, next) {
 		t.is(req.val = 1, 1, '~> foo saw 1');
@@ -391,21 +395,25 @@ test('(polka) middleware – use("foo/:bar")', async t => {
 			.use(foo, bar)
 			.get('/api/:version', (req, res) => {
 				t.is(++req.val, 3, '~> get("/api/:version") saw 3');
+				t.is(req.url, '/api/v1', '~> get("/api/:version") had correct url'); // 1
 				t.is(req.params.version, 'v1', '~> req.params.version correct');
 				res.end('ran=' + req.val);
 			})
 			.use('/api/:version', (req, res, next) => {
 				t.is(++req.val, 3, '~> use("/api/:version") saw 3');
+				t.is(req.url, '/', '~> use("/api/:version") had correct url'); // 1
 				t.is(req.params.version, 'v2', '~> req.params.version correct');
 				next();
 			})
 			.post('*', (req, res, next) => {
 				t.is(++req.val, 4, '~> post("*") saw 4');
+				t.is(req.url, '/api/v2/hello', '~> post("*") had correct url');
 				t.is(req.params.version, 'v2', '~> req.params.version correct');
 				next();
 			})
 			.post('/api/:version/hello', (req, res) => {
 				t.is(++req.val, 5, '~> post("/api/:version/hello") saw 5');
+				t.is(req.url, '/api/v2/hello', '~> post("/api/:version/hello") had correct url');
 				t.is(req.params.version, 'v2', '~> req.params.version correct');
 				res.end('ran=' + req.val);
 			})
