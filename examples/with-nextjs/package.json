@@ -5,9 +5,9 @@
     "start": "NODE_ENV=production node index.js"
   },
   "dependencies": {
-    "next": "latest",
+    "next": "8.1.0",
     "polka": "latest",
-    "react": "16.2.0",
-    "react-dom": "16.2.0"
+    "react": "16.8.6",
+    "react-dom": "16.8.6"
   }
 }
