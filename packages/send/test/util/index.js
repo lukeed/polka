@@ -6,8 +6,8 @@ export const toStatusText = code => STATUS_CODES[code];
 export class Response {
 	constructor(req={}) {
 		this.body = '';
-		this.headers = {};
 		this.statusCode = 200;
+		this.headers = new Map();
 		this.socket = {
 			parser: { incoming:req }
 		};
@@ -18,27 +18,29 @@ export class Response {
 	writeHead(int, obj) {
 		this.statusCode = int;
 		for (let k in obj) {
-			this.headers[k.toLowerCase()] = obj[k];
+			this.headers.set(k, obj[k]);
 		}
 	}
 	getHeaders() {
-		return this.headers;
+		let out = {};
+		this.headers.forEach((v, k) => out[k] = v);
+		return out;
 	}
 	getHeaderNames() {
-		let k, arr=[];
-		for (k in this.headers) arr.push(k);
-		return arr;
+		return [...this.headers.keys()];
 	}
 	getHeader(key) {
-		return this.headers[key.toLowerCase()];
+		let iter = this.headers.entries();
+		let arr, rgx = new RegExp(`^(${key})$`, 'i');
+		for (arr of iter) if (rgx.test(arr[0])) return arr[1];
 	}
 	setHeader(key, val) {
-		this.headers[key.toLowerCase()] = val;
+		this.headers.set(key, val);
 	}
 	removeHeader(key) {
-		delete this.headers[key.toLowerCase()];
+		this.headers.delete(key);
 	}
 	hasHeader(key) {
-		return this.headers[key.toLowerCase()] !== void 0;
+		return this.headers.has(key);
 	}
 }
