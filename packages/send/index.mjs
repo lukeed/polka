@@ -29,6 +29,8 @@ export default function (res, code=200, data='', headers={}) {
 
 	obj[TYPE] = type || 'text/plain';
 	obj[LENGTH] = Buffer.byteLength(data);
+	delete obj[LENGTH.toLowerCase()];
+	delete obj[TYPE.toLowerCase()];
 
 	if (obj.etag) {
 		let hash = createHash('sha1').update(data).digest('base64').substring(0, 27);
