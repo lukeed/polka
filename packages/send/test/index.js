@@ -166,6 +166,29 @@ test('(send) headers – Object', t => {
 	t.end();
 });
 
+test('(send) headers – Object :: case insensitive', t => {
+	let obj = { foo:123 };
+	let str = JSON.stringify(obj);
+
+	let foo = new Response();
+	send(foo, 500, obj, { 'content-type':'foo/bar' });
+	t.is(foo.statusCode, 500, 'set statusCode: 500');
+	t.is(foo.getHeaderNames().length, 2, 'total headers added: 2');
+	t.is(foo.getHeader(TYPE), 'foo/bar', 'allow Content-Type override: foo/bar');
+	t.is(foo.getHeader(LENGTH), str.length, `custom header[length]: ${str.length}`);
+	t.is(foo.body, str, `custom body: ${str}`);
+
+	let bar = new Response();
+	send(bar, 500, obj, { 'cOnTeNt-TyPe':'foo/bar' });
+	t.is(bar.statusCode, 500, 'set statusCode: 500');
+	t.is(bar.getHeaderNames().length, 2, 'total headers added: 2');
+	t.is(bar.getHeader(TYPE), 'foo/bar', 'allow Content-Type override: foo/bar');
+	t.is(bar.getHeader(LENGTH), str.length, `custom header[length]: ${str.length}`);
+	t.is(bar.body, str, `custom body: ${str}`);
+
+	t.end();
+});
+
 test('(send) headers – Object :: respect existing', t => {
 	let obj = { foo:123 };
 	let str = JSON.stringify(obj);
