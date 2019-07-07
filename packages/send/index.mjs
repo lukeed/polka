@@ -1,8 +1,8 @@
 import { STATUS_CODES } from 'http';
 import { createHash } from 'crypto';
 
-const TYPE = 'Content-Type';
-const LENGTH = 'Content-Length';
+const TYPE = 'content-type';
+const LENGTH = 'content-length';
 const OSTREAM = 'application/octet-stream';
 
 export default function (res, code=200, data='', headers={}) {
