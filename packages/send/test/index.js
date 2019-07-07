@@ -4,8 +4,8 @@ import { join } from 'path';
 import { Response, toStatusText } from './util';
 import send from '../index.mjs';
 
-const TYPE = 'content-type';
-const LENGTH = 'content-length';
+const TYPE = 'Content-Type';
+const LENGTH = 'Content-Length';
 const INPUT = require.resolve('../');
 
 test('(send) exports', t => {
