@@ -4,6 +4,7 @@ import { get, send, post } from 'httpie';
 import { test, listen } from './util';
 import polka from '../index.mjs';
 
+const hasNamedGroups = 'groups' in /x/.exec('x');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 test('(polka) exports', t => {
@@ -61,9 +62,9 @@ test('(polka) basics', t => {
 	let app = polka();
 
 	let arr = [
-		['GET','/', []],
-		['POST','/users', []],
-		['PUT','/users/:id', ['id']]
+		['GET', '/', []],
+		['POST', '/users', []],
+		['PUT', '/users/:id', ['id']]
 	];
 
 	arr.forEach(def => {
@@ -609,6 +610,49 @@ test('(polka) middleware w/ wildcard', async t => {
 
 	app.server.close();
 });
+
+
+if (hasNamedGroups) {
+	test('(polka) RegExp routes', async t => {
+		t.plan(12);
+
+		let app = (
+			polka()
+				.use('/movies', (req, res, next) => {
+					req.foo = 'foo';
+					next();
+				}) // global
+				.get(/movies[/](?<year>[0-9]{4})[/](?<title>[^/]+)/i, (req, res) => {
+					t.pass('runs the /movies/<year>/<title> route');
+					t.is(req.foo, 'foo', '~> runs after `foo` global middleware');
+					t.is(req.params.year, '1997', '~> receives correct `params.year` value');
+					t.is(req.params.title, 'titanic', '~> receives correct `params.title` value');
+					res.end('bye~!');
+				})
+				.get(/.*/, (req , res) => {
+					t.pass('runs the wildcard route');
+					t.not(req.foo, 'foo', '~> did not run after `foo` global middleware');
+					t.is(req.originalUrl, '/hello-world?foo=bar', '~> sees correct `originalUrl` value');
+					t.is(req.path, '/hello-world', '~> sees correct `path` value');
+					res.end('hello from wildcard');
+				})
+		);
+
+		let uri = listen(app);
+
+		console.log('GET /hello-world?foo=bar');
+		let r1 = await get(uri + '/hello-world?foo=bar');
+		t.is(r1.statusCode, 200, '~> received 200 status');
+		t.is(r1.data, 'hello from wildcard', '~> received "hello from wildcard" response');
+
+		console.log('GET /movies/1997/titanic');
+		let r2 = await get(uri + '/movies/1997/titanic');
+		t.is(r2.statusCode, 200, '~> received 200 status');
+		t.is(r2.data, 'bye~!', '~> received "bye~!" response');
+
+		app.server.close();
+	});
+}
 
 
 test('(polka) errors – `new Error()`', async t => {
