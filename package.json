@@ -8,12 +8,20 @@
   "scripts": {
     "pretest": "lerna bootstrap",
     "prepublish": "cp readme.md packages/polka/.",
-    "test": "tape tests/*.js | tap-spec"
+    "test": "tape tests/*.js | tap-spec",
+    "postinstall": "opencollective-postinstall || true"
   },
   "devDependencies": {
     "axios": "^0.17.1",
     "lerna": "^2.8.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.8.0"
+  },
+  "dependencies": {
+    "opencollective-postinstall": "^2.0.2"
+  },
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/polka"
   }
 }
