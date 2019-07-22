@@ -7,7 +7,7 @@ function onError(err, req, res) {
 	res.end(err.length && err || err.message || http.STATUS_CODES[code]);
 }
 
-class Polka extends Router {
+export class Polka extends Router {
 	constructor(opts={}) {
 		super();
 		this.parse = parser;
