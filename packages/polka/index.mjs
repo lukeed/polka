@@ -24,11 +24,17 @@ class Polka extends Router {
 		} else if (base === '/') {
 			super.use(base, fns);
 		} else {
-			base.startsWith('/') || (base=`/${base}`);
 			super.use(base,
 				(req, _, next) => {
-					req.url = req.url.substring(base.length) || '/';
-					req.path = req.path.substring(base.length) || '/';
+					if (typeof base === 'string') {
+						let len = base.length;
+						base.startsWith('/') || len++;
+						req.url = req.url.substring(len) || '/';
+						req.path = req.path.substring(len) || '/';
+					} else {
+						req.url = req.url.replace(base, '') || '/';
+						req.path = req.path.replace(base, '') || '/';
+					}
 					next();
 				},
 				fns.map(fn => fn instanceof Polka ? fn.attach : fn),

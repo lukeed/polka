@@ -618,7 +618,7 @@ if (hasNamedGroups) {
 
 		let app = (
 			polka()
-				.use('/movies', (req, res, next) => {
+				.use(/movies/i, (req, res, next) => {
 					req.foo = 'foo';
 					next();
 				}) // global
