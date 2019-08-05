@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "1.0.0-next.5",
+  "version": "1.0.0-next.6",
   "name": "@polka/sendfile",
   "repository": "lukeed/polka",
   "description": "WIP",
@@ -14,7 +14,7 @@
     "url": "https://lukeed.com"
   },
   "dependencies": {
-    "@polka/send": "^1.0.0-next.5",
+    "@polka/send": "^1.0.0-next.6",
     "mime": "^2.4.0"
   },
   "publishConfig": {
