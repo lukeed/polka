@@ -614,7 +614,7 @@ test('(polka) middleware w/ wildcard', async t => {
 
 if (hasNamedGroups) {
 	test('(polka) RegExp routes', async t => {
-		t.plan(22);
+		t.plan(29);
 
 		let app = (
 			polka()
@@ -627,11 +627,19 @@ if (hasNamedGroups) {
 				}) // global
 				.use(/^\/books[/](?<title>[^/]+)/i, (req, res) => {
 					t.pass('runs the /books/<title>/i middleware group');
-					t.is(req.originalUrl, '/books/narnia?foo', '~> sees correct `originalUrl` value');
-					t.is(req.path, '/', '~> sees correct `path` value – REPLACED/MATCHED ALL BCUZ PATTERN');
+					t.is(req.originalUrl, '/books/narnia/comments?foo', '~> sees correct `originalUrl` value');
+					t.is(req.path, '/comments', '~> sees correct `path` value – REPLACED PATTERN');
+					t.is(req.url, '/comments?foo', '~> sees correct `url` value – REPLACED PATTERN');
 					t.is(req.params.title, 'narnia', '~> receives correct `params.title` value');
 					t.same(req.query, { foo: '' }, '~> receives correct `req.query` value');
 					res.end('cya~!');
+				}) // global
+				.use(/^\/songs.*/i, (req, res) => {
+					t.pass('runs the /songs.*/i middleware group');
+					t.is(req.originalUrl, '/songs/foo/bar/baz', '~> sees correct `originalUrl` value');
+					t.is(req.path, '/', '~> sees correct `path` value – REPLACED/MATCHED ALL BCUZ PATTERN');
+					t.is(req.url, '/', '~> sees correct `url` value – REPLACED/MATCHED ALL BCUZ PATTERN');
+					res.end('rekt');
 				}) // global
 				.get(/^\/movies[/](?<year>[0-9]{4})[/](?<title>[^/]+)/i, (req, res) => {
 					t.pass('runs the /movies/<year>/<title> route');
@@ -661,10 +669,15 @@ if (hasNamedGroups) {
 		t.is(r2.statusCode, 200, '~> received 200 status');
 		t.is(r2.data, 'bye~!', '~> received "bye~!" response');
 
-		console.log('GET /books/narnia?foo');
-		let r3 = await get(uri + '/books/narnia?foo');
+		console.log('GET /books/narnia/comments?foo');
+		let r3 = await get(uri + '/books/narnia/comments?foo');
 		t.is(r3.statusCode, 200, '~> received 200 status');
 		t.is(r3.data, 'cya~!', '~> received "cya~!" response');
+
+		console.log('GET /songs/foo/bar/baz');
+		let r4 = await get(uri + '/songs/foo/bar/baz');
+		t.is(r4.statusCode, 200, '~> received 200 status');
+		t.is(r4.data, 'rekt', '~> received "rekt" response');
 
 		app.server.close();
 	});
