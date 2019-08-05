@@ -614,15 +614,26 @@ test('(polka) middleware w/ wildcard', async t => {
 
 if (hasNamedGroups) {
 	test('(polka) RegExp routes', async t => {
-		t.plan(12);
+		t.plan(22);
 
 		let app = (
 			polka()
-				.use(/movies/i, (req, res, next) => {
+				.use(/^\/movies/i, (req, res, next) => {
 					req.foo = 'foo';
+					t.pass('runs the /movies/i middleware group');
+					t.is(req.originalUrl, '/movies/1997/titanic', '~> sees correct `originalUrl` value');
+					t.is(req.path, '/1997/titanic', '~> sees correct `path` value');
 					next();
 				}) // global
-				.get(/movies[/](?<year>[0-9]{4})[/](?<title>[^/]+)/i, (req, res) => {
+				.use(/^\/books[/](?<title>[^/]+)/i, (req, res) => {
+					t.pass('runs the /books/<title>/i middleware group');
+					t.is(req.originalUrl, '/books/narnia?foo', '~> sees correct `originalUrl` value');
+					t.is(req.path, '/', '~> sees correct `path` value – REPLACED/MATCHED ALL BCUZ PATTERN');
+					t.is(req.params.title, 'narnia', '~> receives correct `params.title` value');
+					t.same(req.query, { foo: '' }, '~> receives correct `req.query` value');
+					res.end('cya~!');
+				}) // global
+				.get(/^\/movies[/](?<year>[0-9]{4})[/](?<title>[^/]+)/i, (req, res) => {
 					t.pass('runs the /movies/<year>/<title> route');
 					t.is(req.foo, 'foo', '~> runs after `foo` global middleware');
 					t.is(req.params.year, '1997', '~> receives correct `params.year` value');
@@ -649,6 +660,11 @@ if (hasNamedGroups) {
 		let r2 = await get(uri + '/movies/1997/titanic');
 		t.is(r2.statusCode, 200, '~> received 200 status');
 		t.is(r2.data, 'bye~!', '~> received "bye~!" response');
+
+		console.log('GET /books/narnia?foo');
+		let r3 = await get(uri + '/books/narnia?foo');
+		t.is(r3.statusCode, 200, '~> received 200 status');
+		t.is(r3.data, 'cya~!', '~> received "cya~!" response');
 
 		app.server.close();
 	});
