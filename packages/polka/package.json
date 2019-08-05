@@ -1,6 +1,6 @@
 {
   "name": "polka",
-  "version": "1.0.0-next.4",
+  "version": "1.0.0-next.5",
   "repository": "lukeed/polka",
   "description": "A micro web server so fast, it'll make you dance! :dancers:",
   "module": "index.mjs",

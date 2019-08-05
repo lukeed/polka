@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "1.0.0-next.4",
+  "version": "1.0.0-next.5",
   "name": "@polka/uws",
   "repository": "lukeed/polka",
   "description": "WIP",
@@ -14,7 +14,7 @@
     "url": "https://lukeed.com"
   },
   "dependencies": {
-    "polka": "^1.0.0-next.4",
+    "polka": "^1.0.0-next.5",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v15.5.0"
   },
   "publishConfig": {
