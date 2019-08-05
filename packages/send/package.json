@@ -15,6 +15,9 @@
     "email": "luke@lukeed.com",
     "url": "https://lukeed.com"
   },
+  "engines": {
+    "node": ">=6"
+  },
   "publishConfig": {
     "access": "public"
   }
