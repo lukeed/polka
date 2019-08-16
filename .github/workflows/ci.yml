@@ -1,0 +1,33 @@
+name: Node.js CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Node.js v${{ matrix.nodejs }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        nodejs: [8, 10, 12]
+
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.nodejs }}
+
+    - name: Install
+      run: |
+        npm install
+        npm install -g nyc@13 codecov
+
+    - name: Bootstrap, Lint, and Test
+      run: nyc --extension=.mjs npm test
+
+    - name: Report
+      if: matrix.nodejs == 12
+      run: |
+        nyc report --reporter=text-lcov > coverage.lcov
+        codecov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
