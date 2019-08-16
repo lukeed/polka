@@ -12,6 +12,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@master
+      with:
+        fetch-depth: 1
     - uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.nodejs }}
@@ -25,7 +27,7 @@ jobs:
       run: nyc --exclude=tests npm test
 
     - name: Report
-      if: matrix.nodejs == 12
+      if: matrix.nodejs >= 12
       run: |
         nyc report --reporter=text-lcov > coverage.lcov
         codecov
