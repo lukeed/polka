@@ -1,6 +1,6 @@
 name: CI
 
-on: [push, pull_request]
+on: push
 
 jobs:
   test:
@@ -21,7 +21,7 @@ jobs:
     - name: Install
       run: |
         npm install
-        npm install -g nyc@13 codecov
+        npm install -g nyc@13
 
     - name: Bootstrap, Lint, and Test
       run: nyc --exclude=tests npm test
@@ -30,6 +30,6 @@ jobs:
       if: matrix.nodejs >= 12
       run: |
         nyc report --reporter=text-lcov > coverage.lcov
-        codecov
+        bash <(curl -s https://codecov.io/bash)
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
