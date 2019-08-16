@@ -22,7 +22,7 @@ jobs:
         npm install -g nyc@13 codecov
 
     - name: Bootstrap, Lint, and Test
-      run: nyc --extension=.mjs npm test
+      run: nyc --exclude=tests npm test
 
     - name: Report
       if: matrix.nodejs == 12
