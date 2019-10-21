@@ -11,7 +11,7 @@
     "test": "tape tests/*.js | tap-spec"
   },
   "devDependencies": {
-    "axios": "^0.17.1",
+    "axios": "^0.19.0",
     "lerna": "^2.8.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.8.0"
