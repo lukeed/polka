@@ -21,12 +21,10 @@ class Polka extends Router {
 	}
 
 	use(base, ...fns) {
-		if (typeof base === 'function') {
-			super.use('/', base, fns);
-		} else if (base === '/') {
+		if (base === '/') {
 			super.use(base, fns.map(mount));
-		} else if (base instanceof Polka) {
-			super.use('/', [base.attach, ...fns.map(mount)]);
+		} else if (typeof base === 'function' || base instanceof Polka) {
+			super.use('/', [base, ...fns].map(mount));
 		} else {
 			super.use(base,
 				(req, _, next) => {
