@@ -7,6 +7,8 @@ function onError(err, req, res) {
 	res.end(err.length && err || err.message || http.STATUS_CODES[code]);
 }
 
+const mount = fn => fn instanceof Polka ? fn.attach : fn;
+
 class Polka extends Router {
 	constructor(opts={}) {
 		super();
@@ -22,7 +24,9 @@ class Polka extends Router {
 		if (typeof base === 'function') {
 			super.use('/', base, fns);
 		} else if (base === '/') {
-			super.use(base, fns);
+			super.use(base, fns.map(mount));
+		} else if (base instanceof Polka) {
+			super.use('/', [base.attach, ...fns.map(mount)]);
 		} else {
 			super.use(base,
 				(req, _, next) => {
@@ -37,7 +41,7 @@ class Polka extends Router {
 					}
 					next();
 				},
-				fns.map(fn => fn instanceof Polka ? fn.attach : fn),
+				fns.map(mount),
 				(req, _, next) => {
 					req.url = req._parsedUrl.href;
 					req.path = req._parsedUrl.pathname;

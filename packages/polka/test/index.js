@@ -324,6 +324,136 @@ test('(polka) middleware – sequencing', async t => {
 });
 
 
+test('(polka) middleware - use(subapp)', async t => {
+	t.plan(21);
+
+	function foo(req, res, next) {
+		t.is(req.main, true, '~> FOO ran after MAIN');
+		req.foo = true;
+		next();
+	}
+
+	function bar(req, res, next) {
+		t.is(req.main, true, '~> BAR ran after MAIN');
+		t.is(req.foo, true, '~> BAR ran after FOO');
+		req.bar = true;
+		next();
+	}
+
+	const sub = (
+		polka()
+			.use(bar)
+			.use((req, res, next) => {
+				t.is(req.main, true, '~> SUB ran after MAIN');
+				t.is(req.foo, true, '~> SUB ran after FOO');
+				t.is(req.bar, true, '~> SUB ran after BAR');
+				req.sub = true;
+				next();
+			})
+			.get('/item', (req, res) => {
+				t.pass('~> HANDLER for sub("/item") ran');
+				t.is(req.main, true, '~> HANDLER ran after MAIN');
+				t.is(req.foo, true, '~> HANDLER ran after FOO');
+				t.is(req.bar, true, '~> HANDLER ran after BAR');
+				t.is(req.sub, true, '~> HANDLER ran after SUB');
+				res.end('item');
+			})
+	);
+
+	// Construct the main application
+	const main = (
+		polka()
+			.use((req, res, next) => {
+				req.main = true;
+				next();
+			})
+			.use('/', foo, sub)
+	);
+
+	let uri = listen(main);
+
+	console.log('GET "/item"');
+	// `sub` has the "/item" route
+	let res = await get(uri + '/item'); // +10
+	t.is(res.statusCode, 200, '~> received 200 status');
+	t.is(res.data, 'item', '~> received "item" response');
+
+	console.log('GET "/unknown"');
+	// 404 from `sub` application, no route
+	await get(uri + '/unknown').catch(err => { // +6
+		t.is(err.statusCode, 404, '~> received 404 status');
+		t.is(err.data, 'Not Found', '~> received "Not Found" response');
+	});
+
+	main.server.close();
+});
+
+
+test('(polka) middleware - use("/", subapp)', async t => {
+	t.plan(21);
+
+	function foo(req, res, next) {
+		t.is(req.main, true, '~> FOO ran after MAIN');
+		req.foo = true;
+		next();
+	}
+
+	function bar(req, res, next) {
+		t.is(req.main, true, '~> BAR ran after MAIN');
+		t.is(req.foo, true, '~> BAR ran after FOO');
+		req.bar = true;
+		next();
+	}
+
+	const sub = (
+		polka()
+			.use(bar)
+			.use((req, res, next) => {
+				t.is(req.main, true, '~> SUB ran after MAIN');
+				t.is(req.foo, true, '~> SUB ran after FOO');
+				t.is(req.bar, true, '~> SUB ran after BAR');
+				req.sub = true;
+				next();
+			})
+			.get('/item', (req, res) => {
+				t.pass('~> HANDLER for sub("/item") ran');
+				t.is(req.main, true, '~> HANDLER ran after MAIN');
+				t.is(req.foo, true, '~> HANDLER ran after FOO');
+				t.is(req.bar, true, '~> HANDLER ran after BAR');
+				t.is(req.sub, true, '~> HANDLER ran after SUB');
+				res.end('item');
+			})
+	);
+
+	// Construct the main application
+	const main = (
+		polka()
+			.use((req, res, next) => {
+				req.main = true;
+				next();
+			})
+			.use('/', foo, sub)
+	);
+
+	let uri = listen(main);
+
+	console.log('GET "/item"');
+	// `sub` has the "/item" route
+	let res = await get(uri + '/item'); // +10
+	t.is(res.statusCode, 200, '~> received 200 status');
+	t.is(res.data, 'item', '~> received "item" response');
+
+	console.log('GET "/unknown"');
+	// 404 from `sub` application, no route
+	await get(uri + '/unknown').catch(err => { // +6
+		t.is(err.statusCode, 404, '~> received 404 status');
+		t.is(err.data, 'Not Found', '~> received "Not Found" response');
+	});
+
+	main.server.close();
+});
+
+
 test('(polka) middleware – use("foo/bar")', async t => {
 	t.plan(16);
 
