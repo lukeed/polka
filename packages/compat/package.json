@@ -1,6 +1,6 @@
 {
   "private": true,
-  "version": "1.0.0-next.6",
+  "version": "1.0.0-next.7",
   "name": "@polka/compat",
   "repository": "lukeed/polka",
   "description": "WIP",
@@ -16,9 +16,9 @@
     "url": "https://lukeed.com"
   },
   "dependencies": {
-    "@polka/redirect": "^1.0.0-next.3",
-    "@polka/send": "^1.0.0-next.6",
-    "@polka/sendfile": "^1.0.0-next.6",
+    "@polka/redirect": "^1.0.0-next.7",
+    "@polka/send": "^1.0.0-next.7",
+    "@polka/sendfile": "^1.0.0-next.7",
     "mime": "^2.4.0"
   },
   "publishConfig": {
