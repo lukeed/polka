@@ -25,7 +25,7 @@ jobs:
       run: nyc --include=packages/*/index.js npm test
 
     - name: Report
-      if: matrix.nodejs == 12
+      if: matrix.nodejs >= 12
       run: |
         nyc report --reporter=text-lcov > coverage.lcov
         codecov
