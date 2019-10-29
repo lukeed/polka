@@ -1,5 +1,5 @@
 import test from 'tape';
-import fn from '../index.mjs';
+import fn from '../index';
 
 test.Test.prototype.isRedirect = function (arr, code=302) {
 	let [starting, next, result] = arr;

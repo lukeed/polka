@@ -2,7 +2,7 @@
 import http from 'http';
 import { get, send, post } from 'httpie';
 import { test, listen } from './util';
-import polka from '../index.mjs';
+import polka from '../index';
 
 const hasNamedGroups = 'groups' in /x/.exec('x');
 const sleep = ms => new Promise(r => setTimeout(r, ms));

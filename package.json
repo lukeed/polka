@@ -6,7 +6,7 @@
     "url": "https://lukeed.com"
   },
   "scripts": {
-    "build": "lerna exec bundt index.mjs",
+    "build": "lerna exec bundt index.js",
     "bootstrap": "lerna bootstrap --hoist",
     "lint": "eslint packages --env node,es6",
     "pretest": "npm run lint && npm run bootstrap",
@@ -15,11 +15,11 @@
   "devDependencies": {
     "bundt": "0.4.0",
     "eslint": "5.15.0",
-    "esm": "3.2.22",
+    "esm": "3.2.25",
     "httpie": "1.1.0",
     "lerna": "3.13.4",
     "tap-spec": "5.0.0",
-    "tape": "4.10.1"
+    "tape": "4.11.0"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",

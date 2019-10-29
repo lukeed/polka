@@ -2,7 +2,7 @@ import fs from 'fs';
 import test from 'tape';
 import { join } from 'path';
 import { Response, toStatusText } from './util';
-import send from '../index.mjs';
+import send from '../index';
 
 const TYPE = 'Content-Type';
 const LENGTH = 'Content-Length';

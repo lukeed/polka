@@ -3,7 +3,7 @@ global.native = require('url');
 const { Suite } = require('benchmark');
 global.querystring = require('querystring');
 global.parseurl = require('parseurl');
-global.parse = require('../');
+global.parse = require('../build');
 
 global.nativeDecode = function (url) {
 	let obj = global.native.parse(url, true);

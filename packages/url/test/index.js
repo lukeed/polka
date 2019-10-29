@@ -1,6 +1,6 @@
 import test from 'tape';
 import { parse } from 'url';
-import fn from '../index.mjs';
+import fn from '../index';
 
 const keys = ['protocol', 'slashes', 'auth', 'host', 'port', 'hostname', 'hash'];
 

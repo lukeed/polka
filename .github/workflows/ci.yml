@@ -19,10 +19,10 @@ jobs:
     - name: Install
       run: |
         npm install
-        npm install -g nyc@13 codecov
+        npm install -g nyc codecov
 
     - name: Bootstrap, Lint, and Test
-      run: nyc --extension=.mjs npm test
+      run: nyc --include=packages/*/index.js npm test
 
     - name: Report
       if: matrix.nodejs == 12

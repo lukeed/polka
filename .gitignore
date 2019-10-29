@@ -6,4 +6,4 @@ coverage
 *.lock
 *.log
 
-packages/*/index.js
+packages/*/build.*

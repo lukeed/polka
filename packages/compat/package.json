@@ -4,9 +4,11 @@
   "name": "@polka/compat",
   "repository": "lukeed/polka",
   "description": "WIP",
+  "module": "build.mjs",
+  "main": "build.js",
   "license": "MIT",
   "files": [
-    "*.js"
+    "build.*"
   ],
   "author": {
     "name": "Luke Edwards",
