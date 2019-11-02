@@ -11,6 +11,46 @@ $ wrk -t8 -c100 -d30s http://localhost:3000/user/123
 > Please remember that _your application code_ is most likely the slowest part of your application!<br> Switching from Express to Polka will (likely) not guarantee the same performance gains.
 
 
+## Node v12.13.0
+
+```
+#=> POLKA
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     2.19ms  188.34us   8.30ms   91.27%
+    Req/Sec     5.50k   162.53     6.37k    86.88%
+  1313000 requests in 30.01s, 135.23MB read
+Requests/sec:  43753.41
+Transfer/sec:      4.51MB
+
+#=> EXPRESS
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     2.98ms  271.33us  10.54ms   86.23%
+    Req/Sec     4.05k   143.92     4.31k    83.04%
+  966328 requests in 30.01s, 120.72MB read
+Requests/sec:  32198.32
+Transfer/sec:      4.02MB
+```
+
+## Node v10.17.0
+
+```
+#=> POLKA
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     1.96ms  239.71us   8.66ms   88.31%
+    Req/Sec     6.14k   454.72    20.12k    95.80%
+  1468383 requests in 30.10s, 151.24MB read
+Requests/sec:  48784.16
+Transfer/sec:      5.02MB
+
+#=> EXPRESS
+Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     2.94ms  422.02us  12.56ms   88.31%
+    Req/Sec     4.11k   251.40     4.54k    82.96%
+  980849 requests in 30.01s, 122.54MB read
+Requests/sec:  32684.01
+Transfer/sec:      4.08MB
+```
+
 ## Node v9.1.0
 
 ```
