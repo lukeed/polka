@@ -31,7 +31,6 @@ export function parse(opts={}) {
 			} else {
 				let err = new Error('Exceeded "Content-Length" limit');
 				err.code = 413;
-				req.destroy();
 				next(err);
 			}
 		}).on('end', () => {
