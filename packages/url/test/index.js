@@ -170,3 +170,22 @@ test('(url) decoded w/ query', t => {
 
 	t.end();
 });
+
+test('(url) malformed URI decode', t => {
+	let req = { url: '/%2' };
+
+	let out = fn(req, true);
+
+	t.true(req._decoded);
+	t.same(req._parsedUrl, out);
+	t.same(out, {
+		path: '/%2',
+		pathname: '/%2',
+		href: '/%2',
+		search: null,
+		query: null,
+		_raw: '/%2'
+	});
+
+	t.end();
+});
