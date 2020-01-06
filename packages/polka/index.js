@@ -4,7 +4,8 @@ import parser from '@polka/url';
 
 function onError(err, req, res) {
 	let code = (res.statusCode = err.code || err.status || 500);
-	res.end(err.length && err || err.message || http.STATUS_CODES[code]);
+	if (typeof err === 'string' || Buffer.isBuffer(err)) res.end(err);
+	else res.end(err.message || http.STATUS_CODES[code]);
 }
 
 const mount = fn => fn instanceof Polka ? fn.attach : fn;
