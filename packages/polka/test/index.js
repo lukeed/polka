@@ -1087,6 +1087,49 @@ test('(polka) sub-application', async t => {
 	app.server.close();
 });
 
+test('(polka) sub-application w/ query params', async t => {
+	t.plan(12);
+
+	let sub = (
+		polka()
+			.get('/', (req, res) => {
+				t.pass('runs the sub-application / route');
+				t.is(req.url, '/?foo=bar', '~> trims basepath from `req.url` value');
+				t.is(req.originalUrl, '/sub?foo=bar', '~> preserves original `req.url` value');
+				t.same(req.query, { foo: 'bar' }, '~> preserves original `req.query` value');
+				res.end('hello from sub@index');
+			})
+	);
+
+	let app = (
+		polka()
+			.use('/sub', sub)
+			.get('/', (req, res) => {
+				t.pass('run the main-application route');
+				t.is(req.url, '/?foo=123', '~> always sets `req.originalUrl` key');
+				t.is(req.originalUrl, '/?foo=123', '~> always sets `req.originalUrl` key');
+				t.same(req.query, { foo: '123' }, '~> sets the `req.query` value');
+				res.end('hello from main');
+			})
+	);
+
+	let uri = listen(app);
+
+	// check sub-app index route
+	console.log('GET /sub?foo=bar');
+	let r1 = await get(`${uri}/sub?foo=bar`); // +4
+	t.is(r1.statusCode, 200, '~> received 200 status');
+	t.is(r1.data, 'hello from sub@index', '~> received "hello from sub@index" response');
+
+	// check main-app now
+	console.log('GET /?foo=123');
+	let r2 = await get(uri + '?foo=123'); // +4
+	t.is(r2.statusCode, 200, '~> received 200 status');
+	t.is(r2.data, 'hello from main', '~> received "hello from main" response');
+
+	app.server.close();
+});
+
 
 test('(polka) sub-application & middleware', async t => {
 	t.plan(19);

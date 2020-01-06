@@ -38,6 +38,9 @@ class Polka extends Router {
 						req.url = req.url.replace(base, '') || '/';
 						req.path = req.path.replace(base, '') || '/';
 					}
+					if (req.url.charAt(0) !== '/') {
+						req.url = '/' + req.url;
+					}
 					next();
 				},
 				fns.map(mount),
