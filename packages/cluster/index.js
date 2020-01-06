@@ -6,10 +6,9 @@ export default function (app, num) {
 	if (cluster.isMaster) {
 		return {
 			listen(PORT) {
-				let env = { PORT };
 				let cpu = cpus().length;
 				let max = Math.min(num || cpu, cpu);
-				while (max--) cluster.fork('.', { env });
+				while (max--) cluster.fork({ PORT });
 			}
 		};
 	}
