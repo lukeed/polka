@@ -26,8 +26,11 @@ function run(t, url, isDecode) {
 	t.isObject(req._parsedUrl);
 
 	if (isDecode) {
-		t.true(req._decoded, '~> (decode) leaves "req._decoded" trace');
-		out.query && t.isObject(out.query, '~> (decode) "req.query" is an object');
+		t.is(!!req._decoded, url.includes('%'), '~> (decode) leaves "req._decoded" trace');
+		if (out.query) {
+			t.isObject(out.query, '~> (decode) "req.query" is an object');
+			t.deepEqual(out.query, isDecode, '~> (decode) parsed "query" object matches');
+		}
 	} else {
 		delete out._raw;
 		t.same(out, fmt(url), '~> matches values from `url.parse` output');
@@ -75,6 +78,20 @@ test('(url) "/foo.123" output', t => {
 	run(t, '/foo.123');
 });
 
+test('(url) "/foo?bar" output', t => {
+	run(t, '/foo?bar');
+});
+
+test('(url) "/foo?q=a?b=c" output', t => {
+	run(t, '/foo?q=a?b=c');
+});
+
+test('(url) "/foo?q=a?b=c" output :: decode', t => {
+	run(t, '/foo?q=a?b=c', {
+		q: 'a?b=c'
+	});
+});
+
 test('(url) "/f%C3%B8%C3%B8%C3%9F%E2%88%82r" output', t => {
 	run(t, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r');
 });
@@ -84,11 +101,15 @@ test('(url) "/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309" output', t => {
 });
 
 test('(url) "/f%C3%B8%C3%B8%C3%9F%E2%88%82r" output :: decode', t => {
-	run(t, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r', true);
+	run(t, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r', {
+		// empty
+	});
 });
 
 test('(url) "/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309" output :: decode', t => {
-	run(t, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309', true);
+	run(t, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309', {
+		phone: '+8675309'
+	});
 });
 
 test('(url) recycle', t => {
