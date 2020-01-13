@@ -1,7 +1,10 @@
 function parse(str) {
+	let i=0, j=0, k, v;
 	let out={}, arr=str.split('&');
-	for (let i=0, k, v; i < arr.length; i++) {
-		[k, v=''] = arr[i].split('=');
+	for (; i < arr.length; i++) {
+		j = arr[i].indexOf('=');
+		v = !!~j && arr[i].substring(j+1) || '';
+		k = !!~j ? arr[i].substring(0, j) : arr[i];
 		out[k] = out[k] !== void 0 ? [].concat(out[k], v) : v;
 	}
 	return out;
