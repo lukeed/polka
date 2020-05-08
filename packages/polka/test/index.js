@@ -960,6 +960,34 @@ test('(polka) errors – `throw Error`', async t => {
 });
 
 
+test('(polka) errors – `throw Error (async)`', async t => {
+	t.plan(3);
+
+	let app = (
+		polka()
+			.use(async () => {
+				let err = new Error('hello');
+				err.code = 418;
+				throw err;
+			})
+			.get('/', (req, res) => {
+				val = 123; // wont run
+				res.end('OK');
+			})
+	);
+
+	let val = 42;
+	let uri = listen(app);
+	await get(uri).catch(err => {
+		t.is(val, 42, 'exits without running route handler');
+		t.is(err.data, 'hello', '~> received "hello" text');
+		t.is(err.statusCode, 418, '~> received 418 status (custom)');
+	});
+
+	app.server.close();
+});
+
+
 test('(polka) errors – `throw msg`', async t => {
 	t.plan(3);
 
