@@ -26,6 +26,11 @@
 
 <br />
 
+> <br/>**Black Lives Matter.** ✊🏽✊🏾✊🏿<br/>
+Support the [Equal Justice Initiative](https://support.eji.org/give/153413/#!/donation/checkout), [Campaign Zero](https://www.joincampaignzero.org/), or [Educate Yourself](https://blacklivesmatters.carrd.co/#educate).<br/>&nbsp;
+
+<br />
+
 Polka is an extremely minimal, highly performant Express.js alternative. Yes, you're right, Express is _already_ super fast & not _that_ big :thinking: &mdash; but Polka shows that there was (somehow) room for improvement!
 
 Essentially, Polka is just a [native HTTP server](https://nodejs.org/dist/latest-v9.x/docs/api/http.html#http_class_http_server) with added support for routing, middleware, and sub-applications. That's it! :tada:
