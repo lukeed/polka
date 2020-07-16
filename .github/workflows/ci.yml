@@ -1,6 +1,20 @@
 name: Node.js CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+      - next
+    paths-ignore:
+      - 'bench/**'
+      - 'examples/**'
+  pull_request:
+    branches:
+      - master
+      - next
+    paths-ignore:
+      - 'bench/**'
+      - 'examples/**'
 
 jobs:
   test:
