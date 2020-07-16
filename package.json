@@ -10,7 +10,7 @@
     "bootstrap": "lerna bootstrap --hoist",
     "lint": "eslint packages --env node,es6",
     "pretest": "npm run lint && npm run bootstrap",
-    "test": "tape -r esm packages/*/test/*.js | tap-spec"
+    "test": "uvu -r esm packages test -i util"
   },
   "devDependencies": {
     "bundt": "0.4.0",
@@ -18,8 +18,7 @@
     "esm": "3.2.25",
     "httpie": "1.1.0",
     "lerna": "3.13.4",
-    "tap-spec": "5.0.0",
-    "tape": "4.11.0"
+    "uvu": "0.2.3"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
