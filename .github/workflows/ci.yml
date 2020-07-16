@@ -25,23 +25,37 @@ jobs:
         nodejs: [8, 10, 12]
 
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.nodejs }}
 
+    - name: (env) pnpm
+      run: curl -L https://raw.githubusercontent.com/pnpm/self-installer/master/install.js | node
+
+    - name: (env) cache
+      uses: actions/cache@master
+      with:
+        path: |
+          node_modules
+          */*/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/package.json') }}
+
     - name: Install
       run: |
-        npm install
-        npm install -g nyc codecov
+        pnpm install
+        pnpm add -g nyc
 
-    - name: Bootstrap, Lint, and Test
-      run: nyc --include=packages/*/index.js npm test
+    - name: Linter
+      run: pnpm linter
+
+    - name: Test w/ Coverage
+      run: nyc --include=packages pnpm test
 
     - name: Report
       if: matrix.nodejs >= 12
       run: |
         nyc report --reporter=text-lcov > coverage.lcov
-        codecov
+        bash <(curl -s https://codecov.io/bash)
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

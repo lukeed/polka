@@ -7,16 +7,14 @@
   },
   "scripts": {
     "build": "lerna exec bundt index.js",
-    "bootstrap": "lerna bootstrap --hoist",
-    "lint": "eslint packages --env node,es6",
-    "pretest": "npm run lint && npm run bootstrap",
+    "linter": "eslint packages --env node,es6",
     "test": "uvu -r esm packages test -i util"
   },
   "devDependencies": {
     "bundt": "1.0.2",
     "eslint": "5.15.0",
     "esm": "3.2.25",
-    "httpie": "1.1.0",
+    "httpie": "1.1.2",
     "lerna": "3.13.4",
     "uvu": "0.2.3"
   },
