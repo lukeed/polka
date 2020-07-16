@@ -13,7 +13,7 @@
     "test": "uvu -r esm packages test -i util"
   },
   "devDependencies": {
-    "bundt": "0.4.0",
+    "bundt": "1.0.2",
     "eslint": "5.15.0",
     "esm": "3.2.25",
     "httpie": "1.1.0",
