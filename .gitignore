@@ -1,8 +1,8 @@
+coverage
 .DS_Store
 node_modules
-package-lock.json
 .nyc_output
-coverage
+*-lock.*
 *.lock
 *.log
 
