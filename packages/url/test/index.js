@@ -1,167 +1,158 @@
-import test from 'tape';
+import { test } from 'uvu';
+import * as assert from 'uvu/assert';
 import { parse } from 'url';
 import fn from '../index';
 
 const keys = ['protocol', 'slashes', 'auth', 'host', 'port', 'hostname', 'hash'];
 
-test.Test.prototype.isObject = function (val, msg) {
-	this.is(Object.prototype.toString.call(val), '[object Object]', msg);
-};
+function isObject(val, msg) {
+	assert.is(Object.prototype.toString.call(val), '[object Object]', msg);
+}
 
 function fmt(str) {
 	let obj = parse(str);
 	if (str.indexOf('#') === -1) {
 		keys.forEach(k => delete obj[k]);
 	}
-	return obj;
+	return JSON.parse(JSON.stringify(obj));
 }
 
-function run(t, url, isDecode) {
+function run(url, isDecode) {
 	let req = { url };
 	let out = fn(req, isDecode);
 	let expect = isDecode ? decodeURIComponent(url) : url;
 
-	t.isObject(out);
-	t.is(out._raw, expect);
-	t.isObject(req._parsedUrl);
+	isObject(out);
+	assert.is(out._raw, expect);
+	isObject(req._parsedUrl);
 
 	if (isDecode) {
-		t.is(!!req._decoded, url.includes('%'), '~> (decode) leaves "req._decoded" trace');
+		assert.is(!!req._decoded, url.includes('%'), '~> (decode) leaves "req._decoded" trace');
 		if (out.query) {
-			t.isObject(out.query, '~> (decode) "req.query" is an object');
-			t.deepEqual(out.query, isDecode, '~> (decode) parsed "query" object matches');
+			isObject(out.query, '~> (decode) "req.query" is an object');
+			assert.equal(out.query, isDecode, '~> (decode) parsed "query" object matches');
 		}
 	} else {
 		delete out._raw;
-		t.same(out, fmt(url), '~> matches values from `url.parse` output');
+		assert.equal(out, fmt(url), '~> matches values from `url.parse` output');
 	}
-
-	t.end();
 }
 
-test('(url) exports', t => {
-	t.is(typeof fn, 'function', 'exports a function');
-	t.end();
+test('exports', () => {
+	assert.type(fn, 'function');
 });
 
-test('(url) basics', t => {
-	t.throws(fn, /Cannot read property/, 'throws if no input');
-	t.is(fn({}), undefined, 'returns `undefined` for empty object input');
+test('basics', () => {
+	assert.throws(fn, /Cannot read property/, 'throws if no input');
+	assert.is(fn({}), undefined, 'returns `undefined` for empty object input');
 
 	let obj = { url: '/' };
 	let out = fn(obj);
-	t.isObject(out, 'returns Object for valid input (`{ url }`)');
-	t.is(out._raw, obj.url, '~> `output._raw` matches input URL string');
-	t.ok(!!obj._parsedUrl, 'mutates original input with new `_parsedUrl` key');
-	t.isObject(obj._parsedUrl, '~> `req._parsedUrl` is an Object');
-	t.same(out, obj._parsedUrl, '~> identical to output');
-	t.end();
+	isObject(out, 'returns Object for valid input (`{ url }`)');
+	assert.is(out._raw, obj.url, '~> `output._raw` matches input URL string');
+	assert.ok(!!obj._parsedUrl, 'mutates original input with new `_parsedUrl` key');
+	isObject(obj._parsedUrl, '~> `req._parsedUrl` is an Object');
+	assert.equal(out, obj._parsedUrl, '~> identical to output');
 });
 
-test('(url) "/" output', t => {
-	run(t, '/');
+test('parse :: "/"', () => {
+	run('/');
 });
 
-test('(url) "/foo/bar" output', t => {
-	run(t, '/foo/bar');
+test('parse :: "/foo/bar"', () => {
+	run('/foo/bar');
 });
 
-test('(url) "/foo/bar?fizz=buzz" output', t => {
-	run(t, '/foo/bar?fizz=buzz');
+test('parse :: "/foo/bar?fizz=buzz"', () => {
+	run('/foo/bar?fizz=buzz');
 });
 
-test('(url) "/foo/bar?fizz=buzz&hello=world" output', t => {
-	run(t, '/foo/bar?fizz=buzz&hello=world');
+test('parse :: "/foo/bar?fizz=buzz&hello=world"', () => {
+	run('/foo/bar?fizz=buzz&hello=world');
 });
 
-test('(url) "/foo.123" output', t => {
-	run(t, '/foo.123');
+test('parse :: "/foo.123"', () => {
+	run('/foo.123');
 });
 
-test('(url) "/foo?bar" output', t => {
-	run(t, '/foo?bar');
+test('parse :: "/foo?bar"', () => {
+	run('/foo?bar');
 });
 
-test('(url) "/foo?q=a?b=c" output', t => {
-	run(t, '/foo?q=a?b=c');
+test('parse :: "/foo?q=a?b=c"', () => {
+	run('/foo?q=a?b=c');
 });
 
-test('(url) "/foo?q=a?b=c" output :: decode', t => {
-	run(t, '/foo?q=a?b=c', {
+test('parse :: "/foo?q=a?b=c" output ::', () => {
+	run('/foo?q=a?b=c', {
 		q: 'a?b=c'
 	});
 });
 
-test('(url) "/f%C3%B8%C3%B8%C3%9F%E2%88%82r" output', t => {
-	run(t, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r');
+test('parse :: "/f%C3%B8%C3%B8%C3%9F%E2%88%82r"', () => {
+	run('/f%C3%B8%C3%B8%C3%9F%E2%88%82r');
 });
 
-test('(url) "/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309" output', t => {
-	run(t, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309');
+test('parse :: "/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309"', () => {
+	run('/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309');
 });
 
-test('(url) "/f%C3%B8%C3%B8%C3%9F%E2%88%82r" output :: decode', t => {
-	run(t, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r', {
+test('parse :: "/f%C3%B8%C3%B8%C3%9F%E2%88%82r" output ::', () => {
+	run('/f%C3%B8%C3%B8%C3%9F%E2%88%82r', {
 		// empty
 	});
 });
 
-test('(url) "/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309" output :: decode', t => {
-	run(t, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309', {
+test('parse :: "/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309" output ::', () => {
+	run('/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309', {
 		phone: '+8675309'
 	});
 });
 
-test('(url) recycle', t => {
+test('(url) recycle', () => {
 	let req = { url: '/foo/bar' };
 	let out = fn(req);
 	out.foobar = 123;
 
-	t.is(out.foobar, 123);
-	t.is(out.pathname, '/foo/bar');
+	assert.is(out.foobar, 123);
+	assert.is(out.pathname, '/foo/bar');
 
 	out = fn(req); // 2nd time
-	t.is(out.foobar, 123);
-	t.is(out.pathname, '/foo/bar');
-
-	t.end();
+	assert.is(out.foobar, 123);
+	assert.is(out.pathname, '/foo/bar');
 });
 
-test('(url) rerun if changed', t => {
+test('(url) rerun if changed', () => {
 	let req = { url: '/foo/bar?fizz=buzz' };
 	let out = fn(req);
 	out.foobar = 123;
 
-	t.is(out.foobar, 123);
-	t.is(out.query, 'fizz=buzz');
-	t.is(out.pathname, '/foo/bar');
+	assert.is(out.foobar, 123);
+	assert.is(out.query, 'fizz=buzz');
+	assert.is(out.pathname, '/foo/bar');
 
 	req.url = '/foo';
 	out = fn(req); // 2nd time
-	t.is(out.foobar, undefined);
-	t.is(out.query, null);
-	t.is(out.pathname, '/foo');
-
-	t.end();
+	assert.is(out.foobar, undefined);
+	assert.is(out.query, null);
+	assert.is(out.pathname, '/foo');
 });
 
-test('(url) repeat query keys', t => {
+test('(url) repeat query keys', () => {
 	let url = '/foo?bar=1&bar=2&bar=3&baz=&bat';
 
-	t.same(fn({ url }).query, 'bar=1&bar=2&bar=3&baz=&bat');
-	t.same(fn({ url }, true).query, { bar:['1','2','3'], baz:'', bat:'' });
-
-	t.end();
+	assert.equal(fn({ url }).query, 'bar=1&bar=2&bar=3&baz=&bat');
+	assert.equal(fn({ url }, true).query, { bar:['1','2','3'], baz:'', bat:'' });
 });
 
-test('(url) decoded', t => {
+test('(url) decoded', () => {
 	let req = { url: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r' };
 
 	let out = fn(req, true);
 
-	t.true(req._decoded);
-	t.same(req._parsedUrl, out);
-	t.same(out, {
+	assert.is(req._decoded, true);
+	assert.equal(req._parsedUrl, out);
+	assert.equal(out, {
 		path: '/føøß∂r',
 		pathname: '/føøß∂r',
 		href: '/føøß∂r',
@@ -169,18 +160,16 @@ test('(url) decoded', t => {
 		query: null,
 		_raw: '/føøß∂r'
 	});
-
-	t.end();
 });
 
-test('(url) decoded w/ query', t => {
+test('(url) decoded w/ query', () => {
 	let req = { url: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309' };
 
 	let out = fn(req, true);
 
-	t.true(req._decoded);
-	t.same(req._parsedUrl, out);
-	t.same(out, {
+	assert.is(req._decoded, true);
+	assert.equal(req._parsedUrl, out);
+	assert.equal(out, {
 		path: '/føøß∂r?phone=+8675309',
 		pathname: '/føøß∂r',
 		href: '/føøß∂r?phone=+8675309',
@@ -188,18 +177,16 @@ test('(url) decoded w/ query', t => {
 		query: { phone: '+8675309' },
 		_raw: '/føøß∂r?phone=+8675309'
 	});
-
-	t.end();
 });
 
-test('(url) malformed URI decode', t => {
+test('(url) malformed URI decode', () => {
 	let req = { url: '/%2' };
 
 	let out = fn(req, true);
 
-	t.true(req._decoded);
-	t.same(req._parsedUrl, out);
-	t.same(out, {
+	assert.is(req._decoded, true);
+	assert.equal(req._parsedUrl, out);
+	assert.equal(out, {
 		path: '/%2',
 		pathname: '/%2',
 		href: '/%2',
@@ -207,6 +194,6 @@ test('(url) malformed URI decode', t => {
 		query: null,
 		_raw: '/%2'
 	});
-
-	t.end();
 });
+
+test.run();
