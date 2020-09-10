@@ -4,7 +4,7 @@
   },
   "dependencies": {
     "@polka/send-type": "latest",
-    "node-fetch": "^1.7.3",
+    "node-fetch": "^2.6.1",
     "polka": "latest"
   }
 }
