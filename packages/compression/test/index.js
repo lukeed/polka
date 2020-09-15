@@ -1,3 +1,5 @@
+import { join } from 'path';
+import fs from 'fs';
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 import { prep, toAscii } from './util/index';
@@ -106,3 +108,25 @@ brotliIfSupported('gives brotli precedence over gzip', () => {
 });
 
 brotli.run();
+
+// ---
+
+const streaming = suite('streaming');
+
+streaming('allows piping streams', async () => {
+	const pkg = join(__dirname, '../package.json');
+	const gzipped = zlib.gzipSync(fs.readFileSync(pkg));
+
+	const { req, res } = prep('GET', GZIP);
+	compression({ threshold: 0 })(req, res);
+
+	res.writeHead(200, { 'content-type': 'text/plain' });
+	fs.createReadStream(pkg).pipe(res, { end: true });
+
+	const body = await res.getResponseData();
+
+	assert.is(res.getHeader('content-encoding'), 'gzip', 'compresses with gzip');
+	assert.equal(toAscii(body), toAscii(gzipped), 'content is compressed');
+});
+
+streaming.run();
