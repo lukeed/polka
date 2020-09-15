@@ -14,7 +14,7 @@
     "Jason Miller (https://github.com/developit)"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=6"
   },
   "publishConfig": {
     "access": "public"
