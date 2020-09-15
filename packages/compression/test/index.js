@@ -2,6 +2,7 @@ import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 import { prep, toAscii } from './util/index';
 import compression from '../index';
+import * as zlib from 'zlib';
 
 const GZIP = 'gzip, deflate';
 const BR = 'br, gzip, deflate';
@@ -81,7 +82,9 @@ basics.run();
 
 const brotli = suite('brotli');
 
-brotli('compresses content with brotli when supported', async () => {
+const brotliIfSupported = zlib.createBrotliCompress ? brotli : brotli.skip;
+
+brotliIfSupported('compresses content with brotli when supported', async () => {
 	const { req, res } = prep('GET', 'br');
 	compression({ brotli: true, threshold: 0 })(req, res);
 	res.writeHead(200, { 'content-type': 'text/plain' })
@@ -93,7 +96,7 @@ brotli('compresses content with brotli when supported', async () => {
 	assert.snapshot(toAscii(body), toAscii('\u000b\u0005\u0000hello world\u0003'), 'compressed content');
 });
 
-brotli('gives brotli precedence over gzip', () => {
+brotliIfSupported('gives brotli precedence over gzip', () => {
 	const { req, res } = prep('GET', BR);
 	compression({ brotli: true, threshold: 0 })(req, res);
 	res.writeHead(200, { 'content-type': 'text/plain' })
