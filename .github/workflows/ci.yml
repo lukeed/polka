@@ -33,6 +33,14 @@ jobs:
     - name: (env) pnpm
       run: curl -L https://raw.githubusercontent.com/pnpm/self-installer/master/install.js | node
 
+    - name: (env) cache
+      uses: actions/cache@master
+      with:
+        path: |
+          node_modules
+          */*/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/package.json') }}
+
     - name: Install
       run: |
         pnpm install
