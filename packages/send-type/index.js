@@ -13,7 +13,9 @@ module.exports = function (res, code=200, data='', headers={}) {
 
 	if (!!data && typeof data.pipe === 'function') {
 		res.setHeader(TYPE, type || OSTREAM);
-		res.writeHead(code, obj);
+		if (typeof res.writeHead === 'function') {
+			res.writeHead(code, obj);
+		}
 		return data.pipe(res);
 	}
 
