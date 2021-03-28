@@ -4,9 +4,11 @@
   "repository": "lukeed/polka",
   "description": "A response helper for URL redirects",
   "module": "build.mjs",
+  "types": "index.d.ts",
   "main": "build.js",
   "license": "MIT",
   "files": [
+    "*.d.ts",
     "build.*"
   ],
   "author": {

@@ -4,9 +4,11 @@
   "repository": "lukeed/polka",
   "description": "Super fast, memoized `req.url` parser",
   "module": "build.mjs",
+  "types": "index.d.ts",
   "main": "build.js",
   "license": "MIT",
   "files": [
+    "*.d.ts",
     "build.*"
   ],
   "author": {

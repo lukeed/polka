@@ -4,9 +4,11 @@
   "repository": "lukeed/polka",
   "description": "A micro web server so fast, it'll make you dance! :dancers:",
   "module": "build.mjs",
+  "types": "index.d.ts",
   "main": "build.js",
   "license": "MIT",
   "files": [
+    "*.d.ts",
     "build.*"
   ],
   "author": {
