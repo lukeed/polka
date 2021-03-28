@@ -1,6 +1,6 @@
 {
   "name": "polka",
-  "version": "1.0.0-next.11",
+  "version": "1.0.0-next.12",
   "repository": "lukeed/polka",
   "description": "A micro web server so fast, it'll make you dance! :dancers:",
   "module": "build.mjs",
@@ -20,7 +20,7 @@
     "node": ">=6"
   },
   "dependencies": {
-    "@polka/url": "^1.0.0-next.11",
+    "@polka/url": "^1.0.0-next.12",
     "trouter": "^3.1.0"
   }
 }
