@@ -1,9 +1,10 @@
-import type { Server } from 'net';
+import type { Server, ListenOptions } from 'net';
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { ParsedURL } from '@polka/url';
 import type Trouter from 'trouter';
 
 type Promisable<T> = Promise<T> | T;
+type ListenCallback = () => Promisable<void>;
 
 export interface IError extends Error {
 	code?: number;
@@ -42,9 +43,19 @@ export interface Polka<T extends Request = Request> extends Trouter<Middleware<T
 
 	readonly handler: Middleware<T>;
 	parse: (req: IncomingMessage) => ParsedURL;
+
 	use(pattern: string, ...handlers: (Polka<T> | Middleware<T>)[]): this;
 	use(...handlers: (Polka<T> | Middleware<T>)[]): this;
-	listen: Server['listen'];
+
+	listen(port?: number, hostname?: string, backlog?: number, callback?: ListenCallback): this;
+	listen(port?: number, hostname?: string, callback?: ListenCallback): this;
+	listen(port?: number, backlog?: number, callback?: ListenCallback): this;
+	listen(port?: number, callback?: ListenCallback): this;
+	listen(path: string, backlog?: number, callback?: ListenCallback): this;
+	listen(path: string, callback?: ListenCallback): this;
+	listen(options: ListenOptions, callback?: ListenCallback): this;
+	listen(handle: any, backlog?: number, callback?: ListenCallback): this;
+	listen(handle: any, callback?: ListenCallback): this;
 }
 
 export default function <T extends Request = Request> (options?: IOptions<T>): Polka<T>;
