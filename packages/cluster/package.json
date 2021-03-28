@@ -4,9 +4,11 @@
   "repository": "lukeed/polka",
   "description": "Intialize and run a HTTP cluster",
   "module": "build.mjs",
+  "types": "index.d.ts",
   "main": "build.js",
   "license": "MIT",
   "files": [
+    "*.d.ts",
     "build.*"
   ],
   "author": {
