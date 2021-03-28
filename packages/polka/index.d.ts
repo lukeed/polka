@@ -13,11 +13,11 @@ export interface IError extends Error {
 
 export type NextHandler = (err?: string | IError) => Promisable<void>;
 export type ErrorHandler<T extends Request = Request> = (err: string | IError, req: T, res: Response, next: NextHandler) => Promisable<void>;
-export type RequestHandler<T extends IncomingMessage = Request> = (req: T & Request, res: Response, next: NextHandler) => Promisable<void>;
+export type Middleware<T extends IncomingMessage = Request> = (req: T & Request, res: Response, next: NextHandler) => Promisable<void>;
 
 export interface IOptions<T extends Request = Request> {
 	server?: typeof Server;
-	onNoMatch?: RequestHandler<T>;
+	onNoMatch?: Middleware<T>;
 	onError?: ErrorHandler<T>;
 }
 
@@ -33,17 +33,17 @@ export interface Request extends IncomingMessage, ParsedURL {
 	_parsedUrl: ParsedURL;
 }
 
-export interface Polka<T extends Request = Request> extends Trouter<RequestHandler<T>> {
+export interface Polka<T extends Request = Request> extends Trouter<Middleware<T>> {
 	readonly server: typeof Server;
-	readonly wares: RequestHandler<T>[];
+	readonly wares: Middleware<T>[];
 
 	readonly onError: ErrorHandler<T>;
-	readonly onNoMatch: RequestHandler<T>;
+	readonly onNoMatch: Middleware<T>;
 
-	readonly handler: RequestHandler<T>;
+	readonly handler: Middleware<T>;
 	parse: (req: IncomingMessage) => ParsedURL;
-	use(pattern: string, ...handlers: (Polka<T> | RequestHandler<T>)[]): this;
-	use(...handlers: (Polka<T> | RequestHandler<T>)[]): this;
+	use(pattern: string, ...handlers: (Polka<T> | Middleware<T>)[]): this;
+	use(...handlers: (Polka<T> | Middleware<T>)[]): this;
 	listen: Server['listen'];
 }
 
