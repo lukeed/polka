@@ -44,7 +44,7 @@ export interface Polka<T extends Request = Request> extends Trouter<Middleware<T
 	readonly handler: Middleware<T>;
 	parse: (req: IncomingMessage) => ParsedURL;
 
-	use(pattern: string, ...handlers: (Polka<T> | Middleware<T>)[]): this;
+	use(pattern: RegExp|string, ...handlers: (Polka<T> | Middleware<T>)[]): this;
 	use(...handlers: (Polka<T> | Middleware<T>)[]): this;
 
 	listen(port?: number, hostname?: string, backlog?: number, callback?: ListenCallback): this;
