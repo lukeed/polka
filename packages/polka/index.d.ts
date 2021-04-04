@@ -1,5 +1,5 @@
-import type { Server, ListenOptions } from 'net';
 import type { IncomingMessage, ServerResponse } from 'http';
+import type { ListenOptions, Server } from 'net';
 import type { ParsedURL } from '@polka/url';
 import type Trouter from 'trouter';
 
@@ -17,7 +17,7 @@ export type ErrorHandler<T extends Request = Request> = (err: string | IError, r
 export type Middleware<T extends IncomingMessage = Request> = (req: T & Request, res: Response, next: NextHandler) => Promisable<void>;
 
 export interface IOptions<T extends Request = Request> {
-	server?: typeof Server;
+	server?: Server;
 	onNoMatch?: Middleware<T>;
 	onError?: ErrorHandler<T>;
 }
@@ -35,7 +35,7 @@ export interface Request extends IncomingMessage, ParsedURL {
 }
 
 export interface Polka<T extends Request = Request> extends Trouter<Middleware<T>> {
-	readonly server: typeof Server;
+	readonly server: Server;
 	readonly wares: Middleware<T>[];
 
 	readonly onError: ErrorHandler<T>;
