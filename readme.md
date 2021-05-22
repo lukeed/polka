@@ -304,7 +304,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function authenticate(req, res, next) {
   let token = req.headers['authorization'];
-  if (!token) return (res.statusCode=401,res.end('No token!'));
+  if (!token) return (res.statusCode=401, res.end('No token!'));
   req.user = await Users.find(token); // <== fake
   next(); // done, woot!
 }
@@ -463,7 +463,7 @@ There are three ways to "throw" an error from within a middleware function.
           'Content-Type': 'application/json',
           'X-Error-Code': 'Please dont do this IRL'
         });
-        let json = JSON.stringify({ error:'Missing CSRF token' });
+        let json = JSON.stringify({ error: 'Missing CSRF token' });
         res.end(json);
       } else {
         next(); // never called FYI
