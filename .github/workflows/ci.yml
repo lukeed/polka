@@ -31,6 +31,11 @@ jobs:
         node-version: ${{ matrix.nodejs }}
 
     - name: (env) pnpm
+      if: matrix.nodejs < 12
+      run: npm install -g pnpm@5 # supports Node 10.x
+
+    - name: (env) pnpm
+      if: matrix.nodejs >= 12
       run: curl -L https://pnpm.js.org/pnpm.js | node - add --global pnpm
 
     - name: (env) cache
