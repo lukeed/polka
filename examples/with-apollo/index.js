@@ -41,7 +41,6 @@ polka()
 	.get('/graphiql', graphiqlExpress({
 		endpointURL: '/graphql'
 	}))
-	.listen(PORT, err => {
-		if (err) throw err;
+	.listen(PORT, () => {
 		console.log(`> Ready on localhost:${PORT}`)
 	});
