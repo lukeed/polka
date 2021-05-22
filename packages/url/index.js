@@ -17,7 +17,7 @@ import * as qs from 'querystring';
  * @param {boolean} [toDecode]
  * @returns {ParsedURL|void}
  */
-export default function (req, toDecode) {
+export function parse(req, toDecode) {
 	let raw = req.url;
 	if (raw == null) return;
 

@@ -8,4 +8,4 @@ export interface ParsedURL {
 	raw: string;
 }
 
-export default function (req: IncomingMessage, toDecode?: boolean): ParsedURL;
+export function parse(req: IncomingMessage, toDecode?: boolean): ParsedURL;

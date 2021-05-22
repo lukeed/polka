@@ -1,6 +1,6 @@
 import http from 'http';
 import Router from 'trouter';
-import parser from '@polka/url';
+import { parse } from '@polka/url';
 
 function onError(err, req, res) {
 	let code = (res.statusCode = err.code || err.status || 500);
@@ -13,7 +13,7 @@ const mount = fn => fn instanceof Polka ? fn.attach : fn;
 class Polka extends Router {
 	constructor(opts={}) {
 		super();
-		this.parse = parser;
+		this.parse = parse;
 		this.server = opts.server;
 		this.handler = this.handler.bind(this);
 		this.onError = opts.onError || onError; // catch-all handler
