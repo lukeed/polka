@@ -12,7 +12,6 @@ polka()
 	.get('/', (req, res) => {
 		send(res, 'Index');
 	})
-	.listen(PORT, err => {
-		if (err) throw err;
+	.listen(PORT, () => {
 		console.log(`> Ready on localhost:${PORT}`);
 	});
