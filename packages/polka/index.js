@@ -45,9 +45,9 @@ class Polka extends Router {
 				},
 				fns.map(mount),
 				(req, _, next) => {
-					req.url = req._parsedUrl.href;
 					req.path = req._parsedUrl.pathname;
-					next()
+					req.url = req.path + req._parsedUrl.search;
+					next();
 				}
 			);
 		}
@@ -66,6 +66,7 @@ class Polka extends Router {
 
 		req.params = obj.params;
 		req.originalUrl = req.originalUrl || req.url;
+		req.url = info.pathname + info.search;
 		req.query = info.query || {};
 		req.search = info.search;
 
