@@ -1,80 +1,216 @@
-/* eslint-disable no-console */
-global.native = require('url');
+const native = require('url');
+const qs = require('querystring');
+const assert = require('uvu/assert');
 const { Suite } = require('benchmark');
-global.querystring = require('querystring');
-global.parseurl = require('parseurl');
-global.parse = require('../build');
 
-global.nativeDecode = function (url) {
-	let obj = global.native.parse(url, true);
-	obj.href = obj.path = decodeURIComponent(url);
-	obj.pathname = decodeURIComponent(obj.pathname);
-	obj.search = decodeURIComponent(obj.search);
-	return obj;
+const polka = require('../build').parse;
+const parseurl = require('parseurl');
+
+// Print validation error details
+const isVerbose = process.argv.includes('--verbose');
+
+/**
+ * @typedef Request
+ * @property {string} url
+ */
+
+/**
+ * @typedef Contender
+ * @type {(req: Request, toDecode: boolean) => any}
+ */
+
+/**
+ * All benchmark candidates!
+ * @NOTE Some are modified for decoding validation
+ * @type {Record<string, Contender>}
+ */
+const contenders = {
+	'url.parse': (r, d) => {
+		let out = native.parse(r.url, true); // query as object
+		if (d) out.pathname = decodeURIComponent(out.pathname);
+		// returns `null` if no value
+		out.search = out.search || '';
+		return out;
+	},
+
+	'new URL()': (r, d) => {
+		let url = r.url;
+		let { pathname, search, searchParams } = new URL(url, 'http://x.com');
+		if (d) pathname = decodeURIComponent(pathname);
+		return { url, pathname, search, query: searchParams };
+	},
+
+	'parseurl': (r, d) => {
+		/** @type {Record<string, string>} */ // @ts-ignore
+		let out = parseurl(r);
+
+		// returns `null` if no value
+		out.search = out.search || '';
+
+		// @ts-ignore - always returns `query` as string|null
+		if (out.query) out.query = qs.parse(out.query);
+
+		// never decodes, do bare minimum for compat
+		if (d) out.pathname = decodeURIComponent(out.pathname);
+
+		return out;
+	},
+
+	'@polka/url': (r, d) => {
+		// @ts-ignore - request
+		return polka(r, d);
+	},
+};
+
+/**
+ * @param {object} config
+ * @param {string} config.url
+ * @param {boolean} config.decode
+ * @param {Record<string, unknown>} config.expect
+ * @param {boolean} [config.repeat]
+ */
+function runner(config) {
+	let { url, expect, repeat, decode=false } = config;
+	let title = repeat ? 'repeat' : decode ? 'decode' : 'normal';
+
+	console.log('\nValidation: (%s) "%s"', title, url);
+	Object.keys(contenders).forEach(name => {
+		let key, fn=contenders[name];
+
+		try {
+			let output = fn({ url }, decode);
+
+			for (key in expect) {
+				let tmp = output[key];
+				if (tmp instanceof URLSearchParams) {
+					tmp = Object.fromEntries(tmp);
+				} else if (tmp && typeof tmp === 'object') {
+					tmp = { ...tmp }; // null prototypes
+				}
+				assert.equal(tmp, expect[key]);
+			}
+			console.log('  ✔', name);
+		} catch (err) {
+			console.log('  ✘', name, `(FAILED @ "${key}")`);
+		 	if (isVerbose) console.log(err.details);
+		}
+	});
+
+	console.log('\nBenchmark: (%s) "%s"', title, url);
+	let bench = new Suite().on('cycle', e => {
+		console.log('  ' + e.target);
+	});
+
+	Object.keys(contenders).forEach(name => {
+		let fn = contenders[name];
+		let req = repeat && { url };
+
+		bench.add(name + ' '.repeat(16 - name.length), () => {
+			fn(req || { url }, decode);
+		}, {
+			minSamples: 100
+		});
+	});
+
+	bench.run();
 }
 
-global.parseurlDecode = function (req) {
-	let obj = global.parseurl(req);
-	obj.query = global.querystring.parse(obj.query);
-	obj.path = obj.href = decodeURIComponent(obj.href);
-	obj.pathname = decodeURIComponent(obj.pathname);
-	obj.search = decodeURIComponent(obj.search);
-	return obj;
-}
+// ---
 
-function bench(name, url, setup='') {
-  global.url = url;
-  const suite = new Suite();
-  console.log(`\n# ${name} "${url}"`);
-  suite.with = (x, y) => suite.add(x, y, { setup, minSamples:100 });
-  suite.on('cycle', e => console.log('  ' + e.target));
-  return suite;
-}
+runner({
+	url: '/foo/bar?user=tj&pet=fluffy',
+	decode: false,
+	expect: {
+		pathname: '/foo/bar',
+		search: '?user=tj&pet=fluffy',
+		query: {
+			user: 'tj',
+			pet: 'fluffy',
+		}
+	}
+});
 
-bench('Parsing:', '/foo/bar?user=tj&pet=fluffy')
-	.with('native      ', 'native.parse(url)')
-	.with('parseurl    ', 'parseurl({ url })')
-	.with('@polka/url  ', 'parse({ url })')
-	.run();
+runner({
+	repeat: true,
+	url: '/foo/bar?user=tj&pet=fluffy',
+	decode: false,
+	expect: {
+		pathname: '/foo/bar',
+		search: '?user=tj&pet=fluffy',
+		query: {
+			user: 'tj',
+			pet: 'fluffy',
+		}
+	}
+});
 
-bench('REPEAT:', '/foo/bar?user=tj&pet=fluffy', 'req = { url }')
-	.with('native      ', 'native.parse(req.url)')
-	.with('parseurl    ', 'parseurl(req)')
-	.with('@polka/url  ', 'parse(req)')
-	.run();
+runner({
+	url: '/foo/bar',
+	decode: false,
+	expect: {
+		pathname: '/foo/bar',
+		search: '',
+	}
+});
 
-bench('Parsing:', '/foo/bar')
-	.with('native      ', 'native.parse(url)')
-	.with('parseurl    ', 'parseurl({ url })')
-	.with('@polka/url  ', 'parse({ url })')
-	.run();
+runner({
+	url: '/',
+	decode: false,
+	expect: {
+		pathname: '/',
+		search: '',
+	}
+});
 
-bench('Parsing:', '/')
-	.with('native      ', 'native.parse(url)')
-	.with('parseurl    ', 'parseurl({ url })')
-	.with('@polka/url  ', 'parse({ url })')
-	.run();
+// DECODES
 
-bench('DECODE:', '/f%C3%B8%C3%B8%C3%9F%E2%88%82r')
-	.with('native/bad#1', 'native.parse(url, true)') // wrong
-	.with('native/bad#2', 'native.parse(decodeURIComponent(url), true)') // wrong
-	.with('native      ', 'nativeDecode(url)')
-	.with('parseurl    ', 'parseurlDecode({ url })')
-	.with('@polka/url  ', 'parse({ url }, true)')
-	.run();
+runner({
+	url: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r',
+	decode: true,
+	expect: {
+		pathname: '/føøß∂r',
+		search: '',
+	}
+});
 
-bench('DECODE:', '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b393383123549')
-	.with('native/bad#1', 'native.parse(url, true)') // wrong
-	.with('native/bad#2', 'native.parse(decodeURIComponent(url), true)') // wrong
-	.with('native      ', 'nativeDecode(url)')
-	.with('parseurl    ', 'parseurlDecode({ url })')
-	.with('@polka/url  ', 'parse({ url }, true)')
-	.run();
+runner({
+	url: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b393383123549',
+	decode: true,
+	expect: {
+		pathname: '/føøß∂r',
+		search: '?phone=%2b393383123549',
+		query: { phone: '+393383123549' },
+	}
+});
 
-bench('DECODE:', '/foo/bar')
-	.with('native/bad#1', 'native.parse(url, true)') // wrong
-	.with('native/bad#2', 'native.parse(decodeURIComponent(url), true)') // wrong
-	.with('native      ', 'nativeDecode(url)')
-	.with('parseurl    ', 'parseurlDecode({ url })')
-	.with('@polka/url  ', 'parse({ url }, true)')
-	.run();
+runner({
+	repeat: true,
+	url: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b393383123549',
+	decode: true,
+	expect: {
+		pathname: '/føøß∂r',
+		search: '?phone=%2b393383123549',
+		query: { phone: '+393383123549' },
+	}
+});
+
+runner({
+	url: '/foo/bar?hello=123',
+	decode: true,
+	expect: {
+		pathname: '/foo/bar',
+		search: '?hello=123',
+		query: {
+			hello: '123',
+		}
+	}
+});
+
+runner({
+	url: '/foo/bar',
+	decode: true,
+	expect: {
+		pathname: '/foo/bar',
+		search: '',
+	}
+});
