@@ -6,6 +6,8 @@
 
 Each candidate is _slightly_ modified to match the `pathname` and `query` values that `@polka/url` returns. This is done in an honest/best-effort manner to normalize all candidates (and pass the validation steps), especially considering that the typical user _wants_ `pathname`s to be normalized and _wants_ `query` values to be parsed (and decoded) into an object.
 
+Please see the [Raw Performance](#raw-performance) benchmarks for results ***without*** any modifications. However, do note that the benchmark is effectively useless since all candidates do different things by default.
+
 
 ### Without Decoding
 
@@ -72,4 +74,51 @@ Benchmark: "/foo/bar"
   new URL()        x     252,204 ops/sec ±0.18% (192 runs sampled)
   parseurl         x   2,329,132 ops/sec ±0.26% (193 runs sampled)
   @polka/url       x  19,972,200 ops/sec ±0.64% (188 runs sampled)
+```
+
+
+## Raw Performance
+
+These are the results of the _unmodified_ candidates. In other words, there is **zero consistency** in the candidates outputs. For example:
+
+* `url.parse#1` uses [`url.parse`](https://nodejs.org/api/url.html#url_url_parse_urlstring_parsequerystring_slashesdenotehost) with `parseQueryString` enabled<br>_It decodes the `query` correctly, but all other segments are still encoded segments._
+
+* `url.parse#2` is the same as `url.parse#1`, except `parseQueryString` is disabled.<br>_It leaves the `query` as a string & does no decoding whatsoever._
+
+* `new URL()` does what it describes :)<br>_The `pathname` is never decoded, but `searchParams` is always an decoded `URLSearchParams` instance._
+
+* `parseurl` never decodes any value segments and `query` is always a string.
+
+* `@polka/url` only decodes the `pathname` when asked and `query` is always a decoded object.
+
+***Results***
+
+```
+Benchmark: (normal) "/foo/bar?user=tj&pet=fluffy"
+  url.parse#1      x   1,462,942 ops/sec ±0.16% (193 runs sampled)
+  url.parse#2      x   3,059,883 ops/sec ±0.19% (193 runs sampled)
+  new URL()        x     273,878 ops/sec ±0.11% (194 runs sampled)
+  parseurl         x   7,742,605 ops/sec ±0.25% (192 runs sampled)
+  @polka/url       x   2,611,970 ops/sec ±0.18% (190 runs sampled)
+
+Benchmark: (repeat) "/foo/bar?user=tj&pet=fluffy"
+  url.parse#1      x   1,477,740 ops/sec ±0.28% (194 runs sampled)
+  url.parse#2      x   3,121,952 ops/sec ±0.12% (193 runs sampled)
+  new URL()        x     271,608 ops/sec ±0.24% (192 runs sampled)
+  parseurl         x 112,501,081 ops/sec ±3.88% (177 runs sampled)
+  @polka/url       x  73,331,596 ops/sec ±2.44% (180 runs sampled)
+
+Benchmark: (normal) "/foo/bar"
+  url.parse#1      x   6,109,524 ops/sec ±0.39% (190 runs sampled)
+  url.parse#2      x   6,741,743 ops/sec ±0.38% (190 runs sampled)
+  new URL()        x     304,240 ops/sec ±0.15% (192 runs sampled)
+  parseurl         x  17,809,555 ops/sec ±0.55% (190 runs sampled)
+  @polka/url       x  28,314,612 ops/sec ±1.14% (175 runs sampled)
+
+Benchmark: (normal) "/"
+  url.parse#1      x   9,370,629 ops/sec ±0.37% (187 runs sampled)
+  url.parse#2      x  11,248,825 ops/sec ±0.55% (190 runs sampled)
+  new URL()        x     343,111 ops/sec ±0.18% (193 runs sampled)
+  parseurl         x  28,455,610 ops/sec ±0.92% (187 runs sampled)
+  @polka/url       x  41,677,905 ops/sec ±1.07% (188 runs sampled)
 ```
