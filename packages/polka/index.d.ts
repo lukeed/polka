@@ -4,7 +4,7 @@ import type { ParsedURL } from '@polka/url';
 import type Trouter from 'trouter';
 
 type Promisable<T> = Promise<T> | T;
-type ListenCallback = () => Promisable<void>;
+type ListenCallback = (err?: string | IError) => Promisable<void>;
 
 export interface IError extends Error {
 	code?: number;
