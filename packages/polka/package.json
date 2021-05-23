@@ -24,7 +24,7 @@
     "url": "https://lukeed.com"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
   },
   "dependencies": {
     "@polka/url": "^1.0.0-next.12",
