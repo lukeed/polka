@@ -152,6 +152,11 @@ test('polka/send-type::usage (Stream)', t => {
 		return rw.headers[key];
 	};
 
+	rw.writeHead = (code, obj) => {
+		rw.code = code;
+		rw.headers = Object.assign({}, rw.headers, obj);
+	};
+
 	let rr = fs.createReadStream(input).on('end', () => {
 		try {
 			let info = fs.statSync(output);
@@ -187,6 +192,11 @@ test('polka/send-type::usage (Stream – respect existing header)', t => {
 
 	rw.getHeader = (key) => {
 		return rw.headers[key];
+	};
+
+	rw.writeHead = (code, obj) => {
+		rw.code = code;
+		rw.headers = Object.assign({}, rw.headers, obj);
 	};
 
 	let rr = fs.createReadStream(input).on('end', () => {
