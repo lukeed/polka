@@ -974,7 +974,7 @@ test('errors – `throw Error` :: async', async () => {
 	);
 
 	let val = 42;
-	let uri = listen(app);
+	let uri = $.listen(app);
 	await get(uri).catch(err => {
 		assert.is(val, 42, 'exits without running route handler');
     assert.is(err.statusCode, 418, '~> received custom status');
