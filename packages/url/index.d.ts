@@ -1,12 +1,11 @@
 import type { IncomingMessage } from 'http';
+import type { ParsedUrlQuery } from 'querystring';
 
 export interface ParsedURL {
-	path: string;
 	pathname: string;
-	search: string | null;
-	query: Record<string, string | string[]> | string | null;
-	href: string;
-	_raw: string;
+	search: string;
+	query: Record<string, string | string[]> | void;
+	raw: string;
 }
 
-export default function (req: IncomingMessage, toDecode?: boolean): ParsedURL;
+export function parse(req: IncomingMessage, toDecode?: boolean): ParsedURL;

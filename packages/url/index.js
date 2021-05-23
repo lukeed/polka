@@ -1,50 +1,50 @@
-function parse(str) {
-	let i=0, j=0, k, v;
-	let out={}, arr=str.split('&');
-	for (; i < arr.length; i++) {
-		j = arr[i].indexOf('=');
-		v = !!~j && arr[i].substring(j+1) || '';
-		k = !!~j ? arr[i].substring(0, j) : arr[i];
-		out[k] = out[k] !== void 0 ? [].concat(out[k], v) : v;
-	}
-	return out;
-}
+import * as qs from 'querystring';
 
-export default function (req, toDecode) {
-	let url = req.url;
-	if (url == null) return;
+/**
+ * @typedef ParsedURL
+ * @type {import('.').ParsedURL}
+ */
 
-	let obj = req._parsedUrl;
-	if (obj && obj._raw === url) return obj;
+/**
+ * @typedef Request
+ * @property {string} url
+ * @property {boolean} _decoded
+ * @property {ParsedURL} _parsedUrl
+ */
 
-	obj = {
-		path: url,
-		pathname: url,
-		search: null,
-		query: null,
-		href: url,
-		_raw: url
-	};
+/**
+ * @param {Request} req
+ * @param {boolean} [toDecode]
+ * @returns {ParsedURL|void}
+ */
+export function parse(req, toDecode) {
+	let raw = req.url;
+	if (raw == null) return;
 
-	if (url.length > 1) {
-		if (toDecode && !req._decoded && !!~url.indexOf('%', 1)) {
-			let nxt = url;
-			try { nxt = decodeURIComponent(url) } catch (e) {/* bad */}
-			url = req.url = obj.href = obj.path = obj.pathname = obj._raw = nxt;
-			req._decoded = true;
-		}
+	let prev = req._parsedUrl;
+	if (prev && prev.raw === raw) return prev;
 
-		let idx = url.indexOf('?', 1);
+	let pathname=raw, search='', query;
+
+	if (raw.length > 1) {
+		let idx = raw.indexOf('?', 1);
 
 		if (idx !== -1) {
-			obj.search = url.substring(idx);
-			obj.query = obj.search.substring(1);
-			obj.pathname = url.substring(0, idx);
-			if (toDecode && obj.query.length > 0) {
-				obj.query = parse(obj.query);
+			search = raw.substring(idx);
+			pathname = raw.substring(0, idx);
+			if (search.length > 1) {
+				query = qs.parse(search.substring(1));
+			}
+		}
+
+		if (!!toDecode && !req._decoded) {
+			req._decoded = true;
+			if (pathname.indexOf('%') !== -1) {
+				try { pathname = decodeURIComponent(pathname) }
+				catch (e) { /* URI malformed */ }
 			}
 		}
 	}
 
-	return (req._parsedUrl = obj);
+	return req._parsedUrl = { pathname, search, query, raw };
 }

@@ -825,7 +825,7 @@ if (hasNamedGroups) {
 					assert.is(req.path, '/comments', '~> sees correct `path` value – REPLACED PATTERN');
 					assert.is(req.url, '/comments?foo', '~> sees correct `url` value – REPLACED PATTERN');
 					assert.is(req.params.title, 'narnia', '~> receives correct `params.title` value');
-					assert.equal(req.query, { foo: '' }, '~> receives correct `req.query` value');
+					assert.equal({ ...req.query }, { foo: '' }, '~> receives correct `req.query` value');
 					res.end('cya~!');
 				}) // global
 				.use(/^\/songs.*/i, (req, res) => {
@@ -1042,7 +1042,7 @@ test('sub-application', async () => {
 				assert.ok('runs the sub-application /:id route');
 				assert.is(req.params.bar, 'hi', '~> parses the sub-application params');
 				assert.is(req.url, '/hi?a=0', '~> trims basepath from `req.url` value');
-				assert.equal(req.query, {a:'0'}, '~> parses the sub-application `res.query` value');
+				assert.equal({ ...req.query }, { a:'0' }, '~> parses the sub-application `res.query` value');
 				assert.is(req.originalUrl, '/sub/hi?a=0', '~> preserves original `req.url` value');
 				assert.is(req.foo, 'hello', '~> receives mutatations from main-app middleware');
 				assert.is(req.bar, 'world', '~> receives mutatations from own middleware');
@@ -1095,7 +1095,7 @@ test('sub-application w/ query params', async () => {
 				assert.ok('runs the sub-application / route');
 				assert.is(req.url, '/?foo=bar', '~> trims basepath from `req.url` value');
 				assert.is(req.originalUrl, '/sub?foo=bar', '~> preserves original `req.url` value');
-				assert.equal(req.query, { foo: 'bar' }, '~> preserves original `req.query` value');
+				assert.equal({ ...req.query }, { foo: 'bar' }, '~> preserves original `req.query` value');
 				res.end('hello from sub@index');
 			})
 	);
@@ -1107,7 +1107,7 @@ test('sub-application w/ query params', async () => {
 				assert.ok('run the main-application route');
 				assert.is(req.url, '/?foo=123', '~> always sets `req.originalUrl` key');
 				assert.is(req.originalUrl, '/?foo=123', '~> always sets `req.originalUrl` key');
-				assert.equal(req.query, { foo: '123' }, '~> sets the `req.query` value');
+				assert.equal({ ...req.query }, { foo: '123' }, '~> sets the `req.query` value');
 				res.end('hello from main');
 			})
 	);
@@ -1388,7 +1388,7 @@ test('decode url', async () => {
 				assert.ok('~> inside "GET /sub/:foo" handler')
 				assert.ok(req._decoded, '~> marked as decoded');
 				assert.is(req.path, '/føøß∂r', '~> decoded "path" value');
-				assert.is(req.url, '/føøß∂r?phone=+8675309', '~> decoded "url" value fully');
+				assert.is(req.url, '/føøß∂r?phone=%2b8675309', '~> decoded "url" value partially');
 				assert.is(req.params.foo, 'føøß∂r', '~> decoded "params.foo" segment');
 				assert.is(req.query.phone, '+8675309', '~~> does NOT decode "req.query" keys twice');
 				res.end('done');

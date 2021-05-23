@@ -24,11 +24,14 @@ export interface IOptions<T extends Request = Request> {
 
 export type Response = ServerResponse;
 
-export interface Request extends IncomingMessage, ParsedURL {
+export interface Request extends IncomingMessage {
 	url: string;
 	method: string;
 	originalUrl: string;
 	params: Record<string, string>;
+	path: string;
+	search: string;
+	query: Record<string,string>;
 	body?: any;
 	_decoded?: true;
 	_parsedUrl: ParsedURL;
