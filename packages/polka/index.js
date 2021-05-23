@@ -71,8 +71,7 @@ class Polka extends Router {
 
 		let i=0, arr=obj.handlers.concat(this.onNoMatch), len=arr.length;
 		let loop = async () => res.finished || (i < len) && arr[i++](req, res, next);
-		next = next || (err => err ? this.onError(err, req, res, next) : loop().catch(next));
-		next(); // init
+		(next = next || (err => err ? this.onError(err, req, res, next) : loop().catch(next)))(); // init
 	}
 }
 
