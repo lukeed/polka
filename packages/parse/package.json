@@ -1,12 +1,21 @@
 {
-  "version": "1.0.0-next.8",
+  "version": "1.0.0-next.12",
   "name": "@polka/parse",
   "repository": "lukeed/polka",
   "description": "WIP",
   "module": "build.mjs",
+  "types": "index.d.ts",
   "main": "build.js",
   "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./build.mjs",
+      "require": "./build.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
+    "*.d.ts",
     "build.*"
   ],
   "author": {

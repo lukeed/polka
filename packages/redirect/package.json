@@ -1,12 +1,21 @@
 {
-  "version": "1.0.0-next.7",
+  "version": "1.0.0-next.12",
   "name": "@polka/redirect",
   "repository": "lukeed/polka",
   "description": "A response helper for URL redirects",
   "module": "build.mjs",
+  "types": "index.d.ts",
   "main": "build.js",
   "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./build.mjs",
+      "require": "./build.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
+    "*.d.ts",
     "build.*"
   ],
   "author": {

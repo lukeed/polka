@@ -1,12 +1,19 @@
 {
   "private": true,
-  "version": "1.0.0-next.7",
+  "version": "1.0.0-next.12",
   "name": "@polka/compat",
   "repository": "lukeed/polka",
   "description": "WIP",
   "module": "build.mjs",
   "main": "build.js",
   "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./build.mjs",
+      "require": "./build.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "build.*"
   ],
@@ -16,9 +23,9 @@
     "url": "https://lukeed.com"
   },
   "dependencies": {
-    "@polka/redirect": "^1.0.0-next.7",
-    "@polka/send": "^1.0.0-next.7",
-    "@polka/sendfile": "^1.0.0-next.7",
+    "@polka/redirect": "^1.0.0-next.12",
+    "@polka/send": "^1.0.0-next.12",
+    "@polka/sendfile": "^1.0.0-next.12",
     "mime": "^2.4.0"
   },
   "publishConfig": {

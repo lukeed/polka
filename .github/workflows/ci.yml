@@ -1,6 +1,20 @@
 name: Node.js CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+      - next
+    paths-ignore:
+      - 'bench/**'
+      - 'examples/**'
+  pull_request:
+    branches:
+      - master
+      - next
+    paths-ignore:
+      - 'bench/**'
+      - 'examples/**'
 
 jobs:
   test:
@@ -8,26 +22,44 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        nodejs: [8, 10, 12]
+        nodejs: [10, 12, 14]
 
     steps:
-    - uses: actions/checkout@master
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.nodejs }}
 
+    - name: (env) pnpm
+      if: matrix.nodejs < 12
+      run: npm install -g pnpm@5 # supports Node 10.x
+
+    - name: (env) pnpm
+      if: matrix.nodejs >= 12
+      run: curl -L https://pnpm.js.org/pnpm.js | node - add --global pnpm
+
+    - name: (env) cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.pnpm-store
+        key: ${{ runner.os }}-${{ matrix.nodejs }}-${{ hashFiles('**/package.json') }}
+        restore-keys: ${{ runner.os }}-${{ matrix.nodejs }}-
+
     - name: Install
       run: |
-        npm install
-        npm install -g nyc codecov
+        pnpm install
+        pnpm add -g nyc
 
-    - name: Bootstrap, Lint, and Test
-      run: nyc --include=packages/*/index.js npm test
+    - name: Linter
+      run: pnpm linter
+
+    - name: Test w/ Coverage
+      run: nyc --include=packages pnpm test
 
     - name: Report
       if: matrix.nodejs >= 12
       run: |
         nyc report --reporter=text-lcov > coverage.lcov
-        codecov
+        bash <(curl -s https://codecov.io/bash)
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

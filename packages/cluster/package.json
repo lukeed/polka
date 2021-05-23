@@ -1,12 +1,21 @@
 {
-  "version": "1.0.0-next.10",
+  "version": "1.0.0-next.12",
   "name": "@polka/cluster",
   "repository": "lukeed/polka",
   "description": "Intialize and run a HTTP cluster",
   "module": "build.mjs",
+  "types": "index.d.ts",
   "main": "build.js",
   "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./build.mjs",
+      "require": "./build.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
+    "*.d.ts",
     "build.*"
   ],
   "author": {

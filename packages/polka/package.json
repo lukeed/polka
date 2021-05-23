@@ -1,12 +1,21 @@
 {
   "name": "polka",
-  "version": "1.0.0-next.11",
+  "version": "1.0.0-next.14",
   "repository": "lukeed/polka",
   "description": "A micro web server so fast, it'll make you dance! :dancers:",
   "module": "build.mjs",
+  "types": "index.d.ts",
   "main": "build.js",
   "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./build.mjs",
+      "require": "./build.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
+    "*.d.ts",
     "build.*"
   ],
   "author": {
@@ -18,7 +27,7 @@
     "node": ">=6"
   },
   "dependencies": {
-    "@polka/url": "^1.0.0-next.11",
+    "@polka/url": "^1.0.0-next.12",
     "trouter": "^3.1.0"
   }
 }

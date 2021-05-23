@@ -1,12 +1,21 @@
 {
-  "version": "1.0.0-next.11",
+  "version": "1.0.0-next.12",
   "name": "@polka/url",
   "repository": "lukeed/polka",
   "description": "Super fast, memoized `req.url` parser",
   "module": "build.mjs",
+  "types": "index.d.ts",
   "main": "build.js",
   "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./build.mjs",
+      "require": "./build.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
+    "*.d.ts",
     "build.*"
   ],
   "author": {

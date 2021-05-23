@@ -2,11 +2,11 @@
 
 > Super fast, memoized `req.url` parser; _not_ limited to [Polka][polka]!
 
-Parses the `url` from a [`IncomingMessage`](https://nodejs.org/api/http.html#http_class_http_incomingmessage) request. The returned object will always only contain the following keys: `search`, `query`, `pathname`, `path`, `href`, and `_raw`.
+Parses the `url` from a [`IncomingMessage`](https://nodejs.org/api/http.html#http_class_http_incomingmessage) request. The returned object will always only contain the following keys: `search`, `query`, `pathname`, and `raw`.
 
 > **Note:** This library does not process `protocol`, `hostname`, `port`, etc.<br>This is because the incoming `req.url` value only begins with the path information.
 
-Parsed requests will be mutated with a `_parsedUrl` key, containing the returned output. This is used for future memoization, so as to avoid parsing the same `url` value multiple times.
+Parsed requests will be mutated with a `_parsedUrl` key, containing the returned output. This is used for future memoization, avoiding the need to fully parse the same `url` value multiple times.
 
 ## Install
 
@@ -19,27 +19,35 @@ $ npm install --save @polka/url
 ```js
 const parse = require('@polka/url');
 
-let req = { url: '/foo/bar?fizz=buzz' };
-let foo = parse(req);
-//=> { search: '?fizz=buzz',
-//=>   query: 'fizz=buzz',
+let req = {
+  url: '/foo/bar?fizz=buzz'
+};
+let output = parse(req);
+//=> {
 //=>   pathname: '/foo/bar',
-//=>   path: '/foo/bar?fizz=buzz',
-//=>   href: '/foo/bar?fizz=buzz',
-//=>   _raw: '/foo/bar?fizz=buzz' }
+//=>   raw: '/foo/bar?fizz=buzz',
+//=>   search: '?fizz=buzz',
+//=>   query: {
+//=>     fizz: 'buzz'
+//=>   },
+//=> }
 
 // Attaches result for future memoization
-assert.deepEqual(foo, req._parsedUrl); //=> true
+assert.deepEqual(output, req._parsedUrl); //=> true
 
 // Example with `toDecode` param
-req = { url: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309' };
+req = {
+  url: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309'
+};
 parse(req, true);
-//=> { search: '?phone=+8675309',
-//=>   query: { phone: '+8675309' },
+//=> {
 //=>   pathname: '/føøß∂r',
-//=>   path: '/føøß∂r?phone=+8675309',
-//=>   href: '/føøß∂r?phone=+8675309',
-//=>   _raw: '/føøß∂r?phone=+8675309' }
+//=>   raw: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309',
+//=>   search: '?phone=%2b8675309',
+//=>   query: {
+//=>     phone: '+8675309'
+//=>   }
+//=> }
 
 // Attaches awareness key
 assert(req._decoded); //=> true
@@ -47,13 +55,13 @@ assert(req._decoded); //=> true
 
 ## API
 
-### url(req, toDecode)
+### url(req, toDecode?)
 Returns: `Object` or `undefined`
 
 > **Important:** The `req` must have a `url` key, otherwise `undefined` will be returned.<br>If no input is provided at all, a `TypeError` will be thrown.
 
 #### req
-Type: `IncomingMessage` or `Object`
+Type: `IncomingMessage` or `{ url: string }`
 
 The incoming HTTP request (`req`) or a plain `Object` with a `url` key.
 
@@ -63,11 +71,13 @@ The incoming HTTP request (`req`) or a plain `Object` with a `url` key.
 Type: `Boolean`<br>
 Default: `false`
 
-If enabled, the `url` will be fully decoded (via [`decodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent)) and the output keys will be slightly different:
+If enabled, the `pathname` will be fully decoded, via [`decodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent).
 
-* `path`, `pathname`, `href`, `_raw` &mdash; will be the decoded strings
-* `search` &mdash; if there is a value, will be decoded string, else remain `null`
-* `query` &mdash; if there is a value, will be a decoded **object**, else remain `null`
+> **Important:** Please note the following behaviors:
+> * `raw` is _never_ decoded; this key reflects your original value
+> * `pathname` is decoded _only_ when `toDecode` is enabled
+> * `search` is _never_ decoded; this key reflects your original querystring value
+> * `query` is _always_ decoded; even when `toDecode` is disabled
 
 Additionally, the `req` is mutated with `req._decoded = true` so as to prevent repetitive decoding.
 

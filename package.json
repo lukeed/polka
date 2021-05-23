@@ -7,19 +7,16 @@
   },
   "scripts": {
     "build": "lerna exec bundt index.js",
-    "bootstrap": "lerna bootstrap --hoist",
-    "lint": "eslint packages --env node,es6",
-    "pretest": "npm run lint && npm run bootstrap",
-    "test": "tape -r esm packages/*/test/*.js | tap-spec"
+    "linter": "eslint packages --env node,es6",
+    "test": "uvu -r esm -i util packages test"
   },
   "devDependencies": {
-    "bundt": "0.4.0",
+    "bundt": "1.1.2",
     "eslint": "5.15.0",
     "esm": "3.2.25",
-    "httpie": "1.1.0",
+    "httpie": "1.1.2",
     "lerna": "3.13.4",
-    "tap-spec": "5.0.0",
-    "tape": "4.11.0"
+    "uvu": "0.5.1"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",

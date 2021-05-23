@@ -9,7 +9,6 @@ polka()
 		let json = JSON.stringify(req.body);
 		res.end(json);
 	})
-	.listen(PORT, err => {
-		if (err) throw err;
+	.listen(PORT, () => {
 		console.log(`> Running on localhost:${PORT}`);
 	});
