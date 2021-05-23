@@ -1,11 +1,11 @@
+/* eslint-disable no-console */
+
 /**
  * NO NORMALIZATION ATTEMPTS MADE
  * AKA: All candidates different / no validations
  */
 
 const native = require('url');
-const qs = require('querystring');
-const assert = require('uvu/assert');
 const { Suite } = require('benchmark');
 
 const polka = require('../build').parse;

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const native = require('url');
 const qs = require('querystring');
 const assert = require('uvu/assert');
@@ -92,7 +93,7 @@ function runner(config) {
 			console.log('  ✔', name);
 		} catch (err) {
 			console.log('  ✘', name, `(FAILED @ "${key}")`);
-		 	if (isVerbose) console.log(err.details);
+			if (isVerbose) console.log(err.details);
 		}
 	});
 
