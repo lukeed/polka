@@ -959,6 +959,52 @@ test('errors – `throw Error`', async () => {
 });
 
 
+test('errors – `throw Error` :: async', async () => {
+	let app = (
+		polka()
+			.use(async () => {
+				let err = new Error('hello');
+				err.code = 418;
+				throw err;
+			})
+			.get('/', (req, res) => {
+				val = 123; // wont run
+				res.end('OK');
+			})
+	);
+
+	let val = 42;
+	let uri = $.listen(app);
+	await get(uri).catch(err => {
+		assert.is(val, 42, 'exits without running route handler');
+    assert.is(err.statusCode, 418, '~> received custom status');
+		assert.is(err.data, 'hello', '~> received "hello" text');
+	});
+
+	app.server.close();
+});
+
+test('errors – `throw Error` :: async :: subapp', async () => {
+	let sub = polka().use(async () => {
+		throw new Error('busted');
+	});
+
+	let app = polka().use('/sub', sub, (req, res) => {
+		val = 123; // wont run
+		res.end('OK');
+	});
+
+	let val = 42;
+	let uri = $.listen(app);
+	await get(uri + '/sub/123').catch(err => {
+		assert.is(val, 42, 'exits without running route handler');
+    assert.is(err.statusCode, 500, '~> received default status');
+		assert.is(err.data, 'busted', '~> received "busted" text');
+	});
+
+	app.server.close();
+});
+
 test('errors – `throw msg`', async () => {
 	// t.plan(3);
 
