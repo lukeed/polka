@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-next.12",
+  "version": "1.0.0-next.15",
   "name": "@polka/redirect",
   "repository": "lukeed/polka",
   "description": "A response helper for URL redirects",
