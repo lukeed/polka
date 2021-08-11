@@ -136,7 +136,7 @@ One important difference is that URL decoding is enabled by default in polka but
 
 ```js
 const app = polka();
-const parse = require('@polka/url');
+const { parse } = require('@polka/url');
 app.parse = (req, toDecode) => {
   return parse(req, false); // or simply, return parse(req);
 }
