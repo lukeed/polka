@@ -126,11 +126,21 @@ You may also pass a sub-application, which _must_ be accompanied by a `base` pat
 Please see [`Middleware`](#middleware) and [Express' middleware examples](http://expressjs.com/en/4x/api.html#middleware-callback-function-examples) for more info.
 
 
-### parse(req)
+### parse(req, toDecode=true)
 
 Returns: `Object` or `undefined`
 
 As of `v0.5.0`, this is an alias of the [`@polka/url`](/packages/url) module. For nearly all cases, you'll notice no changes.
+
+One important difference is that URL decoding is enabled by default in polka but it is disabled by default in the `@polka/url` module. You can disable the URL decoding if required,
+
+```js
+const app = polka();
+const { parse } = require('@polka/url');
+app.parse = (req, toDecode) => {
+  return parse(req, false); // or simply, return parse(req);
+}
+```
 
 But, for whatever reason, you can quickly swap in [`parseurl`](https://github.com/pillarjs/parseurl) again:
 
@@ -139,6 +149,8 @@ const app = polka();
 app.parse = require('parseurl');
 //=> Done!
 ```
+
+> **Note:**  `parseurl` doesn't support URL decoding yet.
 
 ### listen()
 
