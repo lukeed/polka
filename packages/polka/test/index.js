@@ -1425,16 +1425,16 @@ test('HEAD', async () => {
 });
 
 
-test('decode url', async () => {
+test('encoded url', async () => {
 	// t.plan(8);
 
 	let sub = (
 		polka()
 			.get('/:foo', (req, res) => {
 				assert.ok('~> inside "GET /sub/:foo" handler')
-				assert.ok(req._decoded, '~> marked as decoded');
-				assert.is(req.path, '/føøß∂r', '~> decoded "path" value');
-				assert.is(req.url, '/føøß∂r?phone=%2b8675309', '~> decoded "url" value partially');
+				assert.ok(!req._decoded, '~> not marked as decoded');
+				assert.is(req.path, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r', '~> "path" value');
+				assert.is(req.url, '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309', '~> "url" value');
 				assert.is(req.params.foo, 'føøß∂r', '~> decoded "params.foo" segment');
 				assert.is(req.query.phone, '+8675309', '~~> does NOT decode "req.query" keys twice');
 				res.end('done');
