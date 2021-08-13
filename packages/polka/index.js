@@ -61,17 +61,21 @@ class Polka extends Router {
 	}
 
 	handler(req, res, next) {
-		let info = this.parse(req);
-		let obj = this.find(req.method, req.path=info.pathname);
+		let info = this.parse(req), path = info.pathname;
+		let obj = this.find(req.method, req.path=path);
 
-		req.params = {};
-		for (let key in obj.params) {
-			req.params[key] = decodeURIComponent(obj.params[key]);
-		}
+		req.url = path + info.search;
 		req.originalUrl = req.originalUrl || req.url;
-		req.url = info.pathname + info.search;
 		req.query = info.query || {};
 		req.search = info.search;
+		req.params = obj.params;
+
+		if (path.length > 1 && path.indexOf('%', 1) !== -1) {
+			for (let k in req.params) {
+				try { req.params[k] = decodeURIComponent(req.params[k]); }
+				catch (e) { /* malform uri segment */ }
+			}
+		}
 
 		let i=0, arr=obj.handlers.concat(this.onNoMatch), len=arr.length;
 		let loop = async () => res.finished || (i < len) && arr[i++](req, res, next);
