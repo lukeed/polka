@@ -21,8 +21,8 @@ export function parse(req, toDecode) {
 	let raw = req.url;
 	if (raw == null) return;
 
-	let prev = req._parsedUrl;
-	if (prev && prev.raw === raw) return prev;
+	let prev=req._parsedUrl, encoded=!req._decoded;
+	if (prev && prev.raw === raw && !toDecode === encoded) return prev;
 
 	let pathname=raw, search='', query;
 
@@ -37,7 +37,7 @@ export function parse(req, toDecode) {
 			}
 		}
 
-		if (!!toDecode && !req._decoded) {
+		if (!!toDecode && encoded) {
 			req._decoded = true;
 			if (pathname.indexOf('%') !== -1) {
 				try { pathname = decodeURIComponent(pathname) }

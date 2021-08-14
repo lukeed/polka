@@ -210,4 +210,60 @@ test('url :: decode :: URI malformed', () => {
 	});
 });
 
+test('url :: decode :: cache :: hit', () => {
+	/** @type any */
+	let req = { url: '/foo/hell%C3%B6' };
+	let out1 = parse(req, true);
+
+	// @ts-ignore
+	out1.foobar = 123;
+
+	let out2 = parse(req, true);
+
+	// @ts-ignore
+	assert.is(out2.foobar, 123);
+	assert.is(out1, out2, 'referential');
+	assert.is(out1.pathname, '/foo/hellö');
+});
+
+test('url :: decode :: cache :: miss #1', () => {
+	/** @type any */
+	let req = { url: '/foo/hell%C3%B6?fizz=buzz' };
+	let out1 = parse(req);
+
+	assert.is(req._parsedUrl, out1);
+	assert.is(out1.pathname, '/foo/hell%C3%B6');
+
+	// @ts-ignore
+	out1.foobar = 123;
+
+	let out2 = parse(req, true);
+
+	// @ts-ignore
+	assert.is(out2.foobar, undefined);
+	assert.is.not(req._parsedUrl, out1);
+	assert.is.not(out1, out2, 'referential');
+	assert.is(out2.pathname, '/foo/hellö');
+});
+
+test('url :: decode :: cache :: miss #2', () => {
+	/** @type any */
+	let req = { url: '/foo/hell%C3%B6?fizz=buzz' };
+	let out1 = parse(req, true);
+
+	assert.is(req._parsedUrl, out1);
+	assert.is(out1.pathname, '/foo/hellö');
+
+	// @ts-ignore
+	out1.foobar = 123;
+
+	let out2 = parse(req);
+
+	// @ts-ignore
+	assert.is(out2.foobar, undefined);
+	assert.is.not(req._parsedUrl, out1);
+	assert.is.not(out1, out2, 'referential');
+	assert.is(out2.pathname, '/foo/hell%C3%B6');
+});
+
 test.run();
