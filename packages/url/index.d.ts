@@ -1,5 +1,4 @@
 import type { IncomingMessage } from 'http';
-import type { ParsedUrlQuery } from 'querystring';
 
 export interface ParsedURL {
 	pathname: string;

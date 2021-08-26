@@ -8,7 +8,7 @@ import * as qs from 'querystring';
 /**
  * @typedef Request
  * @property {string} url
- * @property {boolean} _decoded
+ * @property {string} _decoded
  * @property {ParsedURL} _parsedUrl
  */
 
@@ -38,9 +38,10 @@ export function parse(req, toDecode) {
 		}
 
 		if (!!toDecode && encoded) {
-			req._decoded = true;
-			if (pathname.indexOf('%') !== -1) {
-				try { pathname = decodeURIComponent(pathname) }
+			if (pathname.indexOf('%') === -1) {
+				req._decoded = pathname;
+			} else {
+				try { pathname = req._decoded = decodeURIComponent(pathname) }
 				catch (e) { /* URI malformed */ }
 			}
 		}
