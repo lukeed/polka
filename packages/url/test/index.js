@@ -21,7 +21,7 @@ function run(url, isDecode, expected) {
 		}
 
 		assert.type(output, 'object');
-		if (isDecode) assert.is(req._decoded, true);
+		if (isDecode) assert.is(req._decoded, req._parsedUrl.pathname);
 		assert.is(req._parsedUrl, output, 'referential match');
 
 		assert.is(output.raw, url);
@@ -195,7 +195,8 @@ test('url :: decode :: URI malformed', () => {
 	let req = { url: '/%2?foo=bar' };
 	let out = parse(req, true);
 
-	assert.is(req._decoded, true);
+	// could not be decoded cuz malform
+	assert.is(req._decoded, undefined);
 
 	// convert `null` prototype
 	out.query = { ...out.query };
