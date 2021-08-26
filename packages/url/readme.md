@@ -50,7 +50,7 @@ parse(req, true);
 //=> }
 
 // Attaches awareness key
-assert(req._decoded); //=> true
+assert(req._decoded); //=> '/føøß∂r'
 ```
 
 ## API
@@ -79,7 +79,7 @@ If enabled, the `pathname` will be fully decoded, via [`decodeURIComponent`](htt
 > * `search` is _never_ decoded; this key reflects your original querystring value
 > * `query` is _always_ decoded; even when `toDecode` is disabled
 
-Additionally, the `req` is mutated with `req._decoded = true` so as to prevent repetitive decoding.
+Additionally, the `req` is mutated with `req._decoded` so as to prevent repetitive decoding.
 
 
 ## Benchmarks
