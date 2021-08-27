@@ -8,21 +8,19 @@ import * as qs from 'querystring';
 /**
  * @typedef Request
  * @property {string} url
- * @property {string} _decoded
  * @property {ParsedURL} _parsedUrl
  */
 
 /**
  * @param {Request} req
- * @param {boolean} [toDecode]
  * @returns {ParsedURL|void}
  */
-export function parse(req, toDecode) {
+export function parse(req) {
 	let raw = req.url;
 	if (raw == null) return;
 
-	let prev=req._parsedUrl, encoded=!req._decoded;
-	if (prev && prev.raw === raw && !toDecode === encoded) return prev;
+	let prev = req._parsedUrl;
+	if (prev && prev.raw === raw) return prev;
 
 	let pathname=raw, search='', query;
 
@@ -34,15 +32,6 @@ export function parse(req, toDecode) {
 			pathname = raw.substring(0, idx);
 			if (search.length > 1) {
 				query = qs.parse(search.substring(1));
-			}
-		}
-
-		if (!!toDecode && encoded) {
-			if (pathname.indexOf('%') === -1) {
-				req._decoded = pathname;
-			} else {
-				try { pathname = req._decoded = decodeURIComponent(pathname) }
-				catch (e) { /* URI malformed */ }
 			}
 		}
 	}
