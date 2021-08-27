@@ -7,4 +7,4 @@ export interface ParsedURL {
 	raw: string;
 }
 
-export function parse(req: IncomingMessage, toDecode?: boolean): ParsedURL;
+export function parse(req: IncomingMessage): ParsedURL;

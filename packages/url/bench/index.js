@@ -17,7 +17,7 @@ const isVerbose = process.argv.includes('--verbose');
 
 /**
  * @typedef Contender
- * @type {(req: Request, toDecode: boolean) => any}
+ * @type {(req: Request) => any}
  */
 
 /**
@@ -26,22 +26,20 @@ const isVerbose = process.argv.includes('--verbose');
  * @type {Record<string, Contender>}
  */
 const contenders = {
-	'url.parse': (r, d) => {
+	'url.parse': r => {
 		let out = native.parse(r.url, true); // query as object
-		if (d) out.pathname = decodeURIComponent(out.pathname);
 		// returns `null` if no value
 		out.search = out.search || '';
 		return out;
 	},
 
-	'new URL()': (r, d) => {
+	'new URL()': r => {
 		let url = r.url;
 		let { pathname, search, searchParams } = new URL(url, 'http://x.com');
-		if (d) pathname = decodeURIComponent(pathname);
 		return { url, pathname, search, query: searchParams };
 	},
 
-	'parseurl': (r, d) => {
+	'parseurl': r => {
 		/** @type {Record<string, string>} */ // @ts-ignore
 		let out = parseurl(r);
 
@@ -51,35 +49,31 @@ const contenders = {
 		// @ts-ignore - always returns `query` as string|null
 		if (out.query) out.query = qs.parse(out.query);
 
-		// never decodes, do bare minimum for compat
-		if (d) out.pathname = decodeURIComponent(out.pathname);
-
 		return out;
 	},
 
-	'@polka/url': (r, d) => {
+	'@polka/url': r => {
 		// @ts-ignore - request
-		return polka(r, d);
+		return polka(r);
 	},
 };
 
 /**
  * @param {object} config
  * @param {string} config.url
- * @param {boolean} config.decode
  * @param {Record<string, unknown>} config.expect
  * @param {boolean} [config.repeat]
  */
 function runner(config) {
-	let { url, expect, repeat, decode=false } = config;
-	let title = repeat ? 'repeat' : decode ? 'decode' : 'normal';
+	let { url, expect, repeat } = config;
+	let title = repeat ? 'repeat' : 'normal';
 
 	console.log('\nValidation: (%s) "%s"', title, url);
 	Object.keys(contenders).forEach(name => {
 		let key, fn=contenders[name];
 
 		try {
-			let output = fn({ url }, decode);
+			let output = fn({ url });
 
 			for (key in expect) {
 				let tmp = output[key];
@@ -107,7 +101,7 @@ function runner(config) {
 		let req = repeat && { url };
 
 		bench.add(name + ' '.repeat(16 - name.length), () => {
-			fn(req || { url }, decode);
+			fn(req || { url });
 		}, {
 			minSamples: 100
 		});
@@ -120,7 +114,6 @@ function runner(config) {
 
 runner({
 	url: '/foo/bar?user=tj&pet=fluffy',
-	decode: false,
 	expect: {
 		pathname: '/foo/bar',
 		search: '?user=tj&pet=fluffy',
@@ -134,7 +127,6 @@ runner({
 runner({
 	repeat: true,
 	url: '/foo/bar?user=tj&pet=fluffy',
-	decode: false,
 	expect: {
 		pathname: '/foo/bar',
 		search: '?user=tj&pet=fluffy',
@@ -147,7 +139,6 @@ runner({
 
 runner({
 	url: '/foo/bar',
-	decode: false,
 	expect: {
 		pathname: '/foo/bar',
 		search: '',
@@ -156,62 +147,8 @@ runner({
 
 runner({
 	url: '/',
-	decode: false,
 	expect: {
 		pathname: '/',
-		search: '',
-	}
-});
-
-// DECODES
-
-runner({
-	url: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r',
-	decode: true,
-	expect: {
-		pathname: '/føøß∂r',
-		search: '',
-	}
-});
-
-runner({
-	url: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b393383123549',
-	decode: true,
-	expect: {
-		pathname: '/føøß∂r',
-		search: '?phone=%2b393383123549',
-		query: { phone: '+393383123549' },
-	}
-});
-
-runner({
-	repeat: true,
-	url: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b393383123549',
-	decode: true,
-	expect: {
-		pathname: '/føøß∂r',
-		search: '?phone=%2b393383123549',
-		query: { phone: '+393383123549' },
-	}
-});
-
-runner({
-	url: '/foo/bar?hello=123',
-	decode: true,
-	expect: {
-		pathname: '/foo/bar',
-		search: '?hello=123',
-		query: {
-			hello: '123',
-		}
-	}
-});
-
-runner({
-	url: '/foo/bar',
-	decode: true,
-	expect: {
-		pathname: '/foo/bar',
 		search: '',
 	}
 });

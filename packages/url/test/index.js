@@ -4,16 +4,12 @@ import { parse } from '../index';
 
 /**
  * @param {string} url
- * @param {boolean} isDecode
  * @param {import('..').ParsedURL} expected
  */
-function run(url, isDecode, expected) {
-	let title = `url :: "${url}"`;
-	if (isDecode) title += ' :: decode';
-
-	test(title, () => {
+function run(url, expected) {
+	test(`url :: "${url}"`, () => {
 		let req = /** @type any */ ({ url });
-		let output = parse(req, isDecode);
+		let output = parse(req);
 
 		if (output.query) {
 			// convert `null` prototype
@@ -21,7 +17,6 @@ function run(url, isDecode, expected) {
 		}
 
 		assert.type(output, 'object');
-		if (isDecode) assert.is(req._decoded, req._parsedUrl.pathname);
 		assert.is(req._parsedUrl, output, 'referential match');
 
 		assert.is(output.raw, url);
@@ -44,21 +39,21 @@ test('url :: invalid inputs', () => {
 	);
 });
 
-run('/', false, {
+run('/', {
 	raw: '/',
 	pathname: '/',
 	search: '',
 	query: undefined,
 });
 
-run('/foo/bar', false, {
+run('/foo/bar', {
 	raw: '/foo/bar',
 	pathname: '/foo/bar',
 	search: '',
 	query: undefined,
 });
 
-run('/foo/bar?fizz=buzz', false, {
+run('/foo/bar?fizz=buzz', {
 	raw: '/foo/bar?fizz=buzz',
 	pathname: '/foo/bar',
 	search: '?fizz=buzz',
@@ -67,7 +62,7 @@ run('/foo/bar?fizz=buzz', false, {
 	},
 });
 
-run('/foo/bar?fizz=buzz&hello=world', false, {
+run('/foo/bar?fizz=buzz&hello=world', {
 	raw: '/foo/bar?fizz=buzz&hello=world',
 	pathname: '/foo/bar',
 	search: '?fizz=buzz&hello=world',
@@ -77,14 +72,14 @@ run('/foo/bar?fizz=buzz&hello=world', false, {
 	},
 });
 
-run('/foo.123', false, {
+run('/foo.123', {
 	raw: '/foo.123',
 	pathname: '/foo.123',
 	search: '',
 	query: undefined
 });
 
-run('/foo?bar', false, {
+run('/foo?bar', {
 	raw: '/foo?bar',
 	pathname: '/foo',
 	search: '?bar',
@@ -94,7 +89,7 @@ run('/foo?bar', false, {
 });
 
 // query param w/ "?" value
-run('/foo?q=a?b=c', false, {
+run('/foo?q=a?b=c', {
 	raw: '/foo?q=a?b=c',
 	pathname: '/foo',
 	search: '?q=a?b=c',
@@ -104,7 +99,7 @@ run('/foo?q=a?b=c', false, {
 });
 
 // repeated query keys
-run('/foo?bar=1&bar=2&bar=3&baz=&bat', false, {
+run('/foo?bar=1&bar=2&bar=3&baz=&bat', {
 	raw: '/foo?bar=1&bar=2&bar=3&baz=&bat',
 	pathname: '/foo',
 	search: '?bar=1&bar=2&bar=3&baz=&bat',
@@ -115,25 +110,16 @@ run('/foo?bar=1&bar=2&bar=3&baz=&bat', false, {
 	}
 });
 
-// NOT DECODED
-run('/f%C3%B8%C3%B8%C3%9F%E2%88%82r', false, {
+run('/f%C3%B8%C3%B8%C3%9F%E2%88%82r', {
 	raw: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r',
 	pathname: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r',
 	search: '',
 	query: undefined
 });
 
-// DECODED
-run('/f%C3%B8%C3%B8%C3%9F%E2%88%82r', true, {
-	raw: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r',
-	pathname: '/føøß∂r',
-	search: '',
-	query: undefined
-});
-
-run('/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309', true, {
+run('/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309', {
 	raw: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309',
-	pathname: '/føøß∂r',
+	pathname: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r',
 	search: '?phone=%2b8675309',
 	query: {
 		phone: '+8675309'
@@ -141,7 +127,7 @@ run('/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309', true, {
 });
 
 // query param w/ "+" for space
-run('/hello?world=a+b', true, {
+run('/hello?world=a+b', {
 	raw: '/hello?world=a+b',
 	pathname: '/hello',
 	search: '?world=a+b',
@@ -152,7 +138,7 @@ run('/hello?world=a+b', true, {
 
 let plain = 'https://hi.com/w?v=hello&list=world';
 let urlencoded = encodeURIComponent(plain);
-run(`/foobar/?href=${urlencoded}`, true, {
+run(`/foobar/?href=${urlencoded}`, {
 	raw: `/foobar/?href=${urlencoded}`,
 	pathname: '/foobar/',
 	search: `?href=${urlencoded}`,
@@ -190,13 +176,11 @@ test('url :: cache :: miss', () => {
 	assert.is.not(out1, out2, 'referential');
 });
 
-test('url :: decode :: URI malformed', () => {
+// no effect because no decode
+test('url :: malformed uri', () => {
 	/** @type any */
 	let req = { url: '/%2?foo=bar' };
-	let out = parse(req, true);
-
-	// could not be decoded cuz malform
-	assert.is(req._decoded, undefined);
+	let out = parse(req);
 
 	// convert `null` prototype
 	out.query = { ...out.query };
@@ -209,62 +193,6 @@ test('url :: decode :: URI malformed', () => {
 			foo: 'bar'
 		}
 	});
-});
-
-test('url :: decode :: cache :: hit', () => {
-	/** @type any */
-	let req = { url: '/foo/hell%C3%B6' };
-	let out1 = parse(req, true);
-
-	// @ts-ignore
-	out1.foobar = 123;
-
-	let out2 = parse(req, true);
-
-	// @ts-ignore
-	assert.is(out2.foobar, 123);
-	assert.is(out1, out2, 'referential');
-	assert.is(out1.pathname, '/foo/hellö');
-});
-
-test('url :: decode :: cache :: miss #1', () => {
-	/** @type any */
-	let req = { url: '/foo/hell%C3%B6?fizz=buzz' };
-	let out1 = parse(req);
-
-	assert.is(req._parsedUrl, out1);
-	assert.is(out1.pathname, '/foo/hell%C3%B6');
-
-	// @ts-ignore
-	out1.foobar = 123;
-
-	let out2 = parse(req, true);
-
-	// @ts-ignore
-	assert.is(out2.foobar, undefined);
-	assert.is.not(req._parsedUrl, out1);
-	assert.is.not(out1, out2, 'referential');
-	assert.is(out2.pathname, '/foo/hellö');
-});
-
-test('url :: decode :: cache :: miss #2', () => {
-	/** @type any */
-	let req = { url: '/foo/hell%C3%B6?fizz=buzz' };
-	let out1 = parse(req, true);
-
-	assert.is(req._parsedUrl, out1);
-	assert.is(out1.pathname, '/foo/hellö');
-
-	// @ts-ignore
-	out1.foobar = 123;
-
-	let out2 = parse(req);
-
-	// @ts-ignore
-	assert.is(out2.foobar, undefined);
-	assert.is.not(req._parsedUrl, out1);
-	assert.is.not(out1, out2, 'referential');
-	assert.is(out2.pathname, '/foo/hell%C3%B6');
 });
 
 test.run();
