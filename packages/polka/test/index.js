@@ -984,6 +984,7 @@ test('errors – `throw Error` :: async', async () => {
 	app.server.close();
 });
 
+
 test('errors – `throw Error` :: async :: subapp', async () => {
 	let sub = polka().use(async () => {
 		throw new Error('busted');
@@ -1004,6 +1005,7 @@ test('errors – `throw Error` :: async :: subapp', async () => {
 
 	app.server.close();
 });
+
 
 test('errors – `throw msg`', async () => {
 	// t.plan(3);
@@ -1131,6 +1133,7 @@ test('sub-application', async () => {
 
 	app.server.close();
 });
+
 
 test('sub-application w/ query params', async () => {
 	// t.plan(12);
@@ -1284,6 +1287,55 @@ test('options.onError (err.status)', async () => {
 	});
 
 	app.server.close();
+});
+
+
+test('options.onError (err.status) non-numeric', async () => {
+	function throws(status) {
+		return (r1, f2, next) => {
+			let e = Error('Oops');
+			e.status = status;
+			next(e);
+		};
+	}
+
+	function check(path, code = 500) {
+		return get(path).catch(err => {
+			assert.is(err.statusCode, code, '~> response has 500 status code');
+			assert.is(err.data, 'Oops', '~> response body is "Oops" string');
+		});
+	}
+
+	let app = (
+		polka()
+			.get('/null', throws(null))
+			.get('/string', throws('418'))
+			.get('/array', throws([1, 2, 3]))
+			.get('/undefined', throws(undefined))
+			.get('/200', throws(200))
+			.get('/101', throws(101))
+			.get('/99', throws(99))
+			.get('/1', throws(1))
+			.get('/0', throws(0))
+	);
+
+	try {
+		let uri = $.listen(app);
+
+		await check(uri + '/0', 500);
+		await check(uri + '/1', 500);
+		await check(uri + '/99', 500);
+
+		await check(uri + '/101', 101);
+		await check(uri + '/200', 200);
+
+		await check(uri + '/null', 500);
+		await check(uri + '/string', 500);
+		await check(uri + '/undefined', 500);
+		await check(uri + '/array', 500);
+	} finally {
+		app.server.close();
+	}
 });
 
 
