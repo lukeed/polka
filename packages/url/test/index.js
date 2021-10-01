@@ -31,7 +31,8 @@ test('url :: exports', () => {
 });
 
 test('url :: invalid inputs', () => {
-	assert.throws(parse, /Cannot read property/, 'throws if no input');
+	assert.throws(parse, /Cannot read prop/);
+
 	assert.is(
 		// @ts-ignore
 		parse({ /* empty */ }),
