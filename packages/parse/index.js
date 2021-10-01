@@ -30,7 +30,7 @@ export function parse(opts={}) {
 				bits += x;
 			} else {
 				let err = new Error('Exceeded "Content-Length" limit');
-				err.code = 413;
+				err.status = 413;
 				next(err);
 			}
 		}).on('end', () => {
@@ -39,7 +39,7 @@ export function parse(opts={}) {
 				req._body = true;
 				next();
 			} catch (err) {
-				err.code = 422;
+				err.status = 422;
 				err.details = err.message;
 				err.message = 'Invalid content';
 				next(err);

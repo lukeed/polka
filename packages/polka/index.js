@@ -3,7 +3,7 @@ import Router from 'trouter';
 import { parse } from '@polka/url';
 
 function onError(err, req, res) {
-	let code = (res.statusCode = err.code || err.status || 500);
+	let code = (res.statusCode = err.status || 500);
 	if (typeof err === 'string' || Buffer.isBuffer(err)) res.end(err);
 	else res.end(err.message || http.STATUS_CODES[code]);
 }
@@ -17,7 +17,7 @@ class Polka extends Router {
 		this.server = opts.server;
 		this.handler = this.handler.bind(this);
 		this.onError = opts.onError || onError; // catch-all handler
-		this.onNoMatch = opts.onNoMatch || this.onError.bind(null, { code:404 });
+		this.onNoMatch = opts.onNoMatch || this.onError.bind(null, { status: 404 });
 		this.attach = (req, res) => setImmediate(this.handler, req, res);
 	}
 

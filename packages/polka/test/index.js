@@ -938,7 +938,7 @@ test('errors – `throw Error`', async () => {
 		polka()
 			.use(() => {
 				let err = new Error('hello');
-				err.code = 418;
+				err.status = 418;
 				throw err;
 			})
 			.get('/', (req, res) => {
@@ -964,7 +964,7 @@ test('errors – `throw Error` :: async', async () => {
 		polka()
 			.use(async () => {
 				let err = new Error('hello');
-				err.code = 418;
+				err.status = 418;
 				throw err;
 			})
 			.get('/', (req, res) => {
@@ -1268,25 +1268,6 @@ test('options.onError', async () => {
 });
 
 
-test('options.onError (err.code)', async () => {
-	// t.plan(3);
-
-	let foo = new Error('Oops!');
-	foo.code = 418;
-
-	let app = polka().use((req, res, next) => next(foo));
-	$.isFunction(app.onError, '~> attaches default `app.onError` handler');
-
-	let uri = $.listen(app);
-	await get(uri).catch(err => {
-		assert.is(err.statusCode, 418, '~> response has 418 code (via "err.code" key)');
-		assert.is(err.data, 'Oops!', '~> response body is "Oops!" string');
-	});
-
-	app.server.close();
-});
-
-
 test('options.onError (err.status)', async () => {
 	// t.plan(3);
 
@@ -1310,14 +1291,14 @@ test('options.onError – custom', async () => {
 	// t.plan(7);
 
 	let foo = new Error('boo~!');
-	foo.code = 418;
+	foo.status = 418;
 
 	function onError(err, req, res, next) {
 		assert.equal(err, foo, '~> receives the `err` object directly as 1st param');
 		assert.ok(req.url, '~> receives the `req` object as 2nd param');
 		$.isFunction(res.end, '~> receives the `res` object as 3rd param');
 		$.isFunction(next, '~> receives the `next` function 4th param'); // in case want to skip?
-		res.statusCode = err.code;
+		res.statusCode = err.status;
 		res.end('error: ' + err.message);
 	}
 
