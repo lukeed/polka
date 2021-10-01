@@ -3,8 +3,7 @@ import Router from 'trouter';
 import { parse } from '@polka/url';
 
 function onError(err, req, res) {
-	const code = typeof err.status === 'number' ? err.status : 500;
-	res.statusCode = code;
+	let code = (res.statusCode = +err.status || 500);
 	if (typeof err === 'string' || Buffer.isBuffer(err)) res.end(err);
 	else res.end(err.message || http.STATUS_CODES[code]);
 }
