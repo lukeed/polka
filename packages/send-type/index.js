@@ -18,7 +18,7 @@ module.exports = function (res, code=200, data='', headers={}) {
 
 	if (data instanceof Buffer) {
 		type = type || OSTREAM; // prefer given
-	} else if (typeof data === 'object') {
+	} else if (typeof data === 'object' || typeof data === 'number' || typeof data === 'boolean') {
 		data = JSON.stringify(data);
 		type = type || 'application/json;charset=utf-8';
 	} else {

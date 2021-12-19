@@ -62,6 +62,32 @@ test('polka/send-type::usage::custom::body::object', t => {
 	t.end();
 });
 
+test('polka/send-type::usage::custom::body::number', t => {
+	let res = new Response();
+	let obj = 123;
+	let str = JSON.stringify(obj);
+	send(res, 200, obj); // send object
+	t.is(res.statusCode, 200, 'set statusCode: 200');
+	t.is(res.getHeaderNames().length, 2, 'custom headers added: 2');
+	t.is(res.getHeader(TYPE), 'application/json;charset=utf-8', 'custom header[type]: application/json');
+	t.is(res.getHeader(LENGTH), str.length, `custom header[length]: ${str.length}`);
+	t.is(res.body, str, `custom body: ${str} (as JSON string)`);
+	t.end();
+});
+
+test('polka/send-type::usage::custom::body::boolean', t => {
+	let res = new Response();
+	let obj = false;
+	let str = JSON.stringify(obj);
+	send(res, 200, obj); // send object
+	t.is(res.statusCode, 200, 'set statusCode: 200');
+	t.is(res.getHeaderNames().length, 2, 'custom headers added: 2');
+	t.is(res.getHeader(TYPE), 'application/json;charset=utf-8', 'custom header[type]: application/json');
+	t.is(res.getHeader(LENGTH), str.length, `custom header[length]: ${str.length}`);
+	t.is(res.body, str, `custom body: ${str} (as JSON string)`);
+	t.end();
+});
+
 test('polka/send-type::usage::custom::body::object', t => {
 	let res = new Response();
 	let str = Buffer.from('foobar');
