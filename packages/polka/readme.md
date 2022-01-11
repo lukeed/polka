@@ -65,8 +65,7 @@ polka()
     console.log(`~> Hello, ${req.hello}`);
     res.end(`User: ${req.params.id}`);
   })
-  .listen(3000, err => {
-    if (err) throw err;
+  .listen(3000, () => {
     console.log(`> Running on localhost:3000`);
   });
 ```

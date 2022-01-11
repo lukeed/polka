@@ -12,7 +12,6 @@ polka()
 	.get('/', reply)
 	.get('/about', reply)
 	.use('users', users)
-	.listen(PORT, err => {
-		if (err) throw err;
+	.listen(PORT, () => {
 		console.log(`> Running on localhost:${PORT}`);
 	});

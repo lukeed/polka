@@ -39,7 +39,6 @@ polka()
 			send(res, 200, data);
 		});
 	})
-	.listen(PORT, err => {
-		if (err) throw err;
+	.listen(PORT, () => {
 		console.log(`> Ready on localhost:${PORT}`);
 	});
