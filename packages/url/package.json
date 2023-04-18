@@ -10,7 +10,8 @@
   "exports": {
     ".": {
       "import": "./build.mjs",
-      "require": "./build.js"
+      "require": "./build.js",
+      "types": "./index.d.ts"
     },
     "./package.json": "./package.json"
   },
