@@ -26,22 +26,25 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - uses: pnpm/action-setup@v2.2.4
+      with:
+        version: 7.13.5
+        standalone: true
+
     - uses: actions/setup-node@v3
       with:
+        cache: 'pnpm'
         node-version: ${{ matrix.nodejs }}
 
-    - name: (env) pnpm
-      if: matrix.nodejs < 16
-      run: npm install -g pnpm@5 # supports Node 10.x
-
-    - name: (env) pnpm
-      if: matrix.nodejs >= 16
-      run: curl -L https://pnpm.js.org/pnpm.js | node - add --global pnpm
+    - name: (env) pnpm store path
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
     - name: (env) cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
-        path: ~/.pnpm-store
+        path: ${{ env.STORE_PATH }}
         key: ${{ runner.os }}-${{ matrix.nodejs }}-${{ hashFiles('**/package.json') }}
         restore-keys: ${{ runner.os }}-${{ matrix.nodejs }}-
 
