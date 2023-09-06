@@ -44,9 +44,10 @@ jobs:
       run: |
         bun install
         bun add -g nyc
+        bun add -g oxlint
 
     - name: Linter
-      run: bunx oxlint .
+      run: oxlint .
 
     - name: Test w/ Coverage
       run: nyc --include=packages bun run test
