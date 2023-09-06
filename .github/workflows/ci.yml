@@ -27,15 +27,15 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - uses: actions/setup-node@v3
-      with:
-        cache: 'pnpm'
-        node-version: ${{ matrix.nodejs }}
-
     - uses: pnpm/action-setup@v2.4.0
       with:
         version: 7.13.5
         standalone: true
+
+    - uses: actions/setup-node@v3
+      with:
+        cache: 'pnpm'
+        node-version: ${{ matrix.nodejs }}
 
     - name: (env) pnpm store path
       shell: bash
