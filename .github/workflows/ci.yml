@@ -34,7 +34,6 @@ jobs:
 
     - uses: actions/setup-node@v3
       with:
-        cache: 'pnpm'
         node-version: ${{ matrix.nodejs }}
 
     - name: (env) pnpm store path
