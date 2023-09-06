@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0-next.22",
+  "packages": [
+    "packages/cluster",
+    "packages/parse",
+    "packages/polka",
+    "packages/redirect",
+    "packages/send",
+    "packages/url"
+  ],
+  "message": "v{VERSION}"
+}

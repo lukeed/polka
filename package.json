@@ -6,14 +6,14 @@
     "url": "https://lukeed.com"
   },
   "scripts": {
-    "build": "lerna exec bundt index.js",
+    "build": "bun run scripts/build.ts",
     "test": "uvu -r esm -i util packages test"
   },
   "devDependencies": {
+    "bump": "1.0.0-next.1",
     "bundt": "1.1.2",
     "esm": "3.2.25",
     "httpie": "1.1.2",
-    "lerna": "3.13.4",
     "uvu": "0.5.1"
   },
   "workspaces": [
