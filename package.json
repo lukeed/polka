@@ -7,7 +7,6 @@
   },
   "scripts": {
     "build": "lerna exec bundt index.js",
-    "linter": "eslint packages --env node,es6",
     "test": "uvu -r esm -i util packages test"
   },
   "devDependencies": {
