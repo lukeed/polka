@@ -2,8 +2,10 @@ coverage
 .DS_Store
 node_modules
 .nyc_output
+
 *-lock.*
 *.lock
 *.log
+!bun.lockb
 
 packages/*/build.*

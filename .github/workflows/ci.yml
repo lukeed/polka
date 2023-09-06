@@ -26,38 +26,30 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-
-    - uses: pnpm/action-setup@v2.4.0
-      with:
-        version: 7.13.5
-        standalone: true
-
     - uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.nodejs }}
-
-    - name: (env) pnpm store path
-      shell: bash
-      run: |
-        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+    - uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: 0.8.1
 
     - name: (env) cache
       uses: actions/cache@v3
       with:
-        path: ${{ env.STORE_PATH }}
+        path: ~/.bun/install/cache
         key: ${{ runner.os }}-${{ matrix.nodejs }}-${{ hashFiles('**/package.json') }}
         restore-keys: ${{ runner.os }}-${{ matrix.nodejs }}-
 
     - name: Install
       run: |
-        pnpm install
-        pnpm add -g nyc
+        bun install
+        bun add -g nyc
 
     - name: Linter
-      run: pnpm linter
+      run: bunx oxlint .
 
     - name: Test w/ Coverage
-      run: nyc --include=packages pnpm test
+      run: nyc --include=packages bun run test
 
     - name: Report
       if: matrix.nodejs >= 18

@@ -12,33 +12,12 @@
   },
   "devDependencies": {
     "bundt": "1.1.2",
-    "eslint": "5.15.0",
     "esm": "3.2.25",
     "httpie": "1.1.2",
     "lerna": "3.13.4",
     "uvu": "0.5.1"
   },
-  "eslintConfig": {
-    "extends": "eslint:recommended",
-    "parserOptions": {
-      "ecmaVersion": 10,
-      "sourceType": "module"
-    },
-    "rules": {
-      "no-extra-boolean-cast": 0
-    },
-    "overrides": [
-      {
-        "files": [
-          "packages/*/test/**/*.js"
-        ],
-        "rules": {
-          "no-console": 0
-        }
-      }
-    ]
-  },
-  "eslintIgnore": [
-    "**/node_modules/**"
+  "workspaces": [
+    "packages/*"
   ]
 }
