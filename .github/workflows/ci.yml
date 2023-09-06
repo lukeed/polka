@@ -46,11 +46,11 @@ jobs:
 
     - name: Test
       if: matrix.nodejs < 18
-      run: bun run test
+      run: npm test
 
     - name: Test w/ Coverage
       if: matrix.nodejs >= 18
-      run: nyc --include=packages bun run test
+      run: nyc --include=packages npm test
 
     - name: Report
       if: matrix.nodejs >= 18
