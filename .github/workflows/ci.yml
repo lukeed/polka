@@ -35,8 +35,11 @@ jobs:
         restore-keys: ${{ runner.os }}-${{ matrix.nodejs }}-
 
     - name: Install
+      run: bun install
+
+    - name: Install Globals
+      if: matrix.nodejs >= 18
       run: |
-        bun install
         bun add -g c8
         bun add -g oxlint
 
