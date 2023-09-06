@@ -22,20 +22,20 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        nodejs: [10, 12, 14]
+        nodejs: [10, 12, 14, 16, 18]
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.nodejs }}
 
     - name: (env) pnpm
-      if: matrix.nodejs < 12
+      if: matrix.nodejs < 16
       run: npm install -g pnpm@5 # supports Node 10.x
 
     - name: (env) pnpm
-      if: matrix.nodejs >= 12
+      if: matrix.nodejs >= 16
       run: curl -L https://pnpm.js.org/pnpm.js | node - add --global pnpm
 
     - name: (env) cache
@@ -57,7 +57,7 @@ jobs:
       run: nyc --include=packages pnpm test
 
     - name: Report
-      if: matrix.nodejs >= 12
+      if: matrix.nodejs >= 18
       run: |
         nyc report --reporter=text-lcov > coverage.lcov
         bash <(curl -s https://codecov.io/bash)
