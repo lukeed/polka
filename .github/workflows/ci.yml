@@ -5,16 +5,10 @@ on:
     branches:
       - master
       - next
-    paths-ignore:
-      - 'bench/**'
-      - 'examples/**'
   pull_request:
     branches:
       - master
       - next
-    paths-ignore:
-      - 'bench/**'
-      - 'examples/**'
 
 jobs:
   test:
