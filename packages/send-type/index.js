@@ -13,7 +13,9 @@ module.exports = function (res, code=200, data='', headers={}) {
 
 	if (!!data && typeof data.pipe === 'function') {
 		obj[TYPE] = type || OSTREAM;
-		Object.keys(obj).forEach(header => res.setHeader(header, obj[header]));
+		for (k in obj) {
+		  res.setHeader(k, obj[k]);
+		}
 		return data.pipe(res);
 	}
 
