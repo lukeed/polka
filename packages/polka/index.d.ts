@@ -6,25 +6,25 @@ import type { Trouter } from 'trouter';
 type Promisable<T> = Promise<T> | T;
 type ListenCallback = () => Promisable<void>;
 
-export interface IError extends Error {
+declare interface IError extends Error {
 	code?: number;
 	status?: number;
 	details?: any;
 }
 
-export type NextHandler = (err?: string | IError) => Promisable<void>;
-export type ErrorHandler<T extends Request = Request> = (err: string | IError, req: T, res: Response, next: NextHandler) => Promisable<void>;
-export type Middleware<T extends IncomingMessage = Request> = (req: T & Request, res: Response, next: NextHandler) => Promisable<void>;
+declare type NextHandler = (err?: string | IError) => Promisable<void>;
+declare type ErrorHandler<T extends Request = Request> = (err: string | IError, req: T, res: Response, next: NextHandler) => Promisable<void>;
+declare type Middleware<T extends IncomingMessage = Request> = (req: T & Request, res: Response, next: NextHandler) => Promisable<void>;
 
-export interface IOptions<T extends Request = Request> {
+declare interface IOptions<T extends Request = Request> {
 	server?: Server;
 	onNoMatch?: Middleware<T>;
 	onError?: ErrorHandler<T>;
 }
 
-export type Response = ServerResponse;
+declare type Response = ServerResponse;
 
-export interface Request extends IncomingMessage {
+declare interface Request extends IncomingMessage {
 	url: string;
 	method: string;
 	originalUrl: string;
@@ -37,7 +37,7 @@ export interface Request extends IncomingMessage {
 	_parsedUrl: ParsedURL;
 }
 
-export interface Polka<T extends Request = Request> extends Trouter<Middleware<T>> {
+declare interface Polka<T extends Request = Request> extends Trouter<Middleware<T>> {
 	readonly server: Server;
 	readonly wares: Middleware<T>[];
 
@@ -61,4 +61,6 @@ export interface Polka<T extends Request = Request> extends Trouter<Middleware<T
 	listen(handle: any, callback?: ListenCallback): this;
 }
 
-export default function <T extends Request = Request> (options?: IOptions<T>): Polka<T>;
+declare function polka<T extends Request = Request> (options?: IOptions<T>): Polka<T>;
+
+export = polka;

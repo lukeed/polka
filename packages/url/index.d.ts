@@ -1,10 +1,14 @@
 import type { IncomingMessage } from 'http';
 
-export interface ParsedURL {
+declare interface ParsedURL {
 	pathname: string;
 	search: string;
 	query: Record<string, string | string[]> | void;
 	raw: string;
 }
 
-export function parse(req: IncomingMessage): ParsedURL;
+declare function parse(req: IncomingMessage): ParsedURL;
+
+export = {
+	parse
+};

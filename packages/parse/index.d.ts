@@ -12,7 +12,7 @@ export interface ParseOptions {
 
 function parse<T extends IncomingMessage>(opts?: ParseOptions): Middleware<T>;
 
-export {
+export = {
 	parse,
 	parse as json,
 	parse as urlencoded,
