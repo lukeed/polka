@@ -10,12 +10,12 @@
   "exports": {
     ".": {
       "import": {
-        ".": "./build.mjs",
-        "types": "./index.d.mts"
+        "types": "./index.d.mts",
+        "default": "./build.mjs"
       },
       "require": {
-        ".": "./build.js",
-        "types": "./index.d.ts"
+        "types": "./index.d.ts",
+        "default": "./build.js"
       }
     },
     "./package.json": "./package.json"
