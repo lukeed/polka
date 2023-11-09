@@ -9,9 +9,14 @@
   "license": "MIT",
   "exports": {
     ".": {
-      "types": "./index.d.ts",
-      "import": "./build.mjs",
-      "require": "./build.js"
+      "import": {
+        ".": "./build.mjs",
+        "types": "./index.d.mts"
+      },
+      "require": {
+        ".": "./build.js",
+        "types": "./index.d.ts"
+      }
     },
     "./package.json": "./package.json"
   },
