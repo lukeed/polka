@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build": "bun run scripts/build.ts",
-    "test": "uvu -r esm -i util packages test"
+    "test": "uvu -r esm -i util -i bench packages test"
   },
   "devDependencies": {
     "bump": "1.0.0-next.1",
