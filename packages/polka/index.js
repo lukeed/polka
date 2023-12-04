@@ -1,5 +1,5 @@
 import http from 'http';
-import Router from 'trouter';
+import { Trouter } from 'trouter';
 import { parse } from '@polka/url';
 
 function onError(err, req, res) {
@@ -11,7 +11,7 @@ function onError(err, req, res) {
 
 const mount = fn => fn instanceof Polka ? fn.attach : fn;
 
-class Polka extends Router {
+class Polka extends Trouter {
 	constructor(opts={}) {
 		super();
 		this.parse = parse;

@@ -29,6 +29,6 @@
   },
   "dependencies": {
     "@polka/url": "^1.0.0-next.21",
-    "trouter": "^3.1.0"
+    "trouter": "^4.0.0"
   }
 }
