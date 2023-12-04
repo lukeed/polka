@@ -10,7 +10,7 @@ export interface ParseOptions {
 	type?: string;
 }
 
-function parse<T extends IncomingMessage>(opts?: ParseOptions): Middleware<T>;
+declare function parse<T extends IncomingMessage>(opts?: ParseOptions): Middleware<T>;
 
 export {
 	parse,

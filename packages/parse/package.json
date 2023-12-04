@@ -9,15 +9,20 @@
   "license": "MIT",
   "exports": {
     ".": {
-      "types": "./index.d.ts",
-      "import": "./build.mjs",
-      "require": "./build.js"
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./build.mjs"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./build.js"
+      }
     },
     "./package.json": "./package.json"
   },
   "files": [
-    "*.d.ts",
-    "build.*"
+    "build.*",
+    "index.d.*"
   ],
   "author": {
     "name": "Luke Edwards",

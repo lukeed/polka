@@ -16,8 +16,8 @@
     "./package.json": "./package.json"
   },
   "files": [
-    "*.d.ts",
-    "build.*"
+    "build.*",
+    "index.d.*"
   ],
   "author": {
     "name": "Luke Edwards",

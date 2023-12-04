@@ -1,7 +1,15 @@
 import type { RequestListener } from 'http';
 
-export interface ClusterController {
-	listen(port: number): void;
+declare namespace cluster {
+	export interface ClusterController {
+		listen(port: number): void;
+	}
 }
 
-export default function (app: RequestListener | { listen: Function }): ClusterController;
+declare function cluster(
+	app: RequestListener | {
+		listen: Function
+	}
+): cluster.ClusterController;
+
+export = cluster;

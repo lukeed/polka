@@ -1,2 +1,5 @@
 import type { ServerResponse } from 'http';
-export default function (res: ServerResponse, code?: number, location?: string): void;
+
+declare function redirect(res: ServerResponse, code?: number, location?: string): void;
+
+export = redirect;
