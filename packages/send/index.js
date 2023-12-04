@@ -14,7 +14,10 @@ export default function (res, code=200, data='', headers={}) {
 	let type = obj[TYPE.toLowerCase()] || res.getHeader(TYPE);
 
 	if (!!data && typeof data.pipe === 'function') {
-		res.setHeader(TYPE, type || OSTREAM);
+		obj[TYPE] = type || OSTREAM;
+		for (k in obj) {
+		  res.setHeader(k, obj[k]);
+		}
 		return data.pipe(res);
 	}
 
