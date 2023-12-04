@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-next.23",
+  "version": "1.0.0-next.24",
   "packages": [
     "packages/cluster",
     "packages/parse",
