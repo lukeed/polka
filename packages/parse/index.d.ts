@@ -1,9 +1,9 @@
 import type { IncomingMessage } from 'http';
 import type { Middleware } from 'polka';
 
-declare type Parser = (bits: string | Buffer) => any;
+export type Parser = (bits: string | Buffer) => any;
 
-declare interface ParseOptions {
+export interface ParseOptions {
 	encoding?: string;
 	parser?: Parser;
 	limit?: number;
@@ -12,10 +12,10 @@ declare interface ParseOptions {
 
 declare function parse<T extends IncomingMessage>(opts?: ParseOptions): Middleware<T>;
 
-export = {
+export {
 	parse,
-	json: parse,
-	urlencoded: parse,
-	text: parse,
-	raw: parse
+	parse as json,
+	parse as urlencoded,
+	parse as text,
+	parse as raw
 };

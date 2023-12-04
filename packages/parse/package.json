@@ -10,7 +10,7 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.mts",
+        "types": "./index.d.ts",
         "default": "./build.mjs"
       },
       "require": {
