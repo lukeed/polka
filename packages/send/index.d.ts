@@ -1,7 +1,14 @@
 import type { ServerResponse } from 'http';
 
-declare type OutgoingHeaders = Record<string, string|string[]>;
+declare namespace send {
+	export type OutgoingHeaders = Record<string, string|string[]>;
+}
 
-declare function send(res: ServerResponse, status?: number, data?: any, headers?: OutgoingHeaders): void;
+declare function send(
+	res: ServerResponse,
+	status?: number,
+	data?: any,
+	headers?: send.OutgoingHeaders
+): void;
 
 export = send;
