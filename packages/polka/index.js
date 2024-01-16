@@ -90,7 +90,7 @@ class Polka extends Router {
 		// Exit if only a single function
 		let i=0, len=arr.length, num=fns.length;
 		if (len === i && num === 1) return fns[0](req, res);
-		// Otherwise loop thru all middlware
+		// Otherwise loop thru all middleware
 		let next = err => err ? this.onError(err, req, res, next) : loop();
 		let loop = _ => res.finished || (i < len) && arr[i++](req, res, next);
 		arr = arr.concat(fns);
