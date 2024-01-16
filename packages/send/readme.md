@@ -28,7 +28,7 @@ module.exports = function (req, res, next) {
 ### send(res, code, data, headers)
 
 #### res
-Type: `ServerReponse`
+Type: `ServerResponse`
 
 The outgoing HTTP response.
 
