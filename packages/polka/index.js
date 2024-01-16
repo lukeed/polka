@@ -84,7 +84,7 @@ class Polka extends Router {
 			fns.push(this.apps[base].handler.bind(null, req, res, info));
 		}
 		fns.push(this.onNoMatch);
-		// Grab add values from `info`
+		// Grab addl values from `info`
 		req.search = info.search;
 		req.query = parse(info.query);
 		// Exit if only a single function
