@@ -4,6 +4,6 @@
   },
   "dependencies": {
     "polka": "latest",
-    "serve-static": "^1.13.1"
+    "sirv": "latest"
   }
 }
