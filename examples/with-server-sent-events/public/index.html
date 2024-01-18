@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Polka SSE</title>
+</head>
+
+<body>
+
+	<h1>Server Sent Events</h1>
+
+	<ul id="sse-list"></ul>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const sseList = document.getElementById('sse-list');
+
+			const eventSource = new EventSource('/subscribe');
+
+			eventSource.onopen = function () {
+				console.log('Event Source: connection opened');
+			};
+
+			eventSource.onmessage = function (event) {
+				const li = document.createElement('li');
+				li.innerText = `Event time: ${event.data}`;
+				sseList.appendChild(li);
+			};
+
+			eventSource.onerror = function () {
+				console.log('Event Source: error occurred');
+			};
+		});
+
+	</script>
+
+</body>
+
+</html>
