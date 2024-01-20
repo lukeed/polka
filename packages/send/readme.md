@@ -1,4 +1,4 @@
-# @polka/send [![npm](https://badgen.now.sh/npm/v/@polka/redirect)](https://npmjs.org/package/@polka/send)
+# @polka/send [![npm](https://badgen.now.sh/npm/v/@polka/redirect)](https://npmjs.org/package/@polka/send) [![licenses](https://licenses.dev/b/npm/%40polka%2Fsend)](https://licenses.dev/npm/%40polka%2Fsend)
 
 > An HTTP response helper that detects `Content-Type`s & handles them accordingly &mdash; _not_ limited to [Polka][polka]!
 

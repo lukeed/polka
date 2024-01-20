@@ -14,6 +14,9 @@
   <a href="https://codecov.io/gh/lukeed/polka">
     <img src="https://badgen.now.sh/codecov/c/github/lukeed/polka" alt="codecov" />
   </a>
+  <a href="https://licenses.dev/npm/polka">
+    <img src="https://licenses.dev/b/npm/polka" alt="licenses" />
+  </a>
   <a href="https://npmjs.org/package/polka">
     <img src="https://badgen.now.sh/npm/dm/polka" alt="downloads" />
   </a>

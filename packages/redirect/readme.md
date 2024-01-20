@@ -1,4 +1,4 @@
-# @polka/redirect [![npm](https://badgen.now.sh/npm/v/@polka/redirect)](https://npmjs.org/package/@polka/redirect)
+# @polka/redirect [![npm](https://badgen.now.sh/npm/v/@polka/redirect)](https://npmjs.org/package/@polka/redirect) [![licenses](https://licenses.dev/b/npm/%40polka%2Fredirect)](https://licenses.dev/npm/%40polka%2Fredirect)
 
 > A response helper for URL redirects; _not_ limited to [Polka][polka]!
 

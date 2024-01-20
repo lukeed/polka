@@ -1,4 +1,4 @@
-# @polka/cluster [![npm](https://badgen.now.sh/npm/v/@polka/cluster)](https://npmjs.org/package/@polka/cluster)
+# @polka/cluster [![npm](https://badgen.now.sh/npm/v/@polka/cluster)](https://npmjs.org/package/@polka/cluster) [![licenses](https://licenses.dev/b/npm/%40polka%2Fcluster)](https://licenses.dev/npm/%40polka%2Fcluster)
 
 > Intialize and run a HTTP cluster; _not_ limited to [Polka][polka]!
 
