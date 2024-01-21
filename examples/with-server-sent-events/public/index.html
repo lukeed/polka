@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Polka | Server Sent Events</title>
+</head>
+<body>
+	<h1>Server Sent Events</h1>
+	<ul id="sse-list"></ul>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const list = document.getElementById('sse-list');
+			const src = new EventSource('/subscribe');
+
+			src.onopen = function () {
+				console.log('[sse] connected');
+			};
+
+			src.onmessage = function (event) {
+				console.log('[sse] message', event);
+				const li = document.createElement('li');
+				li.innerText = `server time: ${event.data}`;
+				list.appendChild(li);
+			};
+
+			src.onerror = function () {
+				console.log('[sse]: error!');
+			};
+		});
+	</script>
+</body>
+</html>
