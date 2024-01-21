@@ -3,14 +3,13 @@ const polka = require('polka');
 
 const { PORT = 3000 } = process.env;
 const dir = join(__dirname, 'public');
-const serve = require('sirv')(dir);
+const assets = require('sirv')(dir);
 
 polka()
-	.use(serve)
+	.use(assets)
 	.get('/subscribe', (request, response) => {
-		// 'access-control-allow-origin' is required for cross-origin requests
-		// as for any other requests. In our case, we are using localhost for both,
-		// hence not needed.
+		// You should add 'access-control-allow-origin' for
+		// cross-origin requests. We don't here because localhost
 		response.writeHead(200, {
 			'Content-Type': 'text/event-stream',
 			'Cache-Control': 'no-cache',
@@ -19,7 +18,7 @@ polka()
 
 		setInterval(() => {
 			response.write('data: ' + Date.now() + '\n\n');
-		}, 1000);
+		}, 1e3);
 
 		request.on('close', () => {
 			response.end();
