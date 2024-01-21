@@ -1,40 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-	<meta charset="UTF-8">
-	<title>Polka SSE</title>
+	<meta charset="utf-8">
+	<title>Polka | Server Sent Events</title>
 </head>
-
 <body>
-
 	<h1>Server Sent Events</h1>
-
 	<ul id="sse-list"></ul>
 
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
-			const sseList = document.getElementById('sse-list');
+			const list = document.getElementById('sse-list');
+			const src = new EventSource('/subscribe');
 
-			const eventSource = new EventSource('/subscribe');
-
-			eventSource.onopen = function () {
-				console.log('Event Source: connection opened');
+			src.onopen = function () {
+				console.log('[sse] connected');
 			};
 
-			eventSource.onmessage = function (event) {
+			src.onmessage = function (event) {
+				console.log('[sse] message', event);
 				const li = document.createElement('li');
-				li.innerText = `Event time: ${event.data}`;
-				sseList.appendChild(li);
+				li.innerText = `server time: ${event.data}`;
+				list.appendChild(li);
 			};
 
-			eventSource.onerror = function () {
-				console.log('Event Source: error occurred');
+			src.onerror = function () {
+				console.log('[sse]: error!');
 			};
 		});
-
 	</script>
-
 </body>
-
 </html>
