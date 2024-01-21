@@ -72,7 +72,8 @@ class Polka extends Router {
 		info = info || this.parse(req);
 		let fns=[], arr=this.wares, obj=this.find(req.method, info.pathname);
 		req.originalUrl = req.originalUrl || req.url;
-		let base = value(req.path = info.pathname);
+		if (!req.path) req.path = info.pathname;
+		let base = value(req.path);
 		if (this.bwares[base] !== void 0) {
 			arr = arr.concat(this.bwares[base]);
 		}
