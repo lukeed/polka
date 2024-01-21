@@ -1,6 +1,6 @@
 # Example: Server-Sent Events
 
-Small example demonstrating how to use Server-Sent Events with `polka`
+Small `polka` example demonstrating how to use [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events).
 
 The `public` directory contains an `index.html` file managing the Event Source Web API to subscribe to Server-Sent Events.
 This file is served by Polka as a static asset using [`sirv`](https://github.com/lukeed/sirv) middleware.
