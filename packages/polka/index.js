@@ -56,7 +56,8 @@ class Polka extends Router {
 					this.apps[base] = fn;
 				} else {
 					const arr = this.bwares[base] || [];
-					arr.length > 0 || arr.push((r, _, nxt) => mutate(base, r),nxt());
+					// biome-ignore lint: ignore
+					arr.length > 0 || arr.push((r, _, nxt) => (mutate(base, r),nxt()));
 					this.bwares[base] = arr.concat(fn);
 				}
 			}
