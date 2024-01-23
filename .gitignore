@@ -4,3 +4,4 @@ node_modules
 coverage
 *.lock
 *.log
+.idea

@@ -8,11 +8,11 @@
   "dependencies": {
     "@jaredpalmer/after": "latest",
     "polka": "latest",
-    "razzle": "^0.8.11",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "react-helmet": "^5.2.0",
-    "react-router-dom": "^4.2.2",
-    "serve-static": "^1.13.2"
+    "razzle": "0.8.11",
+    "react": "16.2.0",
+    "react-dom": "16.2.0",
+    "react-helmet": "5.2.0",
+    "react-router-dom": "4.2.2",
+    "serve-static": "1.13.2"
   }
 }

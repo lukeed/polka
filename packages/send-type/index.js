@@ -3,8 +3,10 @@ const { STATUS_CODES } = require('http');
 const TYPE = 'content-type';
 const OSTREAM = 'application/octet-stream';
 
-module.exports = function (res, code=200, data='', headers={}) {
-	let k, obj={};
+module.exports = (res, code=200, data='', headers={}) => {
+	let k;
+	const obj = {};
+	let _data;
 	for (k in headers) {
 		obj[k.toLowerCase()] = headers[k];
 	}
@@ -22,15 +24,15 @@ module.exports = function (res, code=200, data='', headers={}) {
 	if (data instanceof Buffer) {
 		type = type || OSTREAM; // prefer given
 	} else if (typeof data === 'object') {
-		data = JSON.stringify(data);
+		_data = JSON.stringify(data);
 		type = type || 'application/json;charset=utf-8';
 	} else {
-		data = data || STATUS_CODES[code];
+		_data = data || STATUS_CODES[code];
 	}
 
 	obj[TYPE] = type || 'text/plain';
-	obj['content-length'] = Buffer.byteLength(data);
+	obj['content-length'] = Buffer.byteLength(_data);
 
 	res.writeHead(code, obj);
-	res.end(data);
+	res.end(_data);
 }
