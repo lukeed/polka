@@ -6,7 +6,6 @@ const OSTREAM = 'application/octet-stream';
 module.exports = (res, code=200, data='', headers={}) => {
 	let k;
 	const obj = {};
-	let _data = '';
 	for (k in headers) {
 		obj[k.toLowerCase()] = headers[k];
 	}
@@ -24,15 +23,17 @@ module.exports = (res, code=200, data='', headers={}) => {
 	if (data instanceof Buffer) {
 		type = type || OSTREAM; // prefer given
 	} else if (typeof data === 'object') {
-		_data = JSON.stringify(data);
+		// biome-ignore lint: ignore
+		data = JSON.stringify(data);
 		type = type || 'application/json;charset=utf-8';
 	} else {
-		_data = data || STATUS_CODES[code];
+		// biome-ignore lint: ignore
+		data = data || STATUS_CODES[code];
 	}
 
 	obj[TYPE] = type || 'text/plain';
-	obj['content-length'] = Buffer.byteLength(_data);
+	obj['content-length'] = Buffer.byteLength(data);
 
 	res.writeHead(code, obj);
-	res.end(_data);
+	res.end(data);
 }
