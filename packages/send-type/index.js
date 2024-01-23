@@ -6,7 +6,7 @@ const OSTREAM = 'application/octet-stream';
 module.exports = (res, code=200, data='', headers={}) => {
 	let k;
 	const obj = {};
-	let _data;
+	let _data = '';
 	for (k in headers) {
 		obj[k.toLowerCase()] = headers[k];
 	}
