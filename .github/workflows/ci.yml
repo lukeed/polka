@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   test:
     name: Node.js v${{ matrix.nodejs }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         nodejs: [20.6]
