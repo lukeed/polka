@@ -4,8 +4,8 @@ const TYPE = 'content-type';
 const OSTREAM = 'application/octet-stream';
 
 module.exports = function (res, code=200, data='', headers={}) {
-	let k;
-	const obj = {};
+	// biome-ignore lint: ignore
+	let k, obj = {};
 	for (k in headers) {
 		obj[k.toLowerCase()] = headers[k];
 	}

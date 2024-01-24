@@ -32,7 +32,7 @@ test('polka/url', t => {
 });
 
 test('polka/url :: usage', t => {
-	t.throws(fn, /Cannot read property/, 'throws if no input');
+	t.throws(fn, /Cannot read properties of undefined/, 'throws if no input');
 	t.is(fn({}), undefined, 'returns `undefined` for empty object input');
 
 	let obj = { url: '/' };
