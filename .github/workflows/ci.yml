@@ -24,7 +24,7 @@ jobs:
         npm install -g nyc@13
 
     - name: Bootstrap, Lint, and Test
-      run: npm run lint && nyc --exclude=tests npm test
+      run: npm run lint && nyc --exclude=tests && npm test
 
     - name: Report
       if: matrix.nodejs >= 12
