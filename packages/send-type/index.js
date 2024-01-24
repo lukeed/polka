@@ -3,7 +3,7 @@ const { STATUS_CODES } = require('http');
 const TYPE = 'content-type';
 const OSTREAM = 'application/octet-stream';
 
-module.exports = (res, code=200, data='', headers={}) => {
+module.exports = function (res, code=200, data='', headers={}) {
 	let k;
 	const obj = {};
 	for (k in headers) {
