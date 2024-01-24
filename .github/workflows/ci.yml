@@ -8,13 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        nodejs: [20]
+        nodejs: [20.6]
 
     steps:
     - uses: actions/checkout@master
       with:
         fetch-depth: 1
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.nodejs }}
 
