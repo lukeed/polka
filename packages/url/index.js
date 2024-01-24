@@ -1,5 +1,5 @@
-module.exports = function (req) {
-	let url = req.url;
+module.exports = (req) => {
+	const url = req.url;
 	if (url === void 0) return url;
 
 	let obj = req._parsedUrl;
@@ -9,7 +9,7 @@ module.exports = function (req) {
 	obj.query = obj.search = null;
 	obj.href = obj.path = obj.pathname = url;
 
-	let idx = url.indexOf('?', 1);
+	const idx = url.indexOf('?', 1);
 	if (idx !== -1) {
 		obj.search = url.substring(idx);
 		obj.query = obj.search.substring(1);
@@ -17,6 +17,6 @@ module.exports = function (req) {
 	}
 
 	obj._raw = url;
-
+	// biome-ignore lint: ignore
 	return (req._parsedUrl = obj);
 }

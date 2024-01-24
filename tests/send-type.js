@@ -1,5 +1,4 @@
 const fs = require('fs');
-const axios = require('axios');
 const { join } = require('path');
 const { Response } = require('./util/mock');
 const { test, toStatusText } = require('./util');
@@ -195,7 +194,7 @@ test('polka/send-type::usage (Stream – respect existing header)', t => {
 			t.pass('~> "response" output exists');
 			t.true(info.size > 0, '~~> data piped successfully');
 		} catch (err) {
-			//
+			console.log(err.message)
 		}
 		fs.unlinkSync(output); // ~> cleanup
 	});

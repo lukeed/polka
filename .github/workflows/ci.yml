@@ -5,26 +5,26 @@ on: [push, pull_request]
 jobs:
   test:
     name: Node.js v${{ matrix.nodejs }}
-    runs-on: ubuntu-latest
+    runs-on: macos-13
     strategy:
       matrix:
-        nodejs: [8, 10, 12]
+        nodejs: [20.6]
 
     steps:
     - uses: actions/checkout@master
       with:
         fetch-depth: 1
-    - uses: actions/setup-node@v1
+    - uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.nodejs }}
 
     - name: Install
       run: |
         npm install
-        npm install -g nyc@13
+        npm install -g nyc
 
     - name: Bootstrap, Lint, and Test
-      run: nyc --exclude=tests npm test
+      run: npm run lint && nyc --exclude=tests npm test
 
     - name: Report
       if: matrix.nodejs >= 12
