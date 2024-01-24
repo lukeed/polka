@@ -17,6 +17,6 @@ module.exports = (req) => {
 	}
 
 	obj._raw = url;
-	req._parsedUrl = obj;
-	return req._parsedUrl;
+	// biome-ignore lint: ignore
+	return (req._parsedUrl = obj);
 }
