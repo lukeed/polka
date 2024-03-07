@@ -1,10 +1,9 @@
+// NOTE: supports Node 6.x
+
 import zlib from 'zlib';
 
-/* global Buffer */
-
+const NOOP = () => {};
 const MIMES = /text|javascript|\/json|xml/i;
-
-const noop = () => {};
 
 const getChunkSize = (chunk, enc) => chunk ? Buffer.byteLength(chunk, enc) : 0;
 
@@ -18,14 +17,14 @@ const getChunkSize = (chunk, enc) => chunk ? Buffer.byteLength(chunk, enc) : 0;
  * @returns {(req: Pick<import('http').IncomingMessage, 'method'|'headers'>, res: import('http').ServerResponse, next?:Function) => void}
  * @retur {import('polka').Middleware}
  */
-export default function compression({ threshold = 1024, level = -1, brotli = false, gzip = true, mimes = MIMES } = {}) {
+export default function ({ threshold = 1024, level = -1, brotli = false, gzip = true, mimes = MIMES } = {}) {
 	const brotliOpts = (typeof brotli === 'object' && brotli) || {};
 	const gzipOpts = (typeof gzip === 'object' && gzip) || {};
 
 	// disable Brotli on Node<12.7 where it is unsupported:
 	if (!zlib.createBrotliCompress) brotli = false;
 
-	return (req, res, next = noop) => {
+	return (req, res, next = NOOP) => {
 		const accept = req.headers['accept-encoding'] + '';
 		const encoding = ((brotli && accept.match(/\bbr\b/)) || (gzip && accept.match(/\bgzip\b/)) || [])[0];
 
@@ -34,7 +33,9 @@ export default function compression({ threshold = 1024, level = -1, brotli = fal
 
 		/** @type {zlib.Gzip | zlib.BrotliCompress} */
 		let compress;
-		let pendingStatus;
+		/** @type {Array<[string, function]>?} */
+		let pendingListeners = [];
+		let pendingStatus = 0;
 		let started = false;
 		let size = 0;
 
@@ -42,29 +43,37 @@ export default function compression({ threshold = 1024, level = -1, brotli = fal
 			started = true;
 			// @ts-ignore
 			size = res.getHeader('Content-Length') | 0 || size;
-			const compressible = mimes.test(String(res.getHeader('Content-Type') || 'text/plain'));
+			const compressible = mimes.test(
+				String(res.getHeader('Content-Type') || 'text/plain')
+			);
 			const cleartext = !res.getHeader('Content-Encoding');
+			const listeners = pendingListeners || [];
+
 			if (compressible && cleartext && size >= threshold) {
 				res.setHeader('Content-Encoding', encoding);
 				res.removeHeader('Content-Length');
 				if (encoding === 'br') {
-					const params = {
-						[zlib.constants.BROTLI_PARAM_QUALITY]: level,
-						[zlib.constants.BROTLI_PARAM_SIZE_HINT]: size
-					};
-					compress = zlib.createBrotliCompress({ params: Object.assign(params, brotliOpts) });
+					compress = zlib.createBrotliCompress({
+						params: Object.assign({
+							[zlib.constants.BROTLI_PARAM_QUALITY]: level,
+							[zlib.constants.BROTLI_PARAM_SIZE_HINT]: size,
+						}, brotliOpts)
+					});
 				} else {
-					compress = zlib.createGzip(Object.assign({ level }, gzipOpts));
+					compress = zlib.createGzip(
+						Object.assign({ level }, gzipOpts)
+					);
 				}
 				// backpressure
-				compress.on('data', (...args) => write.apply(res, args) === false && compress.pause());
+				compress.on('data', chunk => write.call(res, chunk) || compress.pause());
 				on.call(res, 'drain', () => compress.resume());
-				compress.on('end', (...args) => end.apply(res, args));
+				compress.on('end', () => end.call(res));
+				listeners.forEach(p => compress.on.apply(compress, p));
+			} else {
+				pendingListeners = null;
+				listeners.forEach(p => on.apply(res, p));
 			}
 
-			const listeners = pendingListeners;
-			pendingListeners = null;
-			listeners.forEach(p => on.apply(res, p));
 			writeHead.call(res, pendingStatus || res.statusCode);
 		}
 
@@ -72,7 +81,7 @@ export default function compression({ threshold = 1024, level = -1, brotli = fal
 
 		res.writeHead = function (status, reason, headers) {
 			if (typeof reason !== 'string') [headers, reason] = [reason, headers];
-			if (headers) for (let i in headers) res.setHeader(i, headers[i]);
+			if (headers) for (let k in headers) res.setHeader(k, headers[k]);
 			pendingStatus = status;
 			return this;
 		};
@@ -93,7 +102,6 @@ export default function compression({ threshold = 1024, level = -1, brotli = fal
 			return compress.end.apply(compress, arguments);
 		};
 
-		let pendingListeners = [];
 		res.on = function (type, listener) {
 			if (!pendingListeners) on.call(this, type, listener);
 			else if (compress) compress.on(type, listener);
