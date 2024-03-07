@@ -5,17 +5,18 @@ import zlib from 'zlib';
 const NOOP = () => {};
 const MIMES = /text|javascript|\/json|xml/i;
 
-const getChunkSize = (chunk, enc) => chunk ? Buffer.byteLength(chunk, enc) : 0;
+/**
+ * @param {any} chunk
+ * @param {BufferEncoding} enc
+ * @returns {number}
+ */
+function getChunkSize(chunk, enc) {
+	return chunk ? Buffer.byteLength(chunk, enc) : 0;
+}
 
 /**
- * @param {object} [options]
- * @param {number} [options.threshold = 1024] Don't compress responses below this size (in bytes)
- * @param {number} [options.level = -1] Gzip/Brotli compression effort (1-11, or -1 for default)
- * @param {boolean} [options.brotli = false] Generate and serve Brotli-compressed responses
- * @param {boolean} [options.gzip = true] Generate and serve Gzip-compressed responses
- * @param {RegExp} [options.mimes] Regular expression of response MIME types to compress (default: text|javascript|json|xml)
- * @returns {(req: Pick<import('http').IncomingMessage, 'method'|'headers'>, res: import('http').ServerResponse, next?:Function) => void}
- * @retur {import('polka').Middleware}
+ * @param {import('./index.d.mts').Options} [options]
+ * @returns {import('./index.d.mts').Middleware}
  */
 export default function ({ threshold = 1024, level = -1, brotli = false, gzip = true, mimes = MIMES } = {}) {
 	const brotliOpts = (typeof brotli === 'object' && brotli) || {};
