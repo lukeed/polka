@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-next.11",
+  "version": "1.0.0-next.25",
   "name": "@polka/compression",
   "repository": "lukeed/polka",
   "description": "Fast gzip+brotli compression middleware for polka & express with zero dependencies.",
