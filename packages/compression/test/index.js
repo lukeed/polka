@@ -1,10 +1,12 @@
-import { join } from 'path';
-import fs from 'fs';
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
-import { prep, toAscii } from './util/index';
-import compression from '../index';
+
+import fs from 'fs';
 import * as zlib from 'zlib';
+import { join } from 'path';
+
+import { prepare, toAscii } from './util/index';
+import compression from '../index';
 
 const GZIP = 'gzip, deflate';
 const BR = 'br, gzip, deflate';
@@ -16,7 +18,7 @@ instantiation('should export a function', () => {
 });
 
 instantiation('installs as middleware', () => {
-	const { req, res } = prep('GET', GZIP);
+	const { req, res } = prepare('GET', GZIP);
 	const middleware = compression();
 
 	let calledNext = false;
@@ -27,7 +29,7 @@ instantiation('installs as middleware', () => {
 });
 
 instantiation('works without next callback', () => {
-	const { req, res } = prep('GET', GZIP);
+	const { req, res } = prepare('GET', GZIP);
 	const middleware = compression();
 	assert.not.throws(() => middleware(req, res));
 });
@@ -39,7 +41,7 @@ instantiation.run();
 const basics = suite('basics');
 
 basics('compresses content over threshold', () => {
-	const { req, res } = prep('GET', GZIP);
+	const { req, res } = prepare('GET', GZIP);
 	compression()(req, res);
 	res.writeHead(200, { 'content-type': 'text/plain' })
 	res.write('hello world'.repeat(1000));
@@ -49,7 +51,7 @@ basics('compresses content over threshold', () => {
 });
 
 basics('compresses content with no content-type', () => {
-	const { req, res } = prep('GET', GZIP);
+	const { req, res } = prepare('GET', GZIP);
 	compression({ threshold: 0 })(req, res);
 	res.end('hello world');
 
@@ -57,7 +59,7 @@ basics('compresses content with no content-type', () => {
 });
 
 basics('ignores content with unmatched content-type', async () => {
-	const { req, res } = prep('GET', GZIP);
+	const { req, res } = prepare('GET', GZIP);
 	compression({ threshold: 0 })(req, res);
 	res.writeHead(200, { 'content-type': 'image/jpeg' });
 	const content = 'hello world';
@@ -68,7 +70,7 @@ basics('ignores content with unmatched content-type', async () => {
 });
 
 basics('preserves plaintext below threshold', async () => {
-	const { req, res } = prep('GET', GZIP);
+	const { req, res } = prepare('GET', GZIP);
 	compression()(req, res);
 	res.writeHead(200, { 'content-type': 'text/plain' });
 	const content = 'hello world'.repeat(20);
@@ -84,10 +86,10 @@ basics.run();
 
 const brotli = suite('brotli');
 
-const brotliIfSupported = zlib.createBrotliCompress ? brotli : brotli.skip;
+const brotliIfSupported = zlib.createBrotliCompress != null ? brotli : brotli.skip;
 
 brotliIfSupported('compresses content with brotli when supported', async () => {
-	const { req, res } = prep('GET', 'br');
+	const { req, res } = prepare('GET', 'br');
 	compression({ brotli: true, threshold: 0 })(req, res);
 	res.writeHead(200, { 'content-type': 'text/plain' })
 	res.end('hello world');
@@ -99,7 +101,7 @@ brotliIfSupported('compresses content with brotli when supported', async () => {
 });
 
 brotliIfSupported('gives brotli precedence over gzip', () => {
-	const { req, res } = prep('GET', BR);
+	const { req, res } = prepare('GET', BR);
 	compression({ brotli: true, threshold: 0 })(req, res);
 	res.writeHead(200, { 'content-type': 'text/plain' })
 	res.end('hello world'.repeat(20));
@@ -117,7 +119,7 @@ streaming('allows piping streams', async () => {
 	const pkg = join(__dirname, '../package.json');
 	const gzipped = zlib.gzipSync(fs.readFileSync(pkg));
 
-	const { req, res } = prep('GET', GZIP);
+	const { req, res } = prepare('GET', GZIP);
 	compression({ threshold: 0 })(req, res);
 
 	res.writeHead(200, { 'content-type': 'text/plain' });
