@@ -28,7 +28,7 @@ polka()
 
 ## API
 
-### `compression(options?: Options): Middlware`
+### `compression(options?: Options): Middleware`
 
 The `compression` function creates a Polka/Express-compatible middleware function. When no [`options`](#options) are defined, the defaults are used.
 
