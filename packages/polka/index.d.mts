@@ -61,6 +61,6 @@ export interface Polka<T extends Request = Request> extends Trouter<Middleware<T
 	listen(handle: any, callback?: ListenCallback): this;
 }
 
-export default function<T extends Request = Request>(
+export default function <T extends Request = Request>(
 	options?: IOptions<T>
 ): Polka<T>;
