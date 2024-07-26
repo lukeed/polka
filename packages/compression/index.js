@@ -27,7 +27,7 @@ export default function ({ threshold = 1024, level = -1, brotli = false, gzip = 
 
 	return (req, res, next = NOOP) => {
 		const accept = req.headers['accept-encoding'] + '';
-		const encoding = ((brotli && accept.match(/\bbr\b/)) || (gzip && accept.match(/\bgzip\b/)) || [])[0];
+		const encoding = ((brotli && /\bbr\b/.exec(accept)) || (gzip && /\bgzip\b/.exec(accept)) || [])[0];
 
 		// skip if no response body or no supported encoding:
 		if (req.method === 'HEAD' || !encoding) return next();
