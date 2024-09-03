@@ -3,19 +3,20 @@
   "name": "@polka/cluster",
   "repository": "lukeed/polka",
   "description": "Intialize and run a HTTP cluster",
-  "module": "build.mjs",
-  "types": "index.d.ts",
-  "main": "build.js",
+  "type": "module",
+  "module": "build.js",
+  "types": "index.d.cts",
+  "main": "build.cjs",
   "license": "MIT",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.mts",
-        "default": "./build.mjs"
-      },
-      "require": {
         "types": "./index.d.ts",
         "default": "./build.js"
+      },
+      "require": {
+        "types": "./index.d.cts",
+        "default": "./build.cjs"
       }
     },
     "./package.json": "./package.json"

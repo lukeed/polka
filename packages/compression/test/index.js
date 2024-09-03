@@ -2,11 +2,14 @@ import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 
 import fs from 'fs';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import * as zlib from 'zlib';
-import { join } from 'path';
 
-import { prepare, toAscii } from './util/index';
-import compression from '../index';
+import { prepare, toAscii } from './util/index.js';
+import compression from '../index.js';
+    
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const GZIP = 'gzip, deflate';
 const BR = 'br, gzip, deflate';

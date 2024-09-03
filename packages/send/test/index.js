@@ -1,12 +1,17 @@
 import fs from 'fs';
+import { createRequire } from 'module';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import { suite } from 'uvu';
-import { join } from 'path';
 import * as assert from 'uvu/assert';
-import { Response, toStatusText } from './util';
-import send from '../index';
+import { Response, toStatusText } from './util/index.js';
+import send from '../index.js';
+    
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const TYPE = 'Content-Type';
 const LENGTH = 'Content-Length';
+const require = createRequire(import.meta.url);
 const INPUT = require.resolve('../');
 
 const basics = suite('basics');

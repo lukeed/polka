@@ -3,8 +3,8 @@ import http from 'http';
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 import { get, send, post } from 'httpie';
-import polka from '../index';
-import * as $ from './util';
+import polka from '../index.js';
+import * as $ from './util/index.js';
 
 const hasNamedGroups = 'groups' in /x/.exec('x');
 const sleep = ms => new Promise(r => setTimeout(r, ms));

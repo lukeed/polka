@@ -4,19 +4,20 @@
   "repository": "lukeed/polka",
   "description": "Fast gzip+brotli compression middleware for polka & express with zero dependencies.",
   "homepage": "https://github.com/lukeed/polka/tree/next/packages/compression",
-  "module": "build.mjs",
-  "types": "index.d.ts",
-  "main": "build.js",
+  "type": "module",
+  "module": "build.js",
+  "types": "index.d.cts",
+  "main": "build.cjs",
   "license": "MIT",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.mts",
-        "default": "./build.mjs"
-      },
-      "require": {
         "types": "./index.d.ts",
         "default": "./build.js"
+      },
+      "require": {
+        "types": "./index.d.cts",
+        "default": "./build.cjs"
       }
     },
     "./package.json": "./package.json"

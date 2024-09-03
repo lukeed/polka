@@ -7,12 +7,11 @@
   },
   "scripts": {
     "build": "bun run scripts/build.ts",
-    "test": "uvu -r esm -i util -i bench packages test"
+    "test": "uvu -i util -i bench packages test"
   },
   "devDependencies": {
     "bump": "1.0.0-next.1",
     "bundt": "1.1.2",
-    "esm": "3.2.25",
     "httpie": "1.1.2",
     "uvu": "0.5.1"
   },

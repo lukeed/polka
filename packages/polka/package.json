@@ -3,19 +3,20 @@
   "version": "1.0.0-next.25",
   "repository": "lukeed/polka",
   "description": "A micro web server so fast, it'll make you dance! :dancers:",
-  "module": "build.mjs",
-  "types": "index.d.ts",
-  "main": "build.js",
+  "type": "module",
+  "module": "build.js",
+  "types": "index.d.cts",
+  "main": "build.cjs",
   "license": "MIT",
   "exports": {
     ".": {
       "import": {
-        "types": "./index.d.mts",
-        "default": "./build.mjs"
-      },
-      "require": {
         "types": "./index.d.ts",
         "default": "./build.js"
+      },
+      "require": {
+        "types": "./index.d.cts",
+        "default": "./build.cjs"
       }
     },
     "./package.json": "./package.json"

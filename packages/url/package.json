@@ -3,15 +3,16 @@
   "name": "@polka/url",
   "repository": "lukeed/polka",
   "description": "Super fast, memoized `req.url` parser",
-  "module": "build.mjs",
+  "type": "module",
+  "module": "build.js",
   "types": "index.d.ts",
-  "main": "build.js",
+  "main": "build.cjs",
   "license": "MIT",
   "exports": {
     ".": {
       "types": "./index.d.ts",
-      "import": "./build.mjs",
-      "require": "./build.js"
+      "import": "./build.js",
+      "require": "./build.cjs"
     },
     "./package.json": "./package.json"
   },

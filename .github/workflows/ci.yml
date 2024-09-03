@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        nodejs: [10, 12, 14, 16, 18]
+        nodejs: [12, 14, 16, 18]
 
     steps:
     - uses: actions/checkout@v4
@@ -46,6 +46,9 @@ jobs:
     - name: Linter
       if: matrix.nodejs >= 18
       run: oxlint .
+
+    - name: Build
+      run: npm run build
 
     - name: Test
       if: matrix.nodejs < 18

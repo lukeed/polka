@@ -1,6 +1,6 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
-import { parse } from '../index';
+import { parse } from '../index.js';
 
 /**
  * @param {string} url

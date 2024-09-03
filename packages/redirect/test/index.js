@@ -1,6 +1,6 @@
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
-import fn from '../index';
+import fn from '../index.js';
 
 function isRedirect(arr, code=302) {
 	let [starting, next, result] = arr;
