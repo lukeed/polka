@@ -19,11 +19,11 @@ jobs:
         nodejs: [10, 12, 14, 16, 18]
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.nodejs }}
-    - uses: oven-sh/setup-bun@v1
+    - uses: oven-sh/setup-bun@v2
       with:
         bun-version: 0.8.1
 
