@@ -1,4 +1,4 @@
-import * as qs from 'querystring';
+import * as qs from 'node:querystring';
 
 /**
  * @typedef ParsedURL

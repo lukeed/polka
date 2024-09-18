@@ -1,4 +1,4 @@
-import { STATUS_CODES } from 'http';
+import { STATUS_CODES } from 'node:http';
 
 export const toStatusText = code => STATUS_CODES[code];
 

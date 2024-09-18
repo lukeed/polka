@@ -1,5 +1,5 @@
-import { STATUS_CODES } from 'http';
-import { createHash } from 'crypto';
+import { STATUS_CODES } from 'node:http';
+import { createHash } from 'node:crypto';
 
 const TYPE = 'Content-Type';
 const LENGTH = 'Content-Length';

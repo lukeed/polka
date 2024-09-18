@@ -1,6 +1,6 @@
 // NOTE: supports Node 6.x
 
-import zlib from 'zlib';
+import zlib from 'node:zlib';
 
 const NOOP = () => {};
 const MIMES = /text|javascript|\/json|xml/i;

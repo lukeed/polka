@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import http from 'http';
+import http from 'node:http';
 import { test } from 'uvu';
 import * as assert from 'uvu/assert';
 import { get, send, post } from 'httpie';

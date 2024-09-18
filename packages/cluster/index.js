@@ -1,6 +1,6 @@
-import { cpus } from 'os';
-import cluster from 'cluster';
-import { createServer } from 'http';
+import { cpus } from 'node:os';
+import cluster from 'node:cluster';
+import { createServer } from 'node:http';
 
 export default function (app, num) {
 	if (cluster.isMaster) {

@@ -1,6 +1,6 @@
-import fs from 'fs';
+import fs from 'node:fs';
+import { join } from 'node:path';
 import { suite } from 'uvu';
-import { join } from 'path';
 import * as assert from 'uvu/assert';
 import { Response, toStatusText } from './util';
 import send from '../index';

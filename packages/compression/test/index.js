@@ -1,9 +1,9 @@
 import { suite } from 'uvu';
 import * as assert from 'uvu/assert';
 
-import fs from 'fs';
-import * as zlib from 'zlib';
-import { join } from 'path';
+import fs from 'node:fs';
+import * as zlib from 'node:zlib';
+import { join } from 'node:path';
 
 import { prepare, toAscii } from './util/index';
 import compression from '../index';

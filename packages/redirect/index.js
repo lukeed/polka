@@ -1,4 +1,4 @@
-import { resolve } from 'url';
+import { resolve } from 'node:url';
 
 export default function (res, code=302, location='') {
 	if (!location && typeof code === 'string') {

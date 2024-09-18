@@ -1,4 +1,4 @@
-import { decode } from 'querystring';
+import { decode } from 'node:querystring';
 
 const noop = x => x;
 
