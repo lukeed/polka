@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-next.25",
+  "version": "1.0.0-next.27",
   "name": "@polka/url",
   "repository": "lukeed/polka",
   "description": "Super fast, memoized `req.url` parser",
