@@ -10,10 +10,12 @@
     "test": "uvu -r esm -i util -i bench packages test"
   },
   "devDependencies": {
+    "astray": "1.1.1",
     "bump": "1.0.0-next.1",
-    "bundt": "1.1.2",
     "esm": "3.2.25",
     "httpie": "1.1.2",
+    "magic-string": "0.30.11",
+    "oxc-parser": "0.29.0",
     "uvu": "0.5.1"
   },
   "workspaces": [
