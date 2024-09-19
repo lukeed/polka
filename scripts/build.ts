@@ -98,7 +98,7 @@ for (let name of packages) {
 			}
 
 			let qq = s.snip(src.start, src.start + 1);
-			stmt += ` = require(${qq + from + qq});\n`;
+			stmt += ` = require(${qq + from + qq});`;
 			s.overwrite(start, end, stmt);
 		},
 		ExportDefaultDeclaration(n) {
