@@ -47,6 +47,9 @@ jobs:
       if: matrix.nodejs >= 18
       run: oxlint .
 
+    - name: Build
+      run: bun run build
+
     - name: Test
       if: matrix.nodejs < 18
       run: npm test
