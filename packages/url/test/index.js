@@ -222,7 +222,8 @@ test('url :: malformed uri', () => {
 		search: '?foo=bar',
 		query: {
 			foo: 'bar'
-		}
+		},
+		hash: undefined,
 	});
 });
 
