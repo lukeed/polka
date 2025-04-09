@@ -9,14 +9,27 @@ on:
       - master
       - next
 
+env:
+  BUN_VERSION: 1.2
+
 jobs:
+  health:
+    name: Health
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+      - name: Lint
+        run: bunx oxlint@latest .
+
   test:
     name: Node.js v${{ matrix.nodejs }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         nodejs: [10, 12, 14, 16, 18]
-
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -24,7 +37,7 @@ jobs:
         node-version: ${{ matrix.nodejs }}
     - uses: oven-sh/setup-bun@v2
       with:
-        bun-version: 1.1.27
+        bun-version: ${{ env.BUN_VERSION }}
 
     - name: (env) cache
       uses: actions/cache@v3
@@ -38,13 +51,7 @@ jobs:
 
     - name: Install Globals
       if: matrix.nodejs >= 18
-      run: |
-        bun add -g c8
-        bun add -g oxlint
-
-    - name: Linter
-      if: matrix.nodejs >= 18
-      run: oxlint .
+      run: bun add -g c8
 
     - name: Build
       run: bun run build
