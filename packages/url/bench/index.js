@@ -35,8 +35,8 @@ const contenders = {
 
 	'new URL()': r => {
 		let url = r.url;
-		let { pathname, search, searchParams } = new URL(url, 'http://x.com');
-		return { url, pathname, search, query: searchParams };
+		let { pathname, search, searchParams, hash } = new URL(url, 'http://x.com');
+		return { url, pathname, search, query: searchParams, hash };
 	},
 
 	'parseurl': r => {
@@ -74,6 +74,7 @@ function runner(config) {
 
 		try {
 			let output = fn({ url });
+			output.hash ||= null;
 
 			for (key in expect) {
 				let tmp = output[key];
@@ -134,6 +135,18 @@ runner({
 			user: 'tj',
 			pet: 'fluffy',
 		}
+	}
+});
+
+runner({
+	url: '/foo/bar?abc#123',
+	expect: {
+		pathname: '/foo/bar',
+		search: '?abc',
+		query: {
+			abc: ''
+		},
+		hash: '#123'
 	}
 });
 

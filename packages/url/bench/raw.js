@@ -69,5 +69,6 @@ function runner(url, toRepeat) {
 
 runner('/foo/bar?user=tj&pet=fluffy');
 runner('/foo/bar?user=tj&pet=fluffy', true);
+runner('/foo/bar?abc#123');
 runner('/foo/bar');
 runner('/');
