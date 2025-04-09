@@ -45,6 +45,7 @@ run('/', {
 	pathname: '/',
 	search: '',
 	query: undefined,
+	hash: undefined,
 });
 
 run('/foo/bar', {
@@ -52,12 +53,14 @@ run('/foo/bar', {
 	pathname: '/foo/bar',
 	search: '',
 	query: undefined,
+	hash: undefined,
 });
 
 run('/foo/bar?fizz=buzz', {
 	raw: '/foo/bar?fizz=buzz',
 	pathname: '/foo/bar',
 	search: '?fizz=buzz',
+	hash: undefined,
 	query: {
 		fizz: 'buzz',
 	},
@@ -71,13 +74,15 @@ run('/foo/bar?fizz=buzz&hello=world', {
 		fizz: 'buzz',
 		hello: 'world',
 	},
+	hash: undefined,
 });
 
 run('/foo.123', {
 	raw: '/foo.123',
 	pathname: '/foo.123',
 	search: '',
-	query: undefined
+	query: undefined,
+	hash: undefined,
 });
 
 run('/foo?bar', {
@@ -86,7 +91,8 @@ run('/foo?bar', {
 	search: '?bar',
 	query: {
 		bar: ''
-	}
+	},
+	hash: undefined,
 });
 
 // query param w/ "?" value
@@ -96,7 +102,8 @@ run('/foo?q=a?b=c', {
 	search: '?q=a?b=c',
 	query: {
 		q: 'a?b=c'
-	}
+	},
+	hash: undefined,
 });
 
 // repeated query keys
@@ -108,14 +115,16 @@ run('/foo?bar=1&bar=2&bar=3&baz=&bat', {
 		bar: ['1', '2', '3'],
 		baz: '',
 		bat: '',
-	}
+	},
+	hash: undefined,
 });
 
 run('/f%C3%B8%C3%B8%C3%9F%E2%88%82r', {
 	raw: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r',
 	pathname: '/f%C3%B8%C3%B8%C3%9F%E2%88%82r',
 	search: '',
-	query: undefined
+	query: undefined,
+	hash: undefined,
 });
 
 run('/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309', {
@@ -124,7 +133,8 @@ run('/f%C3%B8%C3%B8%C3%9F%E2%88%82r?phone=%2b8675309', {
 	search: '?phone=%2b8675309',
 	query: {
 		phone: '+8675309'
-	}
+	},
+	hash: undefined,
 });
 
 // query param w/ "+" for space
@@ -134,7 +144,8 @@ run('/hello?world=a+b', {
 	search: '?world=a+b',
 	query: {
 		world: 'a b'
-	}
+	},
+	hash: undefined,
 });
 
 let plain = 'https://hi.com/w?v=hello&list=world';
@@ -145,7 +156,26 @@ run(`/foobar/?href=${urlencoded}`, {
 	search: `?href=${urlencoded}`,
 	query: {
 		href: plain
-	}
+	},
+	hash: undefined,
+});
+
+run('/foo/bar?abc#123', {
+	raw: '/foo/bar?abc#123',
+	pathname: '/foo/bar',
+	search: '?abc',
+	query: {
+		abc: ''
+	},
+	hash: '#123'
+});
+
+run('/foo/bar#123?abc', {
+	raw: '/foo/bar#123?abc',
+	pathname: '/foo/bar',
+	search: '',
+	query: undefined,
+	hash: '#123?abc'
 });
 
 test('url :: cache :: hit', () => {
@@ -192,7 +222,8 @@ test('url :: malformed uri', () => {
 		search: '?foo=bar',
 		query: {
 			foo: 'bar'
-		}
+		},
+		hash: undefined,
 	});
 });
 

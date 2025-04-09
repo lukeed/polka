@@ -1,6 +1,6 @@
 ## Benchmarks
 
-> Running on Node v16.8.0
+> Running on Node v22.12.0
 
 ***Modifications:***
 
@@ -15,28 +15,34 @@ Please see the [Raw Performance](#raw-performance) benchmarks for results ***wit
 
 ```
 Benchmark: "/foo/bar?user=tj&pet=fluffy"
-  url.parse        x   1,766,192 ops/sec ±0.59% (189 runs sampled)
-  new URL()        x     254,742 ops/sec ±0.93% (188 runs sampled)
-  parseurl         x   2,296,634 ops/sec ±0.43% (188 runs sampled)
-  @polka/url       x   3,096,770 ops/sec ±0.56% (189 runs sampled)
+  url.parse        x   2,786,655 ops/sec ±0.14% (197 runs sampled)
+  new URL()        x   1,945,589 ops/sec ±0.09% (195 runs sampled)
+  parseurl         x   3,769,985 ops/sec ±0.17% (196 runs sampled)
+  @polka/url       x   4,384,948 ops/sec ±0.11% (195 runs sampled)
 
 Benchmark: (REPEAT) "/foo/bar?user=tj&pet=fluffy"
-  url.parse        x   1,794,821 ops/sec ±1.01% (188 runs sampled)
-  new URL()        x     258,587 ops/sec ±0.63% (189 runs sampled)
-  parseurl         x  30,616,846 ops/sec ±0.47% (191 runs sampled)
-  @polka/url       x 314,370,079 ops/sec ±0.36% (189 runs sampled)
+  url.parse        x   2,800,105 ops/sec ±0.11% (196 runs sampled)
+  new URL()        x   1,950,331 ops/sec ±0.78% (195 runs sampled)
+  parseurl         x  32,916,543 ops/sec ±0.63% (192 runs sampled)
+  @polka/url       x 107,568,527 ops/sec ±1.10% (192 runs sampled)
+
+Benchmark: "/foo/bar?abc#123"
+  url.parse        x   2,431,521 ops/sec ±0.60% (196 runs sampled)
+  new URL()        x   2,194,648 ops/sec ±0.08% (197 runs sampled)
+  parseurl         x   2,572,037 ops/sec ±0.37% (196 runs sampled)
+  @polka/url       x   8,416,348 ops/sec ±0.61% (197 runs sampled)
 
 Benchmark: "/foo/bar"
-  url.parse        x   7,373,531 ops/sec ±0.63% (188 runs sampled)
-  new URL()        x     291,642 ops/sec ±0.83% (189 runs sampled)
-  parseurl         x  21,946,341 ops/sec ±0.93% (186 runs sampled)
-  @polka/url       x  48,697,030 ops/sec ±0.49% (189 runs sampled)
+  url.parse        x  10,724,472 ops/sec ±0.21% (195 runs sampled)
+  new URL()        x   2,874,192 ops/sec ±0.08% (196 runs sampled)
+  parseurl         x  33,684,546 ops/sec ±1.02% (193 runs sampled)
+  @polka/url       x  38,863,110 ops/sec ±0.54% (193 runs sampled)
 
 Benchmark: "/"
-  url.parse        x  10,744,706 ops/sec ±0.47% (188 runs sampled)
-  new URL()        x     315,725 ops/sec ±0.86% (184 runs sampled)
-  parseurl         x  46,863,886 ops/sec ±1.06% (189 runs sampled)
-  @polka/url       x  72,862,914 ops/sec ±0.54% (190 runs sampled)
+  url.parse        x  14,490,460 ops/sec ±0.29% (195 runs sampled)
+  new URL()        x   2,961,662 ops/sec ±0.26% (196 runs sampled)
+  parseurl         x  53,179,222 ops/sec ±1.16% (188 runs sampled)
+  @polka/url       x  70,449,273 ops/sec ±1.31% (190 runs sampled)
 ```
 
 
@@ -58,30 +64,37 @@ These are the results of the _unmodified_ candidates. In other words, there is *
 
 ```
 Benchmark: (normal) "/foo/bar?user=tj&pet=fluffy"
-  url.parse#1      x   1,757,099 ops/sec ±0.67% (188 runs sampled)
-  url.parse#2      x   4,487,853 ops/sec ±0.70% (185 runs sampled)
-  new URL()        x     284,153 ops/sec ±0.68% (187 runs sampled)
-  parseurl         x   9,848,571 ops/sec ±0.97% (186 runs sampled)
-  @polka/url       x   3,040,460 ops/sec ±0.79% (188 runs sampled)
+  url.parse#1      x   2,765,357 ops/sec ±0.52% (197 runs sampled)
+  url.parse#2      x   5,974,183 ops/sec ±0.32% (195 runs sampled)
+  new URL()        x   2,973,462 ops/sec ±0.12% (197 runs sampled)
+  parseurl         x   9,157,524 ops/sec ±0.37% (194 runs sampled)
+  @polka/url       x   4,311,091 ops/sec ±0.14% (194 runs sampled)
 
 Benchmark: (repeat) "/foo/bar?user=tj&pet=fluffy"
-  url.parse#1      x   1,827,115 ops/sec ±0.41% (190 runs sampled)
-  url.parse#2      x   4,442,871 ops/sec ±0.72% (183 runs sampled)
-  new URL()        x     286,803 ops/sec ±0.30% (189 runs sampled)
-  parseurl         x  78,897,892 ops/sec ±1.51% (182 runs sampled)
-  @polka/url       x 291,908,732 ops/sec ±4.97% (179 runs sampled)
+  url.parse#1      x   2,782,103 ops/sec ±0.12% (196 runs sampled)
+  url.parse#2      x   6,068,865 ops/sec ±0.48% (194 runs sampled)
+  new URL()        x   3,001,140 ops/sec ±0.07% (197 runs sampled)
+  parseurl         x 105,485,588 ops/sec ±1.27% (194 runs sampled)
+  @polka/url       x 107,098,254 ops/sec ±1.28% (194 runs sampled)
+
+Benchmark: (normal) "/foo/bar?abc#123"
+  url.parse#1      x   2,437,515 ops/sec ±0.92% (196 runs sampled)
+  url.parse#2      x   3,804,083 ops/sec ±0.12% (194 runs sampled)
+  new URL()        x   2,982,620 ops/sec ±0.07% (197 runs sampled)
+  parseurl         x   3,219,924 ops/sec ±0.50% (196 runs sampled)
+  @polka/url       x   8,389,305 ops/sec ±0.63% (192 runs sampled)
 
 Benchmark: (normal) "/foo/bar"
-  url.parse#1      x   7,824,747 ops/sec ±0.65% (186 runs sampled)
-  url.parse#2      x   9,015,704 ops/sec ±0.68% (188 runs sampled)
-  new URL()        x     320,978 ops/sec ±0.41% (188 runs sampled)
-  parseurl         x  25,611,676 ops/sec ±0.45% (189 runs sampled)
-  @polka/url       x  48,554,610 ops/sec ±0.48% (190 runs sampled)
+  url.parse#1      x  10,774,201 ops/sec ±0.25% (196 runs sampled)
+  url.parse#2      x  12,779,167 ops/sec ±0.74% (194 runs sampled)
+  new URL()        x   3,444,515 ops/sec ±0.13% (196 runs sampled)
+  parseurl         x  35,436,130 ops/sec ±0.66% (193 runs sampled)
+  @polka/url       x  38,984,804 ops/sec ±0.53% (193 runs sampled)
 
 Benchmark: (normal) "/"
-  url.parse#1      x  11,682,323 ops/sec ±0.81% (187 runs sampled)
-  url.parse#2      x  15,679,363 ops/sec ±0.61% (188 runs sampled)
-  new URL()        x     348,880 ops/sec ±0.35% (189 runs sampled)
-  parseurl         x  34,522,603 ops/sec ±0.73% (190 runs sampled)
-  @polka/url       x  71,136,459 ops/sec ±0.58% (189 runs sampled)
+  url.parse#1      x  14,640,936 ops/sec ±0.94% (193 runs sampled)
+  url.parse#2      x  18,652,575 ops/sec ±0.31% (195 runs sampled)
+  new URL()        x   3,580,881 ops/sec ±0.14% (195 runs sampled)
+  parseurl         x  57,691,065 ops/sec ±1.01% (191 runs sampled)
+  @polka/url       x  71,176,841 ops/sec ±1.33% (188 runs sampled)
 ```
