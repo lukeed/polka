@@ -74,8 +74,10 @@ export default function ({ threshold = 1024, level = -1, brotli = false, gzip = 
 				pendingListeners = null;
 				listeners.forEach(p => on.apply(res, p));
 			}
-
-			writeHead.call(res, pendingStatus || res.statusCode);
+			
+			if(!res?.stream?.aborted){
+				writeHead.call(res, pendingStatus || res.statusCode);
+			}
 		}
 
 		const { end, write, on, writeHead } = res;
