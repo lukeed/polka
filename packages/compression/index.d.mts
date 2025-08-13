@@ -23,7 +23,7 @@ export type Options = {
 	gzip?: boolean;
 	/**
 	 * Regular expression of response MIME types to compress.
-	 * @default /text|javascript|\/json|xml/i
+	 * @default /text|javascript|\/json|xml|wasm/i
 	 */
 	mimes?: RegExp;
 };
