@@ -3,7 +3,7 @@
 import zlib from 'node:zlib';
 
 const NOOP = () => {};
-const MIMES = /text|javascript|\/json|xml/i;
+const MIMES = /text|javascript|\/json|xml|wasm/i;
 
 /**
  * @param {any} chunk

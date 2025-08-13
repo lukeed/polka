@@ -67,7 +67,7 @@ Enables response compression using Gzip for requests that support it, as determi
 
 #### options.mimes
 Type: `RegExp`<br>
-Default: `/text|javascript|\/json|xml/i`
+Default: `/text|javascript|\/json|xml|wasm/i`
 
 The `Content-Type` response header is evaluated against this Regular Expression to determine if it is a MIME type that should be compressed.
 
