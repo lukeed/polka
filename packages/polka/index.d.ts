@@ -1,5 +1,5 @@
-import type { IncomingMessage, ServerResponse } from 'http';
-import type { ListenOptions, Server } from 'net';
+import type { IncomingMessage, Server, ServerResponse } from 'http';
+import type { ListenOptions } from 'net';
 import type { ParsedURL } from '@polka/url';
 import type { Trouter } from 'trouter';
 
