@@ -3,6 +3,10 @@
   "version": "0.5.2",
   "description": "A response helper that detects & handles Content-Types",
   "repository": "lukeed/polka",
+  "homepage": "https://github.com/lukeed/polka#readme",
+  "bugs": {
+    "url": "https://github.com/lukeed/polka/issues"
+  },
   "license": "MIT",
   "files": [
     "*.js"
