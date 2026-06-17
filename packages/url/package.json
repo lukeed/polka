@@ -3,6 +3,10 @@
   "version": "0.5.0",
   "description": "Super fast, memoized `req.url` parser",
   "repository": "lukeed/polka",
+  "homepage": "https://github.com/lukeed/polka#readme",
+  "bugs": {
+    "url": "https://github.com/lukeed/polka/issues"
+  },
   "license": "MIT",
   "files": [
     "*.js"
