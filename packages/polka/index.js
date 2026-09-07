@@ -17,6 +17,21 @@ function mutate(str, req) {
 	req.path = req.path.substring(str.length) || '/';
 }
 
+// Finds the longest registered `key` (from `use(base, ...)`) that is a
+// full-segment prefix of `path`, so bases with more than one "folder"
+// (eg. `/foo/bar`) can be matched instead of only ever comparing the
+// first segment of `path`.
+function matchBase(path, keys) {
+	let base, blen=0, i=0, k, klen;
+	for (; i < keys.length; i++) {
+		k = keys[i]; klen = k.length;
+		if (klen > blen && path.length >= klen && path.substring(0, klen) === k && (path.length === klen || path.charCodeAt(klen) === 47)) {
+			base = k; blen = klen;
+		}
+	}
+	return base;
+}
+
 function onError(err, req, res, next) {
 	let code = (res.statusCode = err.code || err.status || 500);
 	if (typeof err === 'string' || Buffer.isBuffer(err)) res.end(err);
@@ -72,16 +87,20 @@ class Polka extends Router {
 		info = info || this.parse(req);
 		let fns=[], arr=this.wares, obj=this.find(req.method, info.pathname);
 		req.originalUrl = req.originalUrl || req.url;
-		let base = value(req.path = info.pathname);
-		if (this.bwares[base] !== void 0) {
-			arr = arr.concat(this.bwares[base]);
+		req.path = info.pathname;
+		let wbase = matchBase(req.path, Object.keys(this.bwares));
+		if (wbase !== void 0) {
+			arr = arr.concat(this.bwares[wbase]);
 		}
 		if (obj) {
 			fns = obj.handlers;
 			req.params = obj.params;
-		} else if (this.apps[base] !== void 0) {
-			mutate(base, req); info.pathname=req.path; //=> updates
-			fns.push(this.apps[base].handler.bind(null, req, res, info));
+		} else {
+			let abase = matchBase(req.path, Object.keys(this.apps));
+			if (abase !== void 0) {
+				mutate(abase, req); info.pathname=req.path; //=> updates
+				fns.push(this.apps[abase].handler.bind(null, req, res, info));
+			}
 		}
 		fns.push(this.onNoMatch);
 		// Grab addl values from `info`

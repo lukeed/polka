@@ -309,6 +309,63 @@ test('polka::usage::middleware (basenames)', async t => {
 	app.server.close();
 });
 
+test('polka::usage::middleware (multi-segment basenames)', async t => {
+	t.plan(11);
+
+	let app = polka()
+		.use('/foo/bar', (req, res) => {
+			t.pass('runs the base middleware for: /foo/bar');
+			t.false(req.url.includes('/foo/bar'), '~> strips "/foo/bar" base from `req.url`');
+			t.false(req.path.includes('/foo/bar'), '~> strips "/foo/bar" base from `req.path`');
+			t.ok(req.originalUrl.includes('/foo/bar'), '~> keeps "/foo/bar" base within `req.originalUrl`');
+			res.end('hello from foo/bar');
+		})
+		.get('/', (req, res) => {
+			t.pass('runs the MAIN app handler for GET /');
+			res.end('hello from main');
+		});
+
+	let uri = listen(app);
+
+	// A single-segment base under the same first "folder" should be unaffected.
+	await axios.get(uri).catch(() => {});
+	let r1 = await axios.get(uri);
+	t.is(r1.status, 200, '~> received 200 status');
+	t.is(r1.data, 'hello from main', '~> received "hello from main" response');
+
+	// Test (GET /foo/bar/baz), a base with more than one "folder"
+	let r2 = await axios.get(`${uri}/foo/bar/baz`);
+	t.is(r2.status, 200, '~> received 200 status');
+	t.is(r2.data, 'hello from foo/bar', '~> received "hello from foo/bar" response');
+
+	// A path that only shares the FIRST segment ("/foo") must not match.
+	await axios.get(`${uri}/foo/baz`).catch(err => {
+		let r = err.response;
+		t.is(r.status, 404, '~> "/foo/baz" does not match the "/foo/bar" base');
+	});
+
+	app.server.close();
+});
+
+test('polka::usage::sub-application (multi-segment base)', async t => {
+	t.plan(4);
+
+	let sub = polka().get('/', (req, res) => {
+		t.pass('runs the sub-application route');
+		t.is(req.url, '/', '~> trims the multi-segment base from `req.url`');
+		res.end('hello from sub');
+	});
+
+	let app = polka().use('/api/v2', sub);
+
+	let uri = listen(app);
+	let r = await axios.get(`${uri}/api/v2`);
+	t.is(r.status, 200, '~> received 200 status');
+	t.is(r.data, 'hello from sub', '~> received "hello from sub" response');
+
+	app.server.close();
+});
+
 test('polka::usage::middleware (wildcard)', async t => {
 	t.plan(29);
 
