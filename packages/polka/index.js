@@ -18,7 +18,7 @@ function mutate(str, req) {
 }
 
 function onError(err, req, res, next) {
-	let code = (res.statusCode = err.code || err.status || 500);
+	let code = (res.statusCode = Number(err.code) || Number(err.status) || 500);
 	if (typeof err === 'string' || Buffer.isBuffer(err)) res.end(err);
 	else res.end(err.message || http.STATUS_CODES[code]);
 }
