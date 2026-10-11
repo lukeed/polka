@@ -63,7 +63,10 @@ class Polka extends Router {
 	}
 
 	listen() {
-		(this.server = this.server || http.createServer()).on('request', this.handler);
+		this.server = this.server || http.createServer();
+		if (this.server.listeners('request').indexOf(this.handler) === -1) {
+			this.server.on('request', this.handler);
+		}
 		this.server.listen.apply(this.server, arguments);
 		return this;
 	}
