@@ -547,6 +547,27 @@ test('polka::options::server', t => {
 	t.end();
 });
 
+test('polka::listen::restart', async t => {
+	let calls = 0, externalCalls = 0;
+	let server = http.createServer();
+	server.on('request', () => externalCalls++);
+	let app = polka({ server }).get('/restart', (_, res) => {
+		calls++;
+		setTimeout(() => {
+			if (!res.finished) res.end('restarted');
+		}, 1);
+	});
+	listen(app);
+	await new Promise(resolve => server.close(resolve));
+	let uri = listen(app);
+	let response = await axios.get(uri + '/restart');
+	t.is(response.data, 'restarted', 'responds after restart');
+	t.is(calls, 1, 'runs the route once after restart');
+	t.is(externalCalls, 1, 'preserves the separate request listener');
+	server.close();
+	t.end();
+});
+
 test('polka::options::onError', async t => {
 	t.plan(7);
 
