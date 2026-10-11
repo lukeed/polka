@@ -547,6 +547,26 @@ test('polka::options::server', t => {
 	t.end();
 });
 
+test('polka::default::onError with Node error codes', t => {
+	let app = polka();
+	let cases = [
+		[{ code: 'ENOENT', message: 'missing file' }, 500],
+		[{ code: 'ENOENT', status: 404, message: 'missing file' }, 404],
+		[{ code: '404', message: 'missing file' }, 404],
+		[{ code: 403, message: 'forbidden' }, 403]
+	];
+	cases.forEach(([err, status]) => {
+		let res = {
+			end(message) {
+				t.is(this.statusCode, status, `uses HTTP status ${status} for error code ${err.code}`);
+				t.is(message, err.message, 'preserves the error message');
+			}
+		};
+		app.onError(err, {}, res);
+	});
+	t.end();
+});
+
 test('polka::options::onError', async t => {
 	t.plan(7);
 
