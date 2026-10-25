@@ -1484,4 +1484,35 @@ test('encoded url', async () => {
 });
 
 
+test('unicode routes', async () => {
+	let sub = polka().get('/😸', (req, res) => res.end('Meow'));
+	let app = polka()
+		.get('/café', (req, res) => res.end('Coffee'))
+		.get('/encoded/%F0%9F%98%B8', (req, res) => res.end('Encoded'))
+		.get('/file/:title.😸', (req, res) => res.end(req.params.title))
+		.use('/münchen', sub);
+	let uri = $.listen(app);
+
+	try {
+		let r = await get(uri + '/caf%C3%A9');
+		assert.is(r.statusCode, 200, '~> received 200 status for Unicode route');
+		assert.is(r.data, 'Coffee', '~> matched Unicode route');
+
+		r = await get(uri + '/m%C3%BCnchen/%F0%9F%98%B8');
+		assert.is(r.statusCode, 200, '~> received 200 status for Unicode mount');
+		assert.is(r.data, 'Meow', '~> matched Unicode mount and nested route');
+
+		r = await get(uri + '/encoded/%F0%9F%98%B8');
+		assert.is(r.statusCode, 200, '~> received 200 status for encoded route');
+		assert.is(r.data, 'Encoded', '~> does not encode an existing route twice');
+
+		r = await get(uri + '/file/hello.%F0%9F%98%B8');
+		assert.is(r.statusCode, 200, '~> received 200 status for Unicode parameter suffix');
+		assert.is(r.data, 'hello', '~> encodes static suffix without changing the parameter');
+	} finally {
+		app.server.close();
+	}
+});
+
+
 test.run();

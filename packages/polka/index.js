@@ -12,6 +12,16 @@ function onError(err, req, res) {
 
 const mount = fn => fn instanceof Polka ? fn.attach : fn;
 
+function encodeRoute(pattern) {
+	if (typeof pattern !== 'string') return pattern;
+	return pattern.split('/').map(segment => {
+		let c = segment.charAt(0);
+		let idx = c === '*' ? -1 : c === ':' ? segment.indexOf('.', 1) : 0;
+		if (idx < 0) return segment;
+		return segment.substring(0, idx) + segment.substring(idx).replace(/[^\x00-\x7F]+/g, encodeURIComponent);
+	}).join('/');
+}
+
 class Polka extends Trouter {
 	constructor(opts={}) {
 		super();
@@ -23,7 +33,12 @@ class Polka extends Trouter {
 		this.attach = (req, res) => setImmediate(this.handler, req, res);
 	}
 
+	add(method, pattern, ...fns) {
+		return super.add(method, encodeRoute(pattern), ...fns);
+	}
+
 	use(base, ...fns) {
+		base = encodeRoute(base);
 		if (base === '/') {
 			super.use(base, fns.map(mount));
 		} else if (typeof base === 'function' || base instanceof Polka) {
