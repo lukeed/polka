@@ -17,6 +17,17 @@ function mutate(str, req) {
 	req.path = req.path.substring(str.length) || '/';
 }
 
+function matchBase(path, keys) {
+	let base, blen=0, i=0, k, klen;
+	for (; i < keys.length; i++) {
+		k = keys[i]; klen = k.length;
+		if (klen > blen && path.length >= klen && path.substring(0, klen) === k && (path.length === klen || path.charCodeAt(klen) === 47)) {
+			base = k; blen = klen;
+		}
+	}
+	return base;
+}
+
 function onError(err, req, res, next) {
 	let code = (res.statusCode = err.code || err.status || 500);
 	if (typeof err === 'string' || Buffer.isBuffer(err)) res.end(err);
@@ -37,8 +48,9 @@ class Polka extends Router {
 	}
 
 	add(method, pattern, ...fns) {
-		let base = lead(value(pattern));
-		if (this.apps[base] !== void 0) throw new Error(`Cannot mount ".${method.toLowerCase()}('${lead(pattern)}')" because a Polka application at ".use('${base}')" already exists! You should move this handler into your Polka application instead.`);
+		let p = lead(pattern);
+		let base = matchBase(p, Object.keys(this.apps));
+		if (base !== void 0) throw new Error(`Cannot mount ".${method.toLowerCase()}('${p}')" because a Polka application at ".use('${base}')" already exists! You should move this handler into your Polka application instead.`);
 		return super.add(method, pattern, ...fns);
 	}
 
@@ -72,16 +84,20 @@ class Polka extends Router {
 		info = info || this.parse(req);
 		let fns=[], arr=this.wares, obj=this.find(req.method, info.pathname);
 		req.originalUrl = req.originalUrl || req.url;
-		let base = value(req.path = info.pathname);
-		if (this.bwares[base] !== void 0) {
-			arr = arr.concat(this.bwares[base]);
+		req.path = info.pathname;
+		let wbase = matchBase(req.path, Object.keys(this.bwares));
+		if (wbase !== void 0) {
+			arr = arr.concat(this.bwares[wbase]);
 		}
 		if (obj) {
 			fns = obj.handlers;
 			req.params = obj.params;
-		} else if (this.apps[base] !== void 0) {
-			mutate(base, req); info.pathname=req.path; //=> updates
-			fns.push(this.apps[base].handler.bind(null, req, res, info));
+		} else {
+			let abase = matchBase(req.path, Object.keys(this.apps));
+			if (abase !== void 0) {
+				mutate(abase, req); info.pathname=req.path; //=> updates
+				fns.push(this.apps[abase].handler.bind(null, req, res, info));
+			}
 		}
 		fns.push(this.onNoMatch);
 		// Grab addl values from `info`
