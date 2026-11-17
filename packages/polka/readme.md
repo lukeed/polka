@@ -252,7 +252,7 @@ The supported pattern types are:
 
 ### Parameters
 
-Any named parameters included within your route [`pattern`](#patterns) will be automatically added to your incoming `req` object. All parameters will be found within `req.params` under the same name they were given.
+Any named parameters included within your route [`pattern`](#patterns) will be automatically added to your incoming `req` object. All parameters will be found within `req.params` under the same name they were given. Parameter values are percent-decoded, so `/users/1%20%2F%207` yields `req.params.id === '1 / 7'`.
 
 > **Important:** Your parameter names should be unique, as shared names will overwrite each other!
 
