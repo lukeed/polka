@@ -75,6 +75,38 @@ test('polka::usage::basic', t => {
 	});
 });
 
+test('polka::usage::params :: decodes percent-encoded values', async t => {
+	t.plan(6);
+
+	let app = polka()
+		.get('/query/:input', (req, res) => {
+			res.end(JSON.stringify(req.params));
+		})
+		.get('/users/:id/books/:title', (req, res) => {
+			res.end(JSON.stringify(req.params));
+		});
+
+	let uri = listen(app);
+
+	let r = await axios.get(uri + '/query/1%20%2F%207');
+	t.is(r.status, 200, '~> received 200 status');
+	t.same(r.data, { input: '1 / 7' }, '~> decodes percent-encoded param value');
+
+	r = await axios.get(uri + '/query/caf%C3%A9');
+	t.same(r.data, { input: 'café' }, '~> decodes percent-encoded UTF-8 param value');
+
+	r = await axios.get(uri + '/users/42/books/hello%20world');
+	t.same(r.data, { id: '42', title: 'hello world' }, '~> decodes multiple params');
+
+	r = await axios.get(uri + '/query/100%25');
+	t.same(r.data, { input: '100%' }, '~> decodes valid `%25` sequence');
+
+	r = await axios.get(uri + '/query/100%');
+	t.same(r.data, { input: '100%' }, '~> leaves malformed sequence as-is');
+
+	app.server.close();
+});
+
 test('polka::usage::variadic', async t => {
 	t.plan(20);
 

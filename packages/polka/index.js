@@ -79,6 +79,11 @@ class Polka extends Router {
 		if (obj) {
 			fns = obj.handlers;
 			req.params = obj.params;
+			// Decode percent-encoded values (e.g. `%2F` -> `/`), like Express.
+			// Malformed sequences are left as-is instead of throwing.
+			for (let k in req.params) {
+				try { req.params[k] = decodeURIComponent(req.params[k]); } catch (e) {}
+			}
 		} else if (this.apps[base] !== void 0) {
 			mutate(base, req); info.pathname=req.path; //=> updates
 			fns.push(this.apps[base].handler.bind(null, req, res, info));
