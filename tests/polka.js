@@ -575,6 +575,24 @@ test('polka::options::onError', async t => {
 	});
 });
 
+test('polka::error handling after async next', async t => {
+	t.plan(2);
+
+	let app = polka();
+	app.use((req, res, next) => setImmediate(next));
+	app.use(() => {
+		throw new Error('boom');
+	});
+
+	let uri = listen(app);
+	await axios.get(uri).catch(err => {
+		let r = err.response;
+		t.is(r.status, 500, '~> response gets the error status');
+		t.is(r.data, 'boom', '~> response gets the error message');
+	});
+	app.server.close();
+});
+
 test('polka::options::onNoMatch', async t => {
 	t.plan(6);
 
